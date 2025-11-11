@@ -21,10 +21,10 @@ public class User {
     @Indexed(unique = true)
     private String email;
 
-    @Indexed(unique = true, sparse = true)  // Changed: sparse allows null values
+    @Indexed(unique = true, sparse = true)
     private String username;
 
-    private String password;  // Can be null for OAuth users
+    private String password;
 
     private String profileImageUrl;
 
@@ -36,8 +36,19 @@ public class User {
 
     private boolean active = true;
 
-    // NEW: OAuth fields
-    private String provider;  // "local", "google", etc.
+    private String provider;
 
-    private String providerId;  // Google user ID
+    private String providerId;
+
+    // Password Reset Fields
+    private String passwordResetToken;
+
+    private LocalDateTime passwordResetTokenExpiry;
+
+    // Account Deactivation Fields
+    private boolean deactivated = false;
+
+    private LocalDateTime deactivationRequestedAt;
+
+    private LocalDateTime deactivatedAt;
 }
