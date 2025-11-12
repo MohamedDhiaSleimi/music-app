@@ -30,12 +30,11 @@ public class AccountDeactivationScheduler {
         LocalDateTime gracePeriodEnd = LocalDateTime.now().minusSeconds(gracePeriod / 1000);
 
         List<User> usersToDeactivate = userRepository
-                .findByDeactivatedAndDeactivationRequestedAtBefore(false, gracePeriodEnd);
+                .findByActiveAndDeactivationRequestedAtBefore(true, gracePeriodEnd);
 
         for (User user : usersToDeactivate) {
-            user.setDeactivated(true);
-            user.setDeactivatedAt(LocalDateTime.now());
             user.setActive(false);
+            user.setDeactivatedAt(LocalDateTime.now());
             userRepository.save(user);
             log.info("Deactivated account for user: {}", user.getEmail());
         }

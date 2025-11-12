@@ -23,3 +23,43 @@ export interface LoginRequest {
   emailOrUsername: string;
   password: string;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface MessageResponse {
+  message: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
+
+export interface UserProfile {
+  userId: string;
+  email: string;
+  username: string;
+  profileImageUrl?: string;
+  emailVerified: boolean;
+  provider?: string;
+  createdAt: string;
+  lastLogin: string;
+}
+
+export interface UpdateUsernameRequest {
+  username: string;
+}
+
+export interface UpdateProfilePhotoRequest {
+  profilePhotoUrl: string;
+}

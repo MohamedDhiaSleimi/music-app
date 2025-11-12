@@ -3,6 +3,7 @@ package com.musicapp.auth_service.controler;
 import com.musicapp.auth_service.dto.*;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.service.AuthService;
+import com.musicapp.auth_service.service.EmailVerificationService;
 import com.musicapp.auth_service.service.PasswordService;
 import com.musicapp.auth_service.security.JwtUtil;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final PasswordService passwordService;
+    private final EmailVerificationService emailVerificationService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")

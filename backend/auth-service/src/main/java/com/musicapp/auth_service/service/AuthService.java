@@ -21,9 +21,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
+    private final EmailVerificationService emailVerificationService;
 
     @Value("${password.reset.grace.period}")
     private Long gracePeriod;
+
+    @Value("${email.verification.required}")
+    private boolean emailVerificationRequired;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -63,10 +67,6 @@ public class AuthService {
 
         if (!user.isActive()) {
             throw new RuntimeException("Account is deactivated");
-        }
-
-        if (user.isDeactivated()) {
-            throw new RuntimeException("Account has been deactivated");
         }
 
         if (user.getPassword() == null) {
@@ -110,7 +110,7 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.isDeactivated()) {
+        if (!user.isActive()) {
             throw new RuntimeException("Account is already deactivated");
         }
 

@@ -18,19 +18,16 @@ public class OAuth2Service {
     private final JwtUtil jwtUtil;
 
     public AuthResponse processOAuth2User(OAuth2UserInfo userInfo, String provider) {
-        // Check if user already exists with this provider
         User user = userRepository.findByProviderAndProviderId(provider, userInfo.getId())
                 .orElseGet(() -> {
-                    // Check if user exists with same email but different provider
                     return userRepository.findByEmail(userInfo.getEmail())
                             .map(existingUser -> {
-                                // Link this OAuth account to existing user
                                 existingUser.setProvider(provider);
                                 existingUser.setProviderId(userInfo.getId());
+                                existingUser.setEmailVerified(true);
                                 return existingUser;
                             })
                             .orElseGet(() -> {
-                                // Create new user
                                 User newUser = new User();
                                 newUser.setEmail(userInfo.getEmail());
                                 newUser.setProfileImageUrl(userInfo.getPicture());
@@ -40,7 +37,6 @@ public class OAuth2Service {
                                 newUser.setCreatedAt(LocalDateTime.now());
                                 newUser.setActive(true);
 
-                                // Generate username from email
                                 String username = userInfo.getEmail().split("@")[0];
                                 String uniqueUsername = generateUniqueUsername(username);
                                 newUser.setUsername(uniqueUsername);
@@ -49,7 +45,6 @@ public class OAuth2Service {
                             });
                 });
 
-        // Update last login and profile image
         user.setLastLogin(LocalDateTime.now());
         if (userInfo.getPicture() != null) {
             user.setProfileImageUrl(userInfo.getPicture());
@@ -57,7 +52,6 @@ public class OAuth2Service {
 
         user = userRepository.save(user);
 
-        // Generate JWT token
         String token = jwtUtil.generateToken(user.getId(), user.getEmail());
 
         return new AuthResponse(
@@ -80,7 +74,6 @@ public class OAuth2Service {
             return username;
         }
 
-        // Add numbers until we find a unique username
         int counter = 1;
         String newUsername = username + counter;
         while (userRepository.existsByUsername(newUsername)) {

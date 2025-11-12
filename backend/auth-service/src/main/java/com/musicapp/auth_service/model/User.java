@@ -45,10 +45,12 @@ public class User {
 
     private LocalDateTime passwordResetTokenExpiry;
 
-    // Account Deactivation Fields
-    private boolean deactivated = false;
-
     private LocalDateTime deactivationRequestedAt;
 
     private LocalDateTime deactivatedAt;
+
+    // Email Verification Fields
+    private String emailVerificationToken;
+
+    private LocalDateTime emailVerificationTokenExpiry;
 }

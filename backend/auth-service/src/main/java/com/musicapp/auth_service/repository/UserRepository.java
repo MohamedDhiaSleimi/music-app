@@ -20,6 +20,9 @@ public interface UserRepository extends MongoRepository<User, String> {
     // Password Reset
     Optional<User> findByPasswordResetToken(String token);
 
+    // Email Verification
+    Optional<User> findByEmailVerificationToken(String token);
+
     // Account Deactivation
-    List<User> findByDeactivatedAndDeactivationRequestedAtBefore(boolean deactivated, LocalDateTime dateTime);
+    List<User> findByActiveAndDeactivationRequestedAtBefore(boolean activated, LocalDateTime dateTime);
 }

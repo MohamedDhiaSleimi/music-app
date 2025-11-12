@@ -29,7 +29,7 @@ public class PasswordService {
             throw new RuntimeException("Cannot reset password for OAuth accounts");
         }
 
-        if (user.isDeactivated()) {
+        if (!user.isActive()) {
             throw new RuntimeException("Account is deactivated");
         }
 

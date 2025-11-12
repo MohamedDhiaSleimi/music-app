@@ -18,6 +18,35 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
+    public void sendEmailVerification(String toEmail, String verificationToken, String username) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("🎵 Verify Your Music App Email");
+
+        String verificationUrl = frontendUrl + "/verify-email?token=" + verificationToken;
+
+        String emailBody = String.format(
+                "Hi %s,\n\n" +
+                        "Welcome to Music App! 🎵\n\n" +
+                        "Please verify your email address by clicking the link below:\n%s\n\n" +
+                        "This link will expire in 24 hours.\n\n" +
+                        "If you didn't create this account, please ignore this email.\n\n" +
+                        "Best regards,\n" +
+                        "Music App Team 🎵",
+                username,
+                verificationUrl
+        );
+
+        message.setText(emailBody);
+
+        try {
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send verification email: " + e.getMessage());
+        }
+    }
+
     public void sendPasswordResetEmail(String toEmail, String resetToken, String username) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
