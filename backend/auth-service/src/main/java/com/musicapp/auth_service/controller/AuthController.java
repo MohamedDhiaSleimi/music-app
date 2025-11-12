@@ -1,9 +1,6 @@
 package com.musicapp.auth_service.controller;
 
-import com.musicapp.auth_service.dto.request.ForgotPasswordRequest;
-import com.musicapp.auth_service.dto.request.LoginRequest;
-import com.musicapp.auth_service.dto.request.RegisterRequest;
-import com.musicapp.auth_service.dto.request.ResetPasswordRequest;
+import com.musicapp.auth_service.dto.request.*;
 import com.musicapp.auth_service.dto.response.AuthResponse;
 import com.musicapp.auth_service.dto.response.MessageResponse;
 import com.musicapp.auth_service.model.User;
@@ -80,6 +77,26 @@ public class AuthController {
         try {
             passwordService.resetPassword(request.getToken(), request.getNewPassword());
             return ResponseEntity.ok(new MessageResponse("Password reset successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        try {
+            emailVerificationService.verifyEmail(request.getToken());
+            return ResponseEntity.ok(new MessageResponse("Email verified successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        try {
+            emailVerificationService.resendVerificationEmail(request.getEmail());
+            return ResponseEntity.ok(new MessageResponse("Verification email sent successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
