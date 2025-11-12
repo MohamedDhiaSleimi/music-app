@@ -1,11 +1,16 @@
-package com.musicapp.auth_service.controler;
+package com.musicapp.auth_service.controller;
 
-import com.musicapp.auth_service.dto.*;
+import com.musicapp.auth_service.dto.request.ForgotPasswordRequest;
+import com.musicapp.auth_service.dto.request.LoginRequest;
+import com.musicapp.auth_service.dto.request.RegisterRequest;
+import com.musicapp.auth_service.dto.request.ResetPasswordRequest;
+import com.musicapp.auth_service.dto.response.AuthResponse;
+import com.musicapp.auth_service.dto.response.MessageResponse;
 import com.musicapp.auth_service.model.User;
+import com.musicapp.auth_service.security.JwtUtil;
 import com.musicapp.auth_service.service.AuthService;
 import com.musicapp.auth_service.service.EmailVerificationService;
 import com.musicapp.auth_service.service.PasswordService;
-import com.musicapp.auth_service.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

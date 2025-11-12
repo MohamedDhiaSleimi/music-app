@@ -1,13 +1,15 @@
-package com.musicapp.auth_service.controler;
+package com.musicapp.auth_service.controller;
 
-import com.musicapp.auth_service.dto.AuthResponse;
-import com.musicapp.auth_service.dto.OAuth2UserInfo;
+import com.musicapp.auth_service.dto.response.AuthResponse;
+import com.musicapp.auth_service.dto.response.OAuth2UserInfo;
 import com.musicapp.auth_service.service.OAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 

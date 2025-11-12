@@ -1,8 +1,8 @@
 package com.musicapp.auth_service.service;
 
-import com.musicapp.auth_service.dto.AuthResponse;
-import com.musicapp.auth_service.dto.LoginRequest;
-import com.musicapp.auth_service.dto.RegisterRequest;
+import com.musicapp.auth_service.dto.response.AuthResponse;
+import com.musicapp.auth_service.dto.request.LoginRequest;
+import com.musicapp.auth_service.dto.request.RegisterRequest;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.repository.UserRepository;
 import com.musicapp.auth_service.security.JwtUtil;

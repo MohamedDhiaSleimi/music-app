@@ -1,6 +1,6 @@
 package com.musicapp.auth_service.service;
 
-import com.musicapp.auth_service.dto.UserProfileResponse;
+import com.musicapp.auth_service.dto.response.UserProfileResponse;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

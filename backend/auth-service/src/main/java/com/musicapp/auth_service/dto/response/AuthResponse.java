@@ -1,4 +1,4 @@
-package com.musicapp.auth_service.dto;
+package com.musicapp.auth_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

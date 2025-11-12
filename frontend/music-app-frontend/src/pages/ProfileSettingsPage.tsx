@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { data, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProfileSettingsPage() {
-  const { logout, user: authUser } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-console.log("start of the bullshit")
+
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [editingPhoto, setEditingPhoto] = useState(false);
@@ -16,12 +16,11 @@ console.log("start of the bullshit")
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: profileApi.getProfile,
+    retry: 1,
   });
-
-  console.log(data, 'user profile');
 
   useEffect(() => {
     if (profile) {
@@ -30,6 +29,17 @@ console.log("start of the bullshit")
     }
   }, [profile]);
 
+  // Clear messages after 5 seconds
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        setSuccess('');
+        setError('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
+
   const updateUsernameMutation = useMutation({
     mutationFn: profileApi.updateUsername,
     onSuccess: () => {
@@ -37,6 +47,8 @@ console.log("start of the bullshit")
       setEditingUsername(false);
       setError('');
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      // Also update auth context if needed
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
     onError: (error: any) => {
       setError(error.response?.data?.message || 'Failed to update username');
@@ -50,6 +62,7 @@ console.log("start of the bullshit")
       setEditingPhoto(false);
       setError('');
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
     onError: (error: any) => {
       setError(error.response?.data?.message || 'Failed to update profile photo');
@@ -63,6 +76,7 @@ console.log("start of the bullshit")
       setPhotoUrl('');
       setError('');
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
     onError: (error: any) => {
       setError(error.response?.data?.message || 'Failed to remove profile photo');
@@ -81,13 +95,13 @@ console.log("start of the bullshit")
   });
 
   const handleUpdateUsername = () => {
-    if (newUsername.length < 3 || newUsername.length > 20) {
+    if (newUsername.trim().length < 3 || newUsername.trim().length > 20) {
       setError('Username must be between 3 and 20 characters');
       return;
     }
     setError('');
     setSuccess('');
-    updateUsernameMutation.mutate(newUsername);
+    updateUsernameMutation.mutate(newUsername.trim());
   };
 
   const handleUpdatePhoto = () => {
@@ -95,9 +109,18 @@ console.log("start of the bullshit")
       setError('Please enter a valid photo URL');
       return;
     }
+    
+    // Basic URL validation
+    try {
+      new URL(photoUrl);
+    } catch {
+      setError('Please enter a valid URL');
+      return;
+    }
+    
     setError('');
     setSuccess('');
-    updatePhotoMutation.mutate(photoUrl);
+    updatePhotoMutation.mutate(photoUrl.trim());
   };
 
   const handleRemovePhoto = () => {
@@ -115,7 +138,32 @@ console.log("start of the bullshit")
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Failed to load profile</h2>
+          <p className="text-gray-400 mb-6">Please try again later</p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 bg-green-500 hover:bg-green-400 text-black rounded-lg transition font-medium"
+          >
+            Go to Home
+          </button>
+        </div>
       </div>
     );
   }
@@ -178,7 +226,7 @@ console.log("start of the bullshit")
               <button
                 onClick={handleRequestVerification}
                 disabled={requestVerificationMutation.isPending}
-                className="ml-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-black rounded-lg transition text-sm font-medium disabled:opacity-50"
+                className="ml-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-black rounded-lg transition text-sm font-medium disabled:opacity-50 whitespace-nowrap"
               >
                 {requestVerificationMutation.isPending ? 'Sending...' : 'Verify now'}
               </button>
@@ -197,10 +245,14 @@ console.log("start of the bullshit")
                   src={profile.profileImageUrl}
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '';
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               ) : (
                 <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-3xl">
-                  {profile?.username?.[0].toUpperCase()}
+                  {profile?.username?.[0]?.toUpperCase() || 'U'}
                 </div>
               )}
             </div>
@@ -217,9 +269,9 @@ console.log("start of the bullshit")
                   <button
                     onClick={handleRemovePhoto}
                     disabled={removePhotoMutation.isPending}
-                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition font-medium"
+                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition font-medium disabled:opacity-50"
                   >
-                    Remove
+                    {removePhotoMutation.isPending ? 'Removing...' : 'Remove'}
                   </button>
                 )}
               </div>
@@ -358,6 +410,21 @@ console.log("start of the bullshit")
                 })}
               </p>
             </div>
+
+            {profile?.lastLogin && (
+              <div>
+                <p className="text-sm text-gray-400">Last Login</p>
+                <p className="text-white font-medium">
+                  {new Date(profile.lastLogin).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

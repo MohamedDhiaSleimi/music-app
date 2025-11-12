@@ -1,7 +1,7 @@
 package com.musicapp.auth_service.security;
 
-import com.musicapp.auth_service.dto.AuthResponse;
-import com.musicapp.auth_service.dto.OAuth2UserInfo;
+import com.musicapp.auth_service.dto.response.AuthResponse;
+import com.musicapp.auth_service.dto.response.OAuth2UserInfo;
 import com.musicapp.auth_service.service.OAuth2Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URLEncoder;
