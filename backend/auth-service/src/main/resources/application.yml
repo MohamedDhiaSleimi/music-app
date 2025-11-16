@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auth-service
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/music-app}
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
+  email:
+    from: ${EMAIL_FROM:noreply@musicapp.com}
+
+jwt:
+  secret: ${JWT_SECRET:your-secret-key-here-change-in-production}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+password:
+  reset:
+    token:
+      expiration: ${PASSWORD_RESET_EXPIRATION:3600000}
+    grace:
+      period: ${GRACE_PERIOD:604800000}
+
+email:
+  verification:
+    token:
+      expiration: ${EMAIL_VERIFICATION_EXPIRATION:86400000}
+    required: ${EMAIL_VERIFICATION_REQUIRED:false}
+
+logging:
+  level:
+    com.musicapp.auth_service: ${LOG_LEVEL:INFO}
