@@ -61,10 +61,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode(anyString())).thenReturn("encrypted-password");
         when(userRepository.save(any(User.class))).thenReturn(testUser);
         when(jwtUtil.generateToken(anyString(), anyString())).thenReturn("test-token");
-        when(userMapper.toAuthResponse(any(User.class), anyString())).thenReturn(
-                new AuthResponse("test-token", testUser.getId(), testUser.getEmail(),
-                        testUser.getUsername(), testUser.getProfileImageUrl())
-        );
+        when(userMapper.toAuthResponse(any(User.class), anyString())).thenReturn(new AuthResponse("test-token", testUser.getId(), testUser.getEmail(), testUser.getUsername(), testUser.getProfileImageUrl()));
 
         // Act
         AuthResponse response = authService.register(registerRequest);
