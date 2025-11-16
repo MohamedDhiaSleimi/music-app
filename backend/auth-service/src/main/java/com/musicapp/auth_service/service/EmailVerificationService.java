@@ -1,5 +1,7 @@
 package com.musicapp.auth_service.service;
 
+import com.musicapp.auth_service.constants.AppConstants;
+import com.musicapp.auth_service.exception.custom.*;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +37,11 @@ public class EmailVerificationService {
 
         if (user.getEmailVerificationTokenExpiry() == null ||
                 user.getEmailVerificationTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Verification token has expired");
+            throw new TokenExpiredException("Verification token has expired");
         }
 
         if (user.isEmailVerified()) {
-            throw new RuntimeException("Email is already verified");
+            throw new RuntimeException(AppConstants.ERROR_EMAIL_VERIFIED);
         }
 
         user.setEmailVerified(true);
@@ -51,14 +53,14 @@ public class EmailVerificationService {
 
     public void resendVerificationEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(AppConstants.ERROR_USER_NOT_FOUND));
 
         if (user.isEmailVerified()) {
-            throw new RuntimeException("Email is already verified");
+            throw new RuntimeException(AppConstants.ERROR_EMAIL_VERIFIED);
         }
 
         if (!user.isActive()) {
-            throw new RuntimeException("Account is deactivated");
+            throw new AccountDeactivatedException(AppConstants.ERROR_ACCOUNT_DEACTIVATED);
         }
 
         sendVerificationEmail(user);
@@ -66,19 +68,19 @@ public class EmailVerificationService {
 
     public void requestVerificationForExistingUser(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(AppConstants.ERROR_USER_NOT_FOUND));
 
         if (user.isEmailVerified()) {
-            throw new RuntimeException("Email is already verified");
+            throw new RuntimeException(AppConstants.ERROR_EMAIL_VERIFIED);
         }
 
         if (!user.isActive()) {
-            throw new RuntimeException("Account is deactivated");
+            throw new AccountDeactivatedException(AppConstants.ERROR_ACCOUNT_DEACTIVATED);
         }
 
         // OAuth users don't need email verification
-        if (user.getProvider() != null && !user.getProvider().equals("local")) {
-            throw new RuntimeException("OAuth accounts don't require email verification");
+        if (user.getProvider() != null && !user.getProvider().equals(AppConstants.PROVIDER_LOCAL)) {
+            throw new RuntimeException(AppConstants.ERROR_OAUTH_VERIFICATION);
         }
 
         sendVerificationEmail(user);

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { User, AuthResponse } from "../types/auth.types";
 import type { ReactNode } from "react";
 import { authApi } from "../services/api";
+import { STORAGE_KEYS } from "../constants/api.constants";
 
 interface AuthContextType {
   user: User | null;
@@ -17,13 +18,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
+    localStorage.getItem(STORAGE_KEYS.TOKEN)
   );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = localStorage.getItem("token");
+      const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
       if (savedToken) {
         try {
           const userData = await authApi.getCurrentUser();
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             profileImageUrl: userData.profileImageUrl,
           });
         } catch (error) {
-          localStorage.removeItem("token");
+          localStorage.removeItem(STORAGE_KEYS.TOKEN);
           setToken(null);
         }
       }
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (data: AuthResponse) => {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
     setToken(data.token);
     setUser({
       userId: data.userId,
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
     setToken(null);
     setUser(null);
   };

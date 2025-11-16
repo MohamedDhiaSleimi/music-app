@@ -1,7 +1,9 @@
 package com.musicapp.auth_service.service;
 
+import com.musicapp.auth_service.constants.AppConstants;
 import com.musicapp.auth_service.dto.response.AuthResponse;
 import com.musicapp.auth_service.dto.response.OAuth2UserInfo;
+import com.musicapp.auth_service.mapper.UserMapper;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.repository.UserRepository;
 import com.musicapp.auth_service.security.JwtUtil;
@@ -16,6 +18,7 @@ public class OAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final UserMapper userMapper;
 
     public AuthResponse processOAuth2User(OAuth2UserInfo userInfo, String provider) {
         User user = userRepository.findByProviderAndProviderId(provider, userInfo.getId())
@@ -54,20 +57,14 @@ public class OAuth2Service {
 
         String token = jwtUtil.generateToken(user.getId(), user.getEmail());
 
-        return new AuthResponse(
-                token,
-                user.getId(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getProfileImageUrl()
-        );
+        return userMapper.toAuthResponse(user,token);
     }
 
     private String generateUniqueUsername(String baseUsername) {
         String username = baseUsername.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-        if (username.length() < 3) {
-            username = "user" + username;
+        if (username.length() < AppConstants.USERNAME_MIN_LENGTH) {
+            username = AppConstants.USERNAME_PREFIX + username;
         }
 
         if (!userRepository.existsByUsername(username)) {

@@ -1,5 +1,7 @@
 package com.musicapp.auth_service.service;
 
+import com.musicapp.auth_service.constants.AppConstants;
+import com.musicapp.auth_service.exception.custom.*;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +25,14 @@ public class PasswordService {
 
     public void initiatePasswordReset(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(AppConstants.ERROR_USER_NOT_FOUND));
 
-        if (user.getProvider() != null && !user.getProvider().equals("local")) {
-            throw new RuntimeException("Cannot reset password for OAuth accounts");
+        if (user.getProvider() != null && !user.getProvider().equals(AppConstants.PROVIDER_LOCAL)) {
+            throw new RuntimeException(AppConstants.ERROR_OAUTH_PASSWORD_RESET);
         }
 
         if (!user.isActive()) {
-            throw new RuntimeException("Account is deactivated");
+            throw new AccountDeactivatedException(AppConstants.ERROR_ACCOUNT_DEACTIVATED);
         }
 
         String resetToken = UUID.randomUUID().toString();
@@ -48,7 +50,7 @@ public class PasswordService {
 
         if (user.getPasswordResetTokenExpiry() == null ||
                 user.getPasswordResetTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Reset token has expired");
+            throw new TokenExpiredException("Reset token has expired");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));

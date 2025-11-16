@@ -1,4 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
+import {
+  API_BASE_URL,
+  API_ENDPOINTS,
+  STORAGE_KEYS,
+} from "../constants/api.constants";
 import type {
   AuthResponse,
   LoginRequest,
@@ -7,21 +12,17 @@ import type {
   ResetPasswordRequest,
   MessageResponse,
   UserProfile,
-  UpdateUsernameRequest,
-  UpdateProfilePhotoRequest,
-} from '../types/auth.types';
-
-const API_URL = 'http://localhost:8080/api';
+} from "../types/auth.types";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -30,78 +31,88 @@ api.interceptors.request.use((config) => {
 
 export const authApi = {
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post('/auth/register', data);
+    const response = await api.post(API_ENDPOINTS.AUTH.REGISTER, data);
     return response.data;
   },
 
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const response = await api.post('/auth/login', data);
+    const response = await api.post(API_ENDPOINTS.AUTH.LOGIN, data);
     return response.data;
   },
 
   getCurrentUser: async (): Promise<AuthResponse> => {
-    const response = await api.get('/auth/me');
+    const response = await api.get(API_ENDPOINTS.AUTH.ME);
     return response.data;
   },
 
   loginWithGoogle: () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = API_ENDPOINTS.OAUTH.GOOGLE;
   },
 
-  forgotPassword: async (data: ForgotPasswordRequest): Promise<MessageResponse> => {
-    const response = await api.post('/auth/forgot-password', data);
+  forgotPassword: async (
+    data: ForgotPasswordRequest
+  ): Promise<MessageResponse> => {
+    const response = await api.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, data);
     return response.data;
   },
 
-  resetPassword: async (data: ResetPasswordRequest): Promise<MessageResponse> => {
-    const response = await api.post('/auth/reset-password', data);
+  resetPassword: async (
+    data: ResetPasswordRequest
+  ): Promise<MessageResponse> => {
+    const response = await api.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);
     return response.data;
   },
 
   deactivateAccount: async (): Promise<MessageResponse> => {
-    const response = await api.post('/auth/deactivate-account');
+    const response = await api.post(API_ENDPOINTS.AUTH.DEACTIVATE_ACCOUNT);
     return response.data;
   },
 
   cancelDeactivation: async (): Promise<MessageResponse> => {
-    const response = await api.post('/auth/cancel-deactivation');
+    const response = await api.post(API_ENDPOINTS.AUTH.CANCEL_DEACTIVATION);
     return response.data;
   },
 
   verifyEmail: async (token: string): Promise<MessageResponse> => {
-    const response = await api.post('/auth/verify-email', { token });
+    const response = await api.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, { token });
     return response.data;
   },
 
   resendVerification: async (email: string): Promise<MessageResponse> => {
-    const response = await api.post('/auth/resend-verification', { email });
+    const response = await api.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, {
+      email,
+    });
     return response.data;
   },
 };
 
 export const profileApi = {
   getProfile: async (): Promise<UserProfile> => {
-    const response = await api.get('/profile');
+    const response = await api.get(API_ENDPOINTS.PROFILE.GET);
     return response.data;
   },
 
   updateUsername: async (username: string): Promise<UserProfile> => {
-    const response = await api.put('/profile/username', { username });
+    const response = await api.put(API_ENDPOINTS.PROFILE.UPDATE_USERNAME, {
+      username,
+    });
     return response.data;
   },
 
   updateProfilePhoto: async (profilePhotoUrl: string): Promise<UserProfile> => {
-    const response = await api.put('/profile/photo', { profilePhotoUrl });
+    const response = await api.put(API_ENDPOINTS.PROFILE.UPDATE_PHOTO, {
+      profilePhotoUrl,
+    });
     return response.data;
   },
 
   removeProfilePhoto: async (): Promise<UserProfile> => {
-    const response = await api.delete('/profile/photo');
+    const response = await api.delete(API_ENDPOINTS.PROFILE.REMOVE_PHOTO);
     return response.data;
   },
 
   requestVerification: async (): Promise<MessageResponse> => {
-    const response = await api.post('/profile/request-verification');
+    const response = await api.post(API_ENDPOINTS.PROFILE.REQUEST_VERIFICATION);
     return response.data;
   },
 };

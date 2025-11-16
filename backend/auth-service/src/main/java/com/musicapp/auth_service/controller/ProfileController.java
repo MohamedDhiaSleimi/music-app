@@ -1,12 +1,13 @@
 package com.musicapp.auth_service.controller;
 
+import com.musicapp.auth_service.constants.AppConstants;
 import com.musicapp.auth_service.dto.request.UpdateProfilePhotoRequest;
 import com.musicapp.auth_service.dto.request.UpdateUsernameRequest;
 import com.musicapp.auth_service.dto.response.MessageResponse;
 import com.musicapp.auth_service.dto.response.UserProfileResponse;
-import com.musicapp.auth_service.security.JwtUtil;
 import com.musicapp.auth_service.service.EmailVerificationService;
 import com.musicapp.auth_service.service.ProfileService;
+import com.musicapp.auth_service.util.UserIdExtractor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,69 +20,44 @@ public class ProfileController {
 
     private final ProfileService profileService;
     private final EmailVerificationService emailVerificationService;
-    private final JwtUtil jwtUtil;
+    private final UserIdExtractor userIdExtractor;
 
     @GetMapping
-    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authHeader) {
-        try {
-            String token = authHeader.replace("Bearer ", "");
-            String userId = jwtUtil.getUserIdFromToken(token);
-            UserProfileResponse profile = profileService.getUserProfile(userId);
-            return ResponseEntity.ok(profile);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+    public ResponseEntity<UserProfileResponse> getProfile(@RequestHeader("Authorization") String authHeader) {
+        String userId = userIdExtractor.extractUserId(authHeader);
+        UserProfileResponse profile = profileService.getUserProfile(userId);
+        return ResponseEntity.ok(profile);
     }
 
     @PutMapping("/username")
-    public ResponseEntity<?> updateUsername(
+    public ResponseEntity<UserProfileResponse> updateUsername(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody UpdateUsernameRequest request) {
-        try {
-            String token = authHeader.replace("Bearer ", "");
-            String userId = jwtUtil.getUserIdFromToken(token);
-            UserProfileResponse profile = profileService.updateUsername(userId, request.getUsername());
-            return ResponseEntity.ok(profile);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+        String userId = userIdExtractor.extractUserId(authHeader);
+        UserProfileResponse profile = profileService.updateUsername(userId, request.getUsername());
+        return ResponseEntity.ok(profile);
     }
 
     @PutMapping("/photo")
-    public ResponseEntity<?> updateProfilePhoto(
+    public ResponseEntity<UserProfileResponse> updateProfilePhoto(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody UpdateProfilePhotoRequest request) {
-        try {
-            String token = authHeader.replace("Bearer ", "");
-            String userId = jwtUtil.getUserIdFromToken(token);
-            UserProfileResponse profile = profileService.updateProfilePhoto(userId, request.getProfilePhotoUrl());
-            return ResponseEntity.ok(profile);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+        String userId = userIdExtractor.extractUserId(authHeader);
+        UserProfileResponse profile = profileService.updateProfilePhoto(userId, request.getProfilePhotoUrl());
+        return ResponseEntity.ok(profile);
     }
 
     @DeleteMapping("/photo")
-    public ResponseEntity<?> removeProfilePhoto(@RequestHeader("Authorization") String authHeader) {
-        try {
-            String token = authHeader.replace("Bearer ", "");
-            String userId = jwtUtil.getUserIdFromToken(token);
-            UserProfileResponse profile = profileService.removeProfilePhoto(userId);
-            return ResponseEntity.ok(profile);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+    public ResponseEntity<UserProfileResponse> removeProfilePhoto(@RequestHeader("Authorization") String authHeader) {
+        String userId = userIdExtractor.extractUserId(authHeader);
+        UserProfileResponse profile = profileService.removeProfilePhoto(userId);
+        return ResponseEntity.ok(profile);
     }
 
     @PostMapping("/request-verification")
-    public ResponseEntity<?> requestVerification(@RequestHeader("Authorization") String authHeader) {
-        try {
-            String token = authHeader.replace("Bearer ", "");
-            String userId = jwtUtil.getUserIdFromToken(token);
-            emailVerificationService.requestVerificationForExistingUser(userId);
-            return ResponseEntity.ok(new MessageResponse("Verification email sent successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+    public ResponseEntity<MessageResponse> requestVerification(@RequestHeader("Authorization") String authHeader) {
+        String userId = userIdExtractor.extractUserId(authHeader);
+        emailVerificationService.requestVerificationForExistingUser(userId);
+        return ResponseEntity.ok(new MessageResponse(AppConstants.SUCCESS_VERIFICATION_SENT));
     }
 }
