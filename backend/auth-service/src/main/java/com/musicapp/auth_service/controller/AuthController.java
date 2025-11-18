@@ -48,10 +48,11 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody EmailRequest request) {
         passwordService.initiatePasswordReset(request.getEmail());
         return ResponseEntity.ok(new MessageResponse(AppConstants.SUCCESS_PASSWORD_RESET_SENT));
     }
+
 
     @PostMapping("/reset-password")
     public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
@@ -60,13 +61,13 @@ public class AuthController {
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<MessageResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+    public ResponseEntity<MessageResponse> verifyEmail(@Valid @RequestBody TokenRequest request) {
         emailVerificationService.verifyEmail(request.getToken());
         return ResponseEntity.ok(new MessageResponse(AppConstants.SUCCESS_EMAIL_VERIFIED));
     }
 
     @PostMapping("/resend-verification")
-    public ResponseEntity<MessageResponse> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+    public ResponseEntity<MessageResponse> resendVerification(@Valid @RequestBody EmailRequest request) {
         emailVerificationService.resendVerificationEmail(request.getEmail());
         return ResponseEntity.ok(new MessageResponse(AppConstants.SUCCESS_VERIFICATION_SENT));
     }

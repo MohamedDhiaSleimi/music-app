@@ -53,3 +53,21 @@ The service runs on `http://localhost:8080`
 
 ## Environment Variables
 See `.env.example` for all available configuration options.
+
+## Recent Improvements
+
+### Account Status Management
+The application now uses a consolidated `AccountStatus` enum instead of separate boolean flags:
+- `PENDING_VERIFICATION` - Newly registered, email not verified
+- `ACTIVE` - Email verified and account fully active
+- `DEACTIVATION_PENDING` - Deactivation requested, within 7-day grace period
+- `DEACTIVATED` - Permanently deactivated
+
+### Service Layer Abstractions
+- **TokenService**: Centralized management of password reset and email verification tokens
+- **ValidationUtil**: Common validation logic for user states and permissions
+
+### Code Quality
+- Removed redundant DTOs (consolidated into generic EmailRequest and TokenRequest)
+- Extracted common email sending logic
+- Improved test coverage for new services

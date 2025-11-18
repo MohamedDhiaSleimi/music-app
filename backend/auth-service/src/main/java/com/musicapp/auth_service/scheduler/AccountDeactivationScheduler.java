@@ -1,5 +1,6 @@
 package com.musicapp.auth_service.scheduler;
 
+import com.musicapp.auth_service.model.AccountStatus;
 import com.musicapp.auth_service.model.User;
 import com.musicapp.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,10 @@ public class AccountDeactivationScheduler {
 
         LocalDateTime gracePeriodEnd = LocalDateTime.now().minusSeconds(gracePeriod / 1000);
 
-        List<User> usersToDeactivate = userRepository
-                .findByActiveAndDeactivationRequestedAtBefore(true, gracePeriodEnd);
+        List<User> usersToDeactivate = userRepository.findByStatusAndDeactivationRequestedAtBefore(AccountStatus.DEACTIVATION_PENDING, gracePeriodEnd);
 
         for (User user : usersToDeactivate) {
-            user.setActive(false);
+            user.setStatus(AccountStatus.DEACTIVATED);
             user.setDeactivatedAt(LocalDateTime.now());
             userRepository.save(user);
             log.info("Deactivated account for user: {}", user.getEmail());

@@ -14,7 +14,7 @@ public class UserMapper {
                 user.getEmail(),
                 user.getUsername(),
                 user.getProfileImageUrl(),
-                user.isEmailVerified(),
+                user.getStatus().isVerified(),  // CHANGED
                 user.getProvider(),
                 user.getCreatedAt(),
                 user.getLastLogin()

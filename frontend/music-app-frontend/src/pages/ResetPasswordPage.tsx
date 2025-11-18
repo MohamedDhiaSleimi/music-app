@@ -2,115 +2,115 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { authApi } from '../services/api';
+import { useForm } from '../hooks/useForm';
+import { validate } from '../utils/validation';
+import { UI_MESSAGES } from '../constants/ui.constants';
 import type { ResetPasswordRequest } from '../types/auth.types';
+import AuthPageLayout from '../components/layout/AuthPageLayout';
+import PasswordInput from '../components/ui/PasswordInput';
+import Button from '../components/ui/Button';
+import NotificationBanner from '../components/ui/NotificationBanner';
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const navigate = useNavigate();
-
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
   const resetPasswordMutation = useMutation({
     mutationFn: authApi.resetPassword,
     onSuccess: () => {
-      navigate('/login?success=Password reset successfully');
+      navigate('/login?success=' + encodeURIComponent(UI_MESSAGES.SUCCESS.PASSWORD_RESET));
     },
     onError: (error: any) => {
-      setError(error.response?.data?.message || 'Failed to reset password');
+      setError(error.response?.data?.message || UI_MESSAGES.ERRORS.PASSWORD_RESET_FAILED);
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const { values, errors, handleChange, handleSubmit, isSubmitting } = useForm<{
+    newPassword: string;
+    confirmPassword: string;
+  }>({
+    initialValues: {
+      newPassword: '',
+      confirmPassword: '',
+    },
+    validate: (values) => {
+      const errors: any = {};
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+      const passwordError = validate.password(values.newPassword);
+      if (passwordError) errors.newPassword = passwordError;
 
-    if (!token) {
-      setError('Invalid reset token');
-      return;
-    }
+      const matchError = validate.passwordMatch(values.newPassword, values.confirmPassword);
+      if (matchError) errors.confirmPassword = matchError;
 
-    resetPasswordMutation.mutate({ token, newPassword: password });
-  };
+      return errors;
+    },
+    onSubmit: (data) => {
+      if (!token) {
+        setError(UI_MESSAGES.ERRORS.INVALID_RESET_TOKEN);
+        return;
+      }
+      setError('');
+      const payload: ResetPasswordRequest = { token, newPassword: data.newPassword };
+      resetPasswordMutation.mutate(payload);
+    },
+  });
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-neutral-900 to-black flex items-center justify-center px-4">
+      <AuthPageLayout title={UI_MESSAGES.TITLES.INVALID_LINK} subtitle="" showLogo={false}>
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Invalid Link</h1>
-          <p className="text-gray-400 mb-8">This password reset link is invalid or has expired.</p>
-          <Link to="/forgot-password" className="text-green-400 hover:text-green-300 transition">
-            Request a new link
+          <p className="text-gray-400 mb-8">{UI_MESSAGES.NOTIFICATIONS.INVALID_RESET_LINK}</p>
+          <Link
+            to="/forgot-password"
+            className="inline-block bg-green-500 hover:bg-green-400 text-black font-semibold py-3 px-6 rounded-full transition"
+          >
+            {UI_MESSAGES.BUTTONS.REQUEST_NEW_LINK}
           </Link>
         </div>
-      </div>
+      </AuthPageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-900 to-black flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-2xl">🎵</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white mb-2">Choose new password</h1>
-          <p className="text-gray-400">Make it strong and memorable</p>
-        </div>
+    <AuthPageLayout
+      title={UI_MESSAGES.TITLES.CHOOSE_NEW_PASSWORD}
+      subtitle={UI_MESSAGES.DESCRIPTIONS.NEW_PASSWORD_SUBTITLE}
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && <NotificationBanner type="error" message={error} />}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
+        <PasswordInput
+          name="newPassword"
+          value={values.newPassword}
+          onChange={handleChange}
+          placeholder={UI_MESSAGES.PLACEHOLDERS.NEW_PASSWORD}
+          error={errors.newPassword}
+          required
+          minLength={6}
+        />
 
-          <div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-              placeholder="New password"
-              required
-              minLength={6}
-            />
-          </div>
+        <PasswordInput
+          name="confirmPassword"
+          value={values.confirmPassword}
+          onChange={handleChange}
+          placeholder={UI_MESSAGES.PLACEHOLDERS.CONFIRM_PASSWORD}
+          error={errors.confirmPassword}
+          required
+          minLength={6}
+        />
 
-          <div>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-              placeholder="Confirm password"
-              required
-              minLength={6}
-            />
-          </div>
+        <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
+          {UI_MESSAGES.BUTTONS.RESET_PASSWORD}
+        </Button>
+      </form>
 
-          <button
-            type="submit"
-            disabled={resetPasswordMutation.isPending}
-            className="w-full bg-green-500 hover:bg-green-400 text-black font-semibold py-4 rounded-full transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            {resetPasswordMutation.isPending ? 'Resetting...' : 'Reset password'}
-          </button>
-        </form>
-
-        <div className="mt-8 text-center">
-          <Link to="/login" className="text-gray-400 hover:text-white text-sm transition">
-            Back to login
-          </Link>
-        </div>
+      <div className="mt-8 text-center">
+        <Link to="/login" className="text-gray-400 hover:text-white text-sm transition">
+          {UI_MESSAGES.BUTTONS.BACK_TO_LOGIN}
+        </Link>
       </div>
-    </div>
+    </AuthPageLayout>
   );
 }

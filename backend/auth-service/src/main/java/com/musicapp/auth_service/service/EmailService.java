@@ -18,12 +18,22 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    public void sendEmailVerification(String toEmail, String verificationToken, String username) {
+    // ADD base method:
+    private void sendEmail(String toEmail, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(toEmail);
-        message.setSubject("🎵 Verify Your Music App Email");
+        message.setSubject(subject);
+        message.setText(body);
 
+        try {
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
+    }
+
+    public void sendEmailVerification(String toEmail, String verificationToken, String username) {
         String verificationUrl = frontendUrl + "/verify-email?token=" + verificationToken;
 
         String emailBody = String.format(
@@ -38,21 +48,10 @@ public class EmailService {
                 verificationUrl
         );
 
-        message.setText(emailBody);
-
-        try {
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send verification email: " + e.getMessage());
-        }
+        sendEmail(toEmail, "🎵 Verify Your Music App Email", emailBody);
     }
 
     public void sendPasswordResetEmail(String toEmail, String resetToken, String username) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("🎵 Reset Your Music App Password");
-
         String resetUrl = frontendUrl + "/reset-password?token=" + resetToken;
 
         String emailBody = String.format(
@@ -67,21 +66,10 @@ public class EmailService {
                 resetUrl
         );
 
-        message.setText(emailBody);
-
-        try {
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email: " + e.getMessage());
-        }
+        sendEmail(toEmail, "🎵 Reset Your Music App Password", emailBody);
     }
 
     public void sendAccountDeactivationEmail(String toEmail, String username) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("🎵 Account Deactivation Confirmation");
-
         String emailBody = String.format(
                 "Hi %s,\n\n" +
                         "Your Music App account deactivation request has been received.\n\n" +
@@ -94,12 +82,6 @@ public class EmailService {
                 username
         );
 
-        message.setText(emailBody);
-
-        try {
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email: " + e.getMessage());
-        }
+        sendEmail(toEmail, "🎵 Account Deactivation Confirmation", emailBody);
     }
 }

@@ -1,5 +1,6 @@
 package com.musicapp.auth_service.repository;
 
+import com.musicapp.auth_service.model.AccountStatus;
 import com.musicapp.auth_service.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -11,10 +12,15 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmail(String email);
+
     Optional<User> findByUsername(String username);
+
     Optional<User> findByEmailOrUsername(String email, String username);
+
     boolean existsByEmail(String email);
+
     boolean existsByUsername(String username);
+
     Optional<User> findByProviderAndProviderId(String provider, String providerId);
 
     // Password Reset
@@ -24,5 +30,11 @@ public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmailVerificationToken(String token);
 
     // Account Deactivation
-    List<User> findByActiveAndDeactivationRequestedAtBefore(boolean activated, LocalDateTime dateTime);
+    List<User> findByStatusAndDeactivationRequestedAtBefore(AccountStatus status, LocalDateTime dateTime);
+
+    List<User> findByStatus(AccountStatus status);
+
+    long countByStatus(AccountStatus status);
+
+
 }

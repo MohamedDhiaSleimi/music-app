@@ -24,10 +24,6 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
 export interface ResetPasswordRequest {
   token: string;
   newPassword: string;
@@ -37,13 +33,11 @@ export interface MessageResponse {
   message: string;
 }
 
-export interface VerifyEmailRequest {
-  token: string;
+
+export interface EmailRequest {
+   email: string;
 }
 
-export interface ResendVerificationRequest {
-  email: string;
-}
 
 export interface UserProfile {
   userId: string;

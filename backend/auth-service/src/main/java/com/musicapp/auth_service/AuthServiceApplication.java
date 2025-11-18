@@ -9,6 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class AuthServiceApplication {
 
     public static void main(String[] args) {
+        if (System.getenv("MONGODB_URI") == null) {
+            throw new IllegalStateException("MONGODB_URI NOT LOADED — .env NOT USED");
+        }
         SpringApplication.run(AuthServiceApplication.class, args);
     }
 }

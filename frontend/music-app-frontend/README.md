@@ -55,3 +55,25 @@ src/
 - Tailwind CSS
 - Vite
 - React Router
+
+## Recent Improvements
+
+### Component Abstractions
+- **AuthPageLayout**: Consistent layout for all authentication pages
+- **PasswordInput**: Reusable password input with visibility toggle
+- **Avatar**: Unified user avatar display component
+- **GoogleOAuthButton**: Extracted OAuth button for reuse
+
+### Custom Hooks
+- **useForm**: Generic form handling with validation support
+- **useNotification**: Notification state management with auto-dismiss
+
+### API Layer
+- Centralized Axios client configuration with interceptors
+- Global 401 error handling
+- Simplified API method signatures
+
+### Code Quality
+- Removed redundant type definitions
+- Consistent use of UI constants across components
+- Improved error handling patterns

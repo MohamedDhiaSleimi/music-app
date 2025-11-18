@@ -28,13 +28,11 @@ public class User {
 
     private String profileImageUrl;
 
-    private boolean emailVerified = false;
+    private AccountStatus status = AccountStatus.PENDING_VERIFICATION;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime lastLogin;
-
-    private boolean active = true;
 
     private String provider;
 
@@ -53,4 +51,31 @@ public class User {
     private String emailVerificationToken;
 
     private LocalDateTime emailVerificationTokenExpiry;
+
+
+
+    @Deprecated
+    public boolean isEmailVerified() {
+        return status.isVerified();
+    }
+
+    @Deprecated
+    public boolean isActive() {
+        return status.isActive();
+    }
+
+    @Deprecated
+    public void setEmailVerified(boolean emailVerified) {
+        if (emailVerified && status == AccountStatus.PENDING_VERIFICATION) {
+            status = AccountStatus.ACTIVE;
+        }
+    }
+
+    @Deprecated
+    public void setActive(boolean active) {
+        if (!active && status.canLogin()) {
+            status = AccountStatus.DEACTIVATED;
+        }
+    }
+
 }
