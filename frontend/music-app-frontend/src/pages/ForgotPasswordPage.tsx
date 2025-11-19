@@ -15,7 +15,7 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState('');
 
   const forgotPasswordMutation = useMutation({
-    mutationFn: (email: string) => authApi.forgotPassword(email), // ✓ Correct wrapper
+    mutationFn: (email: string) => authApi.forgotPassword(email), 
     onSuccess: () => {
       setSuccess(true);
       setError('');

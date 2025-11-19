@@ -27,7 +27,7 @@ public class ValidationUtil {
         }
     }
 
-    public void validateOAuthProvider(User user) {
+    public void validateNotOAuthProvider(User user) {
         if (user.getProvider() != null && !user.getProvider().equals(AppConstants.PROVIDER_LOCAL)) {
             throw new RuntimeException(AppConstants.ERROR_OAUTH_VERIFICATION);
         }

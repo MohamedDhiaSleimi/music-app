@@ -24,7 +24,7 @@ public class PasswordService {
 
     public void initiatePasswordReset(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(userRepository.findAll().toString()));
+                .orElseThrow(() -> new UserNotFoundException(AppConstants.ERROR_USER_NOT_FOUND));
 
         // REPLACE validation logic WITH:
         validationUtil.validateLocalProvider(user);

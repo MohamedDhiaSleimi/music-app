@@ -1,25 +1,40 @@
-# Stage 1: build
+# Stage 1: Build stage
+# This stage compiles your Java application
 FROM maven:3.9.2-eclipse-temurin-17 AS build
+
+# Set working directory inside container
 WORKDIR /app
 
-# copy maven files first for caching
-COPY pom.xml mvnw ./
+# Copy Maven configuration files first (for better caching)
+# Docker caches layers, so if pom.xml doesn't change, dependencies won't re-download
+COPY pom.xml .
 COPY .mvn .mvn
-RUN mvn -B dependency:go-offline
+COPY mvnw .
 
-# copy source and build
+# Download all dependencies (this layer will be cached)
+RUN mvn dependency:go-offline -B
+
+# Copy source code
 COPY src ./src
-RUN mvn -B package -DskipTests
 
-# Stage 2: runtime
+# Build the application (skip tests for faster builds)
+# Creates a .jar file in target/ directory
+RUN mvn clean package -DskipTests
+
+# Stage 2: Runtime stage
+# This stage creates the final lightweight container
 FROM eclipse-temurin:17-jre
+
+# Set working directory
 WORKDIR /app
 
-# copy jar (adjust name if different)
+# Copy only the compiled .jar from build stage (not source code)
+# This keeps the final image small
 COPY --from=build /app/target/*.jar app.jar
 
-# expose port used by Spring Boot
+# Expose port 8080 (where Spring Boot runs)
+# This is documentation - doesn't actually open the port
 EXPOSE 8080
 
-# run
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# Command to run when container starts
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { profileApi } from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import { useNotification } from '../hooks/useNotification';
-import { UI_MESSAGES, QUERY_KEYS } from '../constants/ui.constants';
-import NotificationBanner from '../components/ui/NotificationBanner';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import AppLogo from '../components/layout/AppLogo';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { profileApi } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import { useNotification } from "../hooks/useNotification";
+import { UI_MESSAGES, QUERY_KEYS } from "../constants/ui.constants";
+import NotificationBanner from "../components/ui/NotificationBanner";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import AppLogo from "../components/layout/AppLogo";
 
 export default function ProfileSettingsPage() {
   const { logout } = useAuth();
@@ -18,11 +18,15 @@ export default function ProfileSettingsPage() {
   const { error, success, setError, setSuccess } = useNotification();
 
   const [editingUsername, setEditingUsername] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
+  const [newUsername, setNewUsername] = useState("");
   const [editingPhoto, setEditingPhoto] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState('');
+  const [photoUrl, setPhotoUrl] = useState("");
 
-  const { data: profile, isLoading, error: profileError } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    error: profileError,
+  } = useQuery({
     queryKey: [QUERY_KEYS.PROFILE],
     queryFn: profileApi.getProfile,
     retry: 1,
@@ -31,7 +35,7 @@ export default function ProfileSettingsPage() {
   useEffect(() => {
     if (profile) {
       setNewUsername(profile.username);
-      setPhotoUrl(profile.profileImageUrl || '');
+      setPhotoUrl(profile.profileImageUrl || "");
     }
   }, [profile]);
 
@@ -44,9 +48,61 @@ export default function ProfileSettingsPage() {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CURRENT_USER] });
     },
     onError: (error: any) => {
-      setError(error.response?.data?.message || UI_MESSAGES.ERRORS.USERNAME_UPDATE_FAILED);
+      setError(
+        error.response?.data?.message ||
+          UI_MESSAGES.ERRORS.USERNAME_UPDATE_FAILED
+      );
     },
   });
+
+  // Add after updateUsernameMutation:
+  const updatePhotoMutation = useMutation({
+    mutationFn: profileApi.updateProfilePhoto,
+    onSuccess: () => {
+      setSuccess(UI_MESSAGES.SUCCESS.PHOTO_UPDATED);
+      setEditingPhoto(false);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CURRENT_USER] });
+    },
+    onError: (error: any) => {
+      setError(
+        error.response?.data?.message || UI_MESSAGES.ERRORS.PHOTO_UPDATE_FAILED
+      );
+    },
+  });
+
+  const removePhotoMutation = useMutation({
+    mutationFn: profileApi.removeProfilePhoto,
+    onSuccess: () => {
+      setSuccess(UI_MESSAGES.SUCCESS.PHOTO_REMOVED);
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CURRENT_USER] });
+    },
+    onError: (error: any) => {
+      setError(
+        error.response?.data?.message || UI_MESSAGES.ERRORS.PHOTO_REMOVE_FAILED
+      );
+    },
+  });
+
+  // Add handlers:
+  const handleUpdatePhoto = () => {
+    if (!photoUrl.trim()) {
+      setError("Please enter a photo URL");
+      return;
+    }
+    try {
+      new URL(photoUrl);
+    } catch {
+      setError(UI_MESSAGES.ERRORS.INVALID_PHOTO_URL);
+      return;
+    }
+    updatePhotoMutation.mutate(photoUrl.trim());
+  };
+
+  const handleRemovePhoto = () => {
+    removePhotoMutation.mutate();
+  };
 
   const handleUpdateUsername = () => {
     if (newUsername.trim().length < 3 || newUsername.trim().length > 20) {
@@ -57,7 +113,12 @@ export default function ProfileSettingsPage() {
   };
 
   if (isLoading) {
-    return <LoadingSpinner fullScreen message={UI_MESSAGES.LOADING.LOADING_PROFILE} />;
+    return (
+      <LoadingSpinner
+        fullScreen
+        message={UI_MESSAGES.LOADING.LOADING_PROFILE}
+      />
+    );
   }
 
   if (profileError) {
@@ -65,13 +126,27 @@ export default function ProfileSettingsPage() {
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-8 h-8 text-red-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">{UI_MESSAGES.ERRORS.PROFILE_LOAD_FAILED}</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {UI_MESSAGES.ERRORS.PROFILE_LOAD_FAILED}
+          </h2>
           <p className="text-gray-400 mb-6">Please try again later</p>
-          <Button onClick={() => navigate('/')}>{UI_MESSAGES.BUTTONS.GO_HOME}</Button>
+          <Button onClick={() => navigate("/")}>
+            {UI_MESSAGES.BUTTONS.GO_HOME}
+          </Button>
         </div>
       </div>
     );
@@ -87,8 +162,18 @@ export default function ProfileSettingsPage() {
               <AppLogo size="sm" showText />
             </Link>
             <Link to="/" className="text-gray-400 hover:text-white transition">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </Link>
           </div>
@@ -97,12 +182,24 @@ export default function ProfileSettingsPage() {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {success && <NotificationBanner type="success" message={success} onDismiss={() => setSuccess('')} />}
+        {success && (
+          <NotificationBanner
+            type="success"
+            message={success}
+            onDismiss={() => setSuccess("")}
+          />
+        )}
 
-        {error && <NotificationBanner type="error" message={error} onDismiss={() => setError('')} />}
+        {error && (
+          <NotificationBanner
+            type="error"
+            message={error}
+            onDismiss={() => setError("")}
+          />
+        )}
 
         {/* Email Verification Banner */}
-        {!profile?.emailVerified && profile?.provider === 'local' && (
+        {!profile?.emailVerified && profile?.provider === "local" && (
           <div className="mb-6">
             <NotificationBanner
               type="warning"
@@ -125,10 +222,17 @@ export default function ProfileSettingsPage() {
           {!editingUsername ? (
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white text-lg font-medium">{profile?.username}</p>
-                <p className="text-gray-400 text-sm mt-1">{UI_MESSAGES.DESCRIPTIONS.USERNAME_DISPLAY}</p>
+                <p className="text-white text-lg font-medium">
+                  {profile?.username}
+                </p>
+                <p className="text-gray-400 text-sm mt-1">
+                  {UI_MESSAGES.DESCRIPTIONS.USERNAME_DISPLAY}
+                </p>
               </div>
-              <Button variant="primary" onClick={() => setEditingUsername(true)}>
+              <Button
+                variant="primary"
+                onClick={() => setEditingUsername(true)}
+              >
                 {UI_MESSAGES.BUTTONS.EDIT}
               </Button>
             </div>
@@ -153,12 +257,15 @@ export default function ProfileSettingsPage() {
                   variant="secondary"
                   onClick={() => {
                     setEditingUsername(false);
-                    setNewUsername(profile?.username || '');
-                  }}>
+                    setNewUsername(profile?.username || "");
+                  }}
+                >
                   {UI_MESSAGES.BUTTONS.CANCEL}
                 </Button>
               </div>
-              <p className="text-xs text-gray-400">{UI_MESSAGES.DESCRIPTIONS.USERNAME_HINT}</p>
+              <p className="text-xs text-gray-400">
+                {UI_MESSAGES.DESCRIPTIONS.USERNAME_HINT}
+              </p>
             </div>
           )}
         </div>
