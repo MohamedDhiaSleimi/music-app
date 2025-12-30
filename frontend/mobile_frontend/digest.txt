@@ -1,0 +1,4962 @@
+Directory structure:
+└── mobile_frontend/
+    ├── build.gradle.kts
+    ├── gradle.properties
+    ├── gradlew
+    ├── gradlew.bat
+    ├── settings.gradle.kts
+    ├── app/
+    │   ├── build.gradle.kts
+    │   ├── proguard-rules.pro
+    │   └── src/
+    │       ├── androidTest/
+    │       │   └── java/
+    │       │       └── iset/
+    │       │           └── tn/
+    │       │               └── mobile_frontend/
+    │       │                   └── ExampleInstrumentedTest.kt
+    │       ├── main/
+    │       │   ├── AndroidManifest.xml
+    │       │   ├── java/
+    │       │   │   └── iset/
+    │       │   │       └── tn/
+    │       │   │           └── mobile_frontend/
+    │       │   │               ├── MainActivity.kt
+    │       │   │               ├── data/
+    │       │   │               │   ├── model/
+    │       │   │               │   │   ├── Album.kt
+    │       │   │               │   │   ├── Song.kt
+    │       │   │               │   │   ├── User.kt
+    │       │   │               │   │   ├── requests/
+    │       │   │               │   │   │   ├── LoginRequest.kt
+    │       │   │               │   │   │   └── RegisterRequest.kt
+    │       │   │               │   │   └── response/
+    │       │   │               │   │       ├── AlbumsResponse.kt
+    │       │   │               │   │       ├── AuthResponse.kt
+    │       │   │               │   │       └── SongsResponse.kt
+    │       │   │               │   ├── network/
+    │       │   │               │   │   ├── AuthApi.kt
+    │       │   │               │   │   ├── MusicApi.kt
+    │       │   │               │   │   └── RetrofitInstance.kt
+    │       │   │               │   └── repository/
+    │       │   │               │       ├── AuthRepository.kt
+    │       │   │               │       └── MusicRepository.kt
+    │       │   │               ├── ui/
+    │       │   │               │   ├── adapter/
+    │       │   │               │   │   └── MusicAdapter.kt
+    │       │   │               │   ├── home/
+    │       │   │               │   │   └── HomeFragment.kt
+    │       │   │               │   ├── login/
+    │       │   │               │   │   └── LoginFragment.kt
+    │       │   │               │   ├── music/
+    │       │   │               │   │   └── MusicFragment.kt
+    │       │   │               │   ├── register/
+    │       │   │               │   │   └── RegisterFragment.kt
+    │       │   │               │   └── viewmodel/
+    │       │   │               │       ├── AuthViewModel.kt
+    │       │   │               │       └── MusicViewModel.kt
+    │       │   │               └── util/
+    │       │   │                   ├── Constants.kt
+    │       │   │                   ├── PreferenceManager.kt
+    │       │   │                   └── Resource.kt
+    │       │   └── res/
+    │       │       ├── drawable/
+    │       │       │   ├── active_filters_bg.xml
+    │       │       │   ├── background_gradient_mauve.xml
+    │       │       │   ├── baseline_music_note_24.xml
+    │       │       │   ├── bg_button_primary.xml
+    │       │       │   ├── bg_error_message.xml
+    │       │       │   ├── bg_filter_chip.xml
+    │       │       │   ├── bg_form_card.xml
+    │       │       │   ├── bg_form_card_modern.xml
+    │       │       │   ├── bg_gradient_light.xml
+    │       │       │   ├── bg_gradient_premium.xml
+    │       │       │   ├── bg_icon_circle.xml
+    │       │       │   ├── bg_input.xml
+    │       │       │   ├── bg_login_gradient.xml
+    │       │       │   ├── bg_neu_circle.xml
+    │       │       │   ├── bg_spinner_mauve.xml
+    │       │       │   ├── bg_white_rounded_top.xml
+    │       │       │   ├── border_bottom.xml
+    │       │       │   ├── border_top.xml
+    │       │       │   ├── button_ripple.xml
+    │       │       │   ├── edittext_background.xml
+    │       │       │   ├── features_background.xml
+    │       │       │   ├── filter_chip.xml
+    │       │       │   ├── filter_chip_premium.xml
+    │       │       │   ├── filters_background.xml
+    │       │       │   ├── gradient_hero_background.xml
+    │       │       │   ├── gradient_line.xml
+    │       │       │   ├── gradient_orb_1.xml
+    │       │       │   ├── gradient_orb_2.xml
+    │       │       │   ├── gradient_overlay_dark.xml
+    │       │       │   ├── gradient_overlay_light.xml
+    │       │       │   ├── gradient_overlay_mauve.xml
+    │       │       │   ├── header_wave_mauve.xml
+    │       │       │   ├── header_wave_premium.xml
+    │       │       │   ├── header_wave_primary.xml
+    │       │       │   ├── hero_gradient_overlay.xml
+    │       │       │   ├── ic_arrow_back_mauve.xml
+    │       │       │   ├── ic_arrow_back_white.xml
+    │       │       │   ├── ic_business_mauve.xml
+    │       │       │   ├── ic_calendar_mauve.xml
+    │       │       │   ├── ic_category.xml
+    │       │       │   ├── ic_category_mauve.xml
+    │       │       │   ├── ic_close_small.xml
+    │       │       │   ├── ic_email_mauve.xml
+    │       │       │   ├── ic_error_red.xml
+    │       │       │   ├── ic_launcher_background.xml
+    │       │       │   ├── ic_launcher_foreground.xml
+    │       │       │   ├── ic_location_mauve.xml
+    │       │       │   ├── ic_login_white.xml
+    │       │       │   ├── ic_logout.xml
+    │       │       │   ├── ic_password_mauve.xml
+    │       │       │   ├── ic_person_add_white.xml
+    │       │       │   ├── ic_person_mauve.xml
+    │       │       │   ├── ic_phone_mauve.xml
+    │       │       │   ├── ic_refresh.xml
+    │       │       │   ├── ic_refresh_white.xml
+    │       │       │   ├── ic_role_mauve.xml
+    │       │       │   ├── ic_search.xml
+    │       │       │   ├── ic_search_mauve.xml
+    │       │       │   ├── ic_search_white.xml
+    │       │       │   ├── ic_sort.xml
+    │       │       │   ├── ic_visibility_white.xml
+    │       │       │   ├── login_background.xml
+    │       │       │   ├── rating_background.xml
+    │       │       │   ├── register_background.xml
+    │       │       │   ├── spinner_background.xml
+    │       │       │   └── wave_bottom_mauve.xml
+    │       │       ├── layout/
+    │       │       │   ├── activity_main.xml
+    │       │       │   ├── dropdown_item_simple.xml
+    │       │       │   ├── filter_chip_layout.xml
+    │       │       │   ├── fragment_home.xml
+    │       │       │   ├── fragment_login.xml
+    │       │       │   ├── fragment_music.xml
+    │       │       │   ├── fragment_offres.xml
+    │       │       │   ├── fragment_register.xml
+    │       │       │   ├── item_offre.xml
+    │       │       │   └── item_song.xml
+    │       │       ├── mipmap-anydpi-v26/
+    │       │       │   ├── ic_launcher.xml
+    │       │       │   └── ic_launcher_round.xml
+    │       │       ├── mipmap-hdpi/
+    │       │       │   ├── ic_launcher.webp
+    │       │       │   └── ic_launcher_round.webp
+    │       │       ├── mipmap-mdpi/
+    │       │       │   ├── ic_launcher.webp
+    │       │       │   └── ic_launcher_round.webp
+    │       │       ├── mipmap-xhdpi/
+    │       │       │   ├── ic_launcher.webp
+    │       │       │   └── ic_launcher_round.webp
+    │       │       ├── mipmap-xxhdpi/
+    │       │       │   ├── ic_launcher.webp
+    │       │       │   └── ic_launcher_round.webp
+    │       │       ├── mipmap-xxxhdpi/
+    │       │       │   ├── ic_launcher.webp
+    │       │       │   └── ic_launcher_round.webp
+    │       │       ├── navigation/
+    │       │       │   └── nav_graph.xml
+    │       │       ├── values/
+    │       │       │   ├── arrays.xml
+    │       │       │   ├── colors.xml
+    │       │       │   ├── dimens.xml
+    │       │       │   ├── strings.xml
+    │       │       │   ├── styles.xml
+    │       │       │   └── themes.xml
+    │       │       ├── values-night/
+    │       │       │   └── themes.xml
+    │       │       └── xml/
+    │       │           ├── backup_rules.xml
+    │       │           └── data_extraction_rules.xml
+    │       └── test/
+    │           └── java/
+    │               └── iset/
+    │                   └── tn/
+    │                       └── mobile_frontend/
+    │                           └── ExampleUnitTest.kt
+    └── gradle/
+        ├── libs.versions.toml
+        └── wrapper/
+            └── gradle-wrapper.properties
+
+================================================
+FILE: build.gradle.kts
+================================================
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+}
+
+
+================================================
+FILE: gradle.properties
+================================================
+# Project-wide Gradle settings.
+# IDE (e.g. Android Studio) users:
+# Gradle settings configured through the IDE *will override*
+# any settings specified in this file.
+# For more details on how to configure your build environment visit
+# http://www.gradle.org/docs/current/userguide/build_environment.html
+# Specifies the JVM arguments used for the daemon process.
+# The setting is particularly useful for tweaking memory settings.
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+# When configured, Gradle will run in incubating parallel mode.
+# This option should only be used with decoupled projects. For more details, visit
+# https://developer.android.com/r/tools/gradle-multi-project-decoupled-projects
+# org.gradle.parallel=true
+# AndroidX package structure to make it clearer which packages are bundled with the
+# Android operating system, and which are packaged with your app's APK
+# https://developer.android.com/topic/libraries/support-library/androidx-rn
+android.useAndroidX=true
+# Kotlin code style for this project: "official" or "obsolete":
+kotlin.code.style=official
+# Enables namespacing of each library's R class so that its R class includes only the
+# resources declared in the library itself and none from the library's dependencies,
+# thereby reducing the size of the R class for that library
+android.nonTransitiveRClass=true
+
+
+================================================
+FILE: gradlew
+================================================
+#!/usr/bin/env sh
+
+#
+# Copyright 2015 the original author or authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+##############################################################################
+##
+##  Gradle start up script for UN*X
+##
+##############################################################################
+
+# Attempt to set APP_HOME
+# Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/" >/dev/null
+APP_HOME="`pwd -P`"
+cd "$SAVED" >/dev/null
+
+APP_NAME="Gradle"
+APP_BASE_NAME=`basename "$0"`
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD="maximum"
+
+warn () {
+    echo "$*"
+}
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+}
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "`uname`" in
+  CYGWIN* )
+    cygwin=true
+    ;;
+  Darwin* )
+    darwin=true
+    ;;
+  MINGW* )
+    msys=true
+    ;;
+  NONSTOP* )
+    nonstop=true
+    ;;
+esac
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+        JAVACMD="$JAVA_HOME/bin/java"
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD="java"
+    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+fi
+
+# Increase the maximum file descriptors if we can.
+if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
+    MAX_FD_LIMIT=`ulimit -H -n`
+    if [ $? -eq 0 ] ; then
+        if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then
+            MAX_FD="$MAX_FD_LIMIT"
+        fi
+        ulimit -n $MAX_FD
+        if [ $? -ne 0 ] ; then
+            warn "Could not set maximum file descriptor limit: $MAX_FD"
+        fi
+    else
+        warn "Could not query maximum file descriptor limit: $MAX_FD_LIMIT"
+    fi
+fi
+
+# For Darwin, add options to specify how the application appears in the dock
+if $darwin; then
+    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
+fi
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
+    APP_HOME=`cygpath --path --mixed "$APP_HOME"`
+    CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
+
+    JAVACMD=`cygpath --unix "$JAVACMD"`
+
+    # We build the pattern for arguments to be converted via cygpath
+    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+    SEP=""
+    for dir in $ROOTDIRSRAW ; do
+        ROOTDIRS="$ROOTDIRS$SEP$dir"
+        SEP="|"
+    done
+    OURCYGPATTERN="(^($ROOTDIRS))"
+    # Add a user-defined pattern to the cygpath arguments
+    if [ "$GRADLE_CYGPATTERN" != "" ] ; then
+        OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
+    fi
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    i=0
+    for arg in "$@" ; do
+        CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
+        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+
+        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
+            eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
+        else
+            eval `echo args$i`="\"$arg\""
+        fi
+        i=`expr $i + 1`
+    done
+    case $i in
+        0) set -- ;;
+        1) set -- "$args0" ;;
+        2) set -- "$args0" "$args1" ;;
+        3) set -- "$args0" "$args1" "$args2" ;;
+        4) set -- "$args0" "$args1" "$args2" "$args3" ;;
+        5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
+        6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
+        7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
+        8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
+        9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
+    esac
+fi
+
+# Escape application args
+save () {
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+    echo " "
+}
+APP_ARGS=`save "$@"`
+
+# Collect all arguments for the java command, following the shell quoting and substitution rules
+eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
+
+exec "$JAVACMD" "$@"
+
+
+
+================================================
+FILE: gradlew.bat
+================================================
+@rem
+@rem Copyright 2015 the original author or authors.
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem      https://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+
+@if "%DEBUG%" == "" @echo off
+@rem ##########################################################################
+@rem
+@rem  Gradle startup script for Windows
+@rem
+@rem ##########################################################################
+
+@rem Set local scope for the variables with windows NT shell
+if "%OS%"=="Windows_NT" setlocal
+
+set DIRNAME=%~dp0
+if "%DIRNAME%" == "" set DIRNAME=.
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+
+@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if "%ERRORLEVEL%" == "0" goto execute
+
+echo.
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+echo.
+echo Please set the JAVA_HOME variable in your environment to match the
+echo location of your Java installation.
+
+goto fail
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+
+echo.
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+echo.
+echo Please set the JAVA_HOME variable in your environment to match the
+echo location of your Java installation.
+
+goto fail
+
+:execute
+@rem Setup the command line
+
+set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+
+
+@rem Execute Gradle
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+
+:end
+@rem End local scope for the variables with windows NT shell
+if "%ERRORLEVEL%"=="0" goto mainEnd
+
+:fail
+rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+rem the _cmd.exe /c_ return code!
+if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
+exit /b 1
+
+:mainEnd
+if "%OS%"=="Windows_NT" endlocal
+
+:omega
+
+
+
+================================================
+FILE: settings.gradle.kts
+================================================
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "mobile_frontend"
+include(":app")
+ 
+
+
+================================================
+FILE: app/build.gradle.kts
+================================================
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+
+
+
+
+}
+
+android {
+    namespace = "iset.tn.mobile_frontend"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "iset.tn.mobile_frontend"
+        minSdk = 24
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.5")
+        implementation ("androidx.navigation:navigation-ui-ktx:2.7.5")
+
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.client)
+    implementation(libs.androidx.ui.text)
+    debugImplementation(libs.okhttp.logging.interceptor)
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+}
+
+
+================================================
+FILE: app/proguard-rules.pro
+================================================
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+
+
+================================================
+FILE: app/src/androidTest/java/iset/tn/mobile_frontend/ExampleInstrumentedTest.kt
+================================================
+package iset.tn.mobile_frontend
+
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
+
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import org.junit.Assert.*
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+@RunWith(AndroidJUnit4::class)
+class ExampleInstrumentedTest {
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals("iset.tn.mobile_frontend", appContext.packageName)
+    }
+}
+
+
+================================================
+FILE: app/src/main/AndroidManifest.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Voyage_intelligent"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name="iset.tn.mobile_frontend.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/MainActivity.kt
+================================================
+package iset.tn.mobile_frontend
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import iset.tn.mobile_frontend.R
+import iset.tn.mobile_frontend.databinding.ActivityMainBinding
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Initialisation du binding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Initialisation du NavController
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
+        // Appliquer edge-to-edge et gÃ©rer les insets
+        enableEdgeToEdge()
+
+        // NE PAS appeler checkUserLoginStatus() ici - la navigation est gÃ©rÃ©e par le nav_graph
+    }
+
+    private fun enableEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+
+    // Fonction pour accÃ©der au NavController depuis les fragments
+    fun getNavController(): NavController = navController
+
+    fun setUserLoggedIn() {
+        // Sauvegarder l'Ã©tat de connexion
+        val sharedPref = getSharedPreferences("session", MODE_PRIVATE)
+        sharedPref.edit().putBoolean("isLoggedIn", true).apply()
+
+        // La navigation vers offres est gÃ©rÃ©e par le LoginFragment
+        // NE PAS naviguer depuis ici
+    }
+
+    // Supprimez la mÃ©thode checkUserLoginStatus() ou gardez-la mais ne l'appelez pas
+    private fun checkUserLoginStatus() {
+        // Cette mÃ©thode peut exister mais ne doit pas Ãªtre appelÃ©e dans onCreate
+        // ou alors utilisez-la diffÃ©remment (voir option 2)
+    }
+
+    // Gestion du bouton back pour la navigation
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/Album.kt
+================================================
+package iset.tn.mobile_frontend.data.model
+
+data class Album(
+    val _id: String,
+    val name: String,
+    val desc: String,
+    val image: String,
+    val bgColour: String
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/Song.kt
+================================================
+package iset.tn.mobile_frontend.data.model
+
+data class Song(
+    val _id: String,
+    val name: String,
+    val desc: String,
+    val album: String,
+    val image: String,
+    val file: String,
+    val duration: String
+)
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/User.kt
+================================================
+package iset.tn.mobile_frontend.data.model
+
+data class User(
+    val userId: String,
+    val email: String,
+    val username: String,
+    val profileImageUrl: String?
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/requests/LoginRequest.kt
+================================================
+package iset.tn.mobile_frontend.data.model.requests
+
+data class LoginRequest(
+    val emailOrUsername: String, val password: String
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/requests/RegisterRequest.kt
+================================================
+package iset.tn.mobile_frontend.data.model.requests
+
+data class RegisterRequest(
+    val email: String,
+    val username: String,
+    val password: String
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/response/AlbumsResponse.kt
+================================================
+package iset.tn.mobile_frontend.data.model.response
+
+import iset.tn.mobile_frontend.data.model.Album
+
+data class AlbumsResponse(
+    val albums: List<Album>
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/response/AuthResponse.kt
+================================================
+package iset.tn.mobile_frontend.data.model.response
+
+data class AuthResponse(
+    val token: String,
+    val userId: String,
+    val email: String,
+    val username: String,
+    val profileImageUrl: String?
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/model/response/SongsResponse.kt
+================================================
+package iset.tn.mobile_frontend.data.model.response
+
+import iset.tn.mobile_frontend.data.model.Song
+
+data class SongsResponse(
+    val songs: List<Song>
+)
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/network/AuthApi.kt
+================================================
+package iset.tn.mobile_frontend.data.network
+
+import iset.tn.mobile_frontend.data.model.requests.LoginRequest
+import iset.tn.mobile_frontend.data.model.requests.RegisterRequest
+import iset.tn.mobile_frontend.data.model.response.AuthResponse
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+
+
+interface AuthApi {
+    @POST("auth/login")
+    suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
+
+    @POST("auth/register")
+    suspend fun register(@Body request: RegisterRequest): Response<AuthResponse>
+
+    @GET("auth/me")
+    suspend fun getCurrentUser(
+        @Header("Authorization") token: String
+    ): Response<AuthResponse>
+}
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/network/MusicApi.kt
+================================================
+package iset.tn.mobile_frontend.data.network
+
+import iset.tn.mobile_frontend.data.model.response.AlbumsResponse
+import iset.tn.mobile_frontend.data.model.response.SongsResponse
+import retrofit2.Response
+import retrofit2.http.GET
+
+
+interface MusicApi {
+    @GET("song/list")
+    suspend fun getSongs(): Response<SongsResponse>
+
+    @GET("album/list")
+    suspend fun getAlbums(): Response<AlbumsResponse>
+}
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/network/RetrofitInstance.kt
+================================================
+package iset.tn.mobile_frontend.data.network
+
+import iset.tn.mobile_frontend.util.Constants
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+object RetrofitInstance {
+
+
+    private val logging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .build()
+
+    // Auth API instance
+    val authApi: AuthApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constants.getBaseUrl("auth"))
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AuthApi::class.java)
+    }
+
+    // Music API instance
+    val musicApi: MusicApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constants.getBaseUrl("music"))
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(MusicApi::class.java)
+    }
+}
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/repository/AuthRepository.kt
+================================================
+package iset.tn.mobile_frontend.data.repository
+
+import iset.tn.mobile_frontend.data.model.requests.LoginRequest
+import iset.tn.mobile_frontend.data.model.requests.RegisterRequest
+import iset.tn.mobile_frontend.data.model.response.AuthResponse
+import iset.tn.mobile_frontend.data.network.RetrofitInstance
+import retrofit2.Response
+
+class AuthRepository {
+
+    suspend fun login(req: LoginRequest): Response<AuthResponse> {
+        return RetrofitInstance.authApi.login(req)
+    }
+
+    suspend fun register(req: RegisterRequest): Response<AuthResponse> {
+        return RetrofitInstance.authApi.register(req)
+    }
+}
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/data/repository/MusicRepository.kt
+================================================
+package iset.tn.mobile_frontend.data.repository
+
+import iset.tn.mobile_frontend.data.model.Album
+import iset.tn.mobile_frontend.data.model.Song
+import iset.tn.mobile_frontend.data.network.MusicApi
+import iset.tn.mobile_frontend.data.network.RetrofitInstance
+
+class MusicRepository {
+    private val api: MusicApi = RetrofitInstance.musicApi
+
+    suspend fun getSongs(): List<Song> {
+        val response = api.getSongs()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.songs
+        } else {
+            emptyList()
+        }
+    }
+
+    suspend fun getAlbums(): List<Album> {
+        val response = api.getAlbums()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.albums
+        } else {
+            emptyList()
+        }
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/adapter/MusicAdapter.kt
+================================================
+package iset.tn.mobile_frontend.ui.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import iset.tn.mobile_frontend.data.model.Song
+import iset.tn.mobile_frontend.databinding.ItemSongBinding
+
+class MusicAdapter(
+    private var songs: List<Song>,
+    private val onSongClick: (Song) -> Unit
+) : RecyclerView.Adapter<MusicAdapter.SongViewHolder>() {
+
+    inner class SongViewHolder(val binding: ItemSongBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
+        val binding = ItemSongBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return SongViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+        val song = songs[position]
+
+        with(holder.binding) {
+            tvSongName.text = song.name
+            tvSongDesc.text = song.desc
+            tvSongAlbum.text = song.album
+            tvSongDuration.text = song.duration
+
+            // Load image using Glide (you'll need to add Glide dependency)
+            // For now, we'll just use a placeholder
+            // Glide.with(root.context)
+            //     .load(song.image)
+            //     .placeholder(R.drawable.ic_music_placeholder)
+            //     .into(ivSongImage)
+
+            root.setOnClickListener {
+                onSongClick(song)
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = songs.size
+
+    fun updateSongs(newSongs: List<Song>) {
+        songs = newSongs
+        notifyDataSetChanged()
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/home/HomeFragment.kt
+================================================
+package iset.tn.mobile_frontend.ui.home
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import iset.tn.mobile_frontend.R
+import iset.tn.mobile_frontend.databinding.FragmentHomeBinding
+
+class HomeFragment : Fragment() {
+
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupClickListeners()
+        setupAnimations()
+    }
+
+    private fun setupClickListeners() {
+        // âœ… CORRECTION : Utiliser navigate() avec ID directement
+        binding.btnLogin.setOnClickListener {
+            animateButtonClick(binding.btnLogin) {
+                findNavController().navigate(R.id.loginFragment)
+            }
+        }
+
+        // âœ… CORRECTION : Utiliser navigate() avec ID directement
+        binding.btnRegister.setOnClickListener {
+            animateButtonClick(binding.btnRegister) {
+                findNavController().navigate(R.id.registerFragment)
+            }
+        }
+
+
+    }
+
+    private fun setupAnimations() {
+        // Animation d'entrÃ©e pour les Ã©lÃ©ments
+        binding.logo.animate().alpha(1f).setDuration(800).start()
+        binding.tvWelcome.animate().alpha(1f).setStartDelay(200).setDuration(600).start()
+        binding.tvAppName.animate().alpha(1f).setStartDelay(400).setDuration(600).start()
+        binding.tvTagline.animate().alpha(1f).setStartDelay(600).setDuration(600).start()
+
+        // Animation des boutons
+        binding.btnLogin.animate().alpha(1f).setStartDelay(800).setDuration(400).start()
+        binding.btnRegister.animate().alpha(1f).setStartDelay(900).setDuration(400).start()
+    }
+
+    private fun animateButtonClick(button: View, action: () -> Unit) {
+        button.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100).withEndAction {
+            button.animate().scaleX(1f).scaleY(1f).setDuration(100).withEndAction(action).start()
+        }.start()
+    }
+
+    private fun animateTextClick(textView: View, action: () -> Unit) {
+        textView.animate().alpha(0.6f).setDuration(100).withEndAction {
+            textView.animate().alpha(1f).setDuration(100).withEndAction(action).start()
+        }.start()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/login/LoginFragment.kt
+================================================
+package iset.tn.mobile_frontend.ui.login
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import iset.tn.mobile_frontend.databinding.FragmentLoginBinding
+import iset.tn.mobile_frontend.ui.viewmodel.AuthViewModel
+import iset.tn.mobile_frontend.R
+class LoginFragment : Fragment() {
+
+    private var _binding: FragmentLoginBinding? = null
+    private val binding get() = _binding!!
+    private val vm: AuthViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.setSessionManager(requireContext())
+
+        binding.btnLogin.setOnClickListener {
+            val email = binding.inputEmail.text.toString()
+            val password = binding.inputPassword.text.toString()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                binding.textError.text = "Please fill in all fields"
+                binding.textError.visibility = View.VISIBLE
+            } else {
+                binding.textError.visibility = View.GONE
+                vm.login(email, password)
+            }
+        }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.btnRegister.setOnClickListener {
+            findNavController().navigate(R.id.action_login_to_register)
+        }
+
+        observeLiveData()
+    }
+
+    private fun observeLiveData() {
+        vm.authResult.observe(viewLifecycleOwner) { auth ->
+            if (auth != null) {
+                Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                // Navigate to music screen
+                findNavController().navigate(R.id.action_login_to_music)
+            }
+        }
+
+        vm.errorMessage.observe(viewLifecycleOwner) { error ->
+            if (error != null) {
+                binding.textError.text = error
+                binding.textError.visibility = View.VISIBLE
+            } else {
+                binding.textError.visibility = View.GONE
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/music/MusicFragment.kt
+================================================
+package iset.tn.mobile_frontend.ui.music
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import iset.tn.mobile_frontend.databinding.FragmentMusicBinding
+import iset.tn.mobile_frontend.ui.adapter.MusicAdapter
+import iset.tn.mobile_frontend.ui.viewmodel.MusicViewModel
+import iset.tn.mobile_frontend.R
+class MusicFragment : Fragment() {
+
+    private var _binding: FragmentMusicBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: MusicViewModel by viewModels()
+    private lateinit var adapter: MusicAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMusicBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupSearchAndFilters()
+        setupButtons()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = MusicAdapter(emptyList()) { song ->
+            viewModel.playSong(song)
+            Toast.makeText(requireContext(), "Playing: ${song.name}", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@MusicFragment.adapter
+        }
+    }
+
+    private fun setupSearchAndFilters() {
+        // Search functionality
+        binding.searchButton.setOnClickListener {
+            val query = binding.searchEdit.text.toString()
+            viewModel.searchSongs(query)
+        }
+
+        // Album filter setup
+        viewModel.albums.observe(viewLifecycleOwner) { albums ->
+            val albumNames = listOf("All") + albums.map { it.name }
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                albumNames
+            )
+            binding.filterAlbumSpinner.setAdapter(adapter)
+        }
+
+        binding.filterAlbumSpinner.setOnItemClickListener { _, _, position, _ ->
+            val selectedAlbum = if (position == 0) null else binding.filterAlbumSpinner.text.toString()
+            viewModel.filterByAlbum(selectedAlbum)
+        }
+
+        // Refresh button
+        binding.refreshButton.setOnClickListener {
+            binding.searchEdit.text?.clear()
+            binding.filterAlbumSpinner.setText("", false)
+            viewModel.clearFilters()
+            viewModel.loadMusic()
+        }
+    }
+
+    private fun setupButtons() {
+        // Logout button
+        binding.btnLogout.setOnClickListener {
+            logout()
+        }
+    }
+
+    private fun observeViewModel() {
+        // Observe filtered songs
+        viewModel.filteredSongs.observe(viewLifecycleOwner) { songs ->
+            adapter.updateSongs(songs)
+            updateResultsCount(songs.size)
+        }
+
+        // Observe loading state
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.recyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
+        }
+
+        // Observe errors
+        viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // Observe currently playing song
+        viewModel.currentPlayingSong.observe(viewLifecycleOwner) { song ->
+            song?.let {
+                // Update UI to show currently playing song
+                binding.nowPlayingSection.visibility = View.VISIBLE
+                binding.tvNowPlaying.text = "Now Playing: ${it.name}"
+            } ?: run {
+                binding.nowPlayingSection.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun updateResultsCount(count: Int) {
+        binding.resultsCount.text = if (count == 1) {
+            "$count song found"
+        } else {
+            "$count songs found"
+        }
+    }
+
+    private fun logout() {
+        // Clear session
+        val sharedPrefs = requireContext().getSharedPreferences("session", android.content.Context.MODE_PRIVATE)
+        sharedPrefs.edit().clear().apply()
+
+        // Navigate to home
+        findNavController().navigate(R.id.homeFragment)
+
+        Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/register/RegisterFragment.kt
+================================================
+package iset.tn.mobile_frontend.ui.register
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import iset.tn.mobile_frontend.data.model.requests.RegisterRequest
+import iset.tn.mobile_frontend.data.network.RetrofitInstance
+import iset.tn.mobile_frontend.databinding.FragmentRegisterBinding
+import iset.tn.mobile_frontend.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+class RegisterFragment : Fragment() {
+
+    private var _binding: FragmentRegisterBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        binding.btnRegister.setOnClickListener {
+            registerUser()
+        }
+    }
+
+    private fun registerUser() {
+        val email = binding.etEmail.text.toString()
+        val username = binding.etUsername.text.toString()
+        val password = binding.etPassword.text.toString()
+
+        // Basic validation
+        if (!isFormValid(email, username, password)) {
+            return
+        }
+
+        val request = RegisterRequest(
+            email = email,
+            username = username,
+            password = password
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.authApi.register(request)
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (response.isSuccessful) {
+                        Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_register_to_login)
+                        clearForm()
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        showError("Error ${response.code()}: $errorBody")
+                    }
+                }
+            } catch (e: Exception) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    showError("Exception: ${e.message}")
+                }
+            }
+        }
+    }
+
+    private fun isFormValid(email: String, username: String, password: String): Boolean {
+        // Validate email
+        if (email.isBlank() || !email.contains("@")) {
+            showError("Please enter a valid email address")
+            return false
+        }
+
+        // Validate username
+        if (username.length < 3 || username.length > 20) {
+            showError("Username must be between 3 and 20 characters")
+            return false
+        }
+
+        // Validate password
+        if (password.length < 6) {
+            showError("Password must be at least 6 characters")
+            return false
+        }
+
+        hideError()
+        return true
+    }
+
+    private fun showError(message: String) {
+        binding.textError.text = message
+        binding.textError.visibility = View.VISIBLE
+    }
+
+    private fun hideError() {
+        binding.textError.visibility = View.GONE
+    }
+
+    private fun clearForm() {
+        binding.etEmail.text?.clear()
+        binding.etUsername.text?.clear()
+        binding.etPassword.text?.clear()
+        hideError()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/viewmodel/AuthViewModel.kt
+================================================
+package iset.tn.mobile_frontend.ui.viewmodel
+
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.integration.musicapp.util.PreferenceManager
+import iset.tn.mobile_frontend.data.model.requests.LoginRequest
+import iset.tn.mobile_frontend.data.model.requests.RegisterRequest
+import iset.tn.mobile_frontend.data.model.response.AuthResponse
+import iset.tn.mobile_frontend.data.repository.AuthRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+class AuthViewModel : ViewModel() {
+
+    private val repo = AuthRepository()
+    private lateinit var session: PreferenceManager
+
+    fun setSessionManager(context: Context) {
+        session = PreferenceManager(context)
+    }
+
+    private val _authResult = MutableLiveData<AuthResponse?>()
+    val authResult: LiveData<AuthResponse?> = _authResult
+
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+
+
+    fun login(email: String, password: String) {
+        _errorMessage.postValue(null)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = repo.login(LoginRequest(email, password))
+                if (response.isSuccessful && response.body() != null) {
+
+                    val data = response.body()!!
+                    session.saveAuthToken(data.token)
+
+                    _authResult.postValue(data)
+
+                } else {
+                    _errorMessage.postValue("Email ou mot de passe incorrect")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Erreur de connexion au serveur")
+            }
+        }
+    }
+
+
+
+    fun register(req: RegisterRequest) {
+        _errorMessage.postValue(null)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = repo.register(req)
+                if (response.isSuccessful && response.body() != null) {
+
+                    val data = response.body()!!
+                    session.saveAuthToken(data.token)
+
+                    _authResult.postValue(data)
+
+                } else {
+                    _errorMessage.postValue("Impossible de crÃ©er le compte")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Erreur rÃ©seau")
+            }
+        }
+    }
+
+    fun logout() {
+        session.clearAll()          // Efface le token et le rÃ´le de la session
+        _authResult.postValue(null)  // RÃ©initialise les donnÃ©es utilisateur
+    }
+
+}
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/ui/viewmodel/MusicViewModel.kt
+================================================
+package iset.tn.mobile_frontend.ui.viewmodel
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import iset.tn.mobile_frontend.data.model.Album
+import iset.tn.mobile_frontend.data.model.Song
+import iset.tn.mobile_frontend.data.repository.MusicRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+class MusicViewModel : ViewModel() {
+    private val repository = MusicRepository()
+
+    private val _songs = MutableLiveData<List<Song>>()
+    val songs: LiveData<List<Song>> = _songs
+
+    private val _albums = MutableLiveData<List<Album>>()
+    val albums: LiveData<List<Album>> = _albums
+
+    private val _filteredSongs = MutableLiveData<List<Song>>()
+    val filteredSongs: LiveData<List<Song>> = _filteredSongs
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+
+    private val _currentPlayingSong = MutableLiveData<Song?>()
+    val currentPlayingSong: LiveData<Song?> = _currentPlayingSong
+
+    private var allSongs: List<Song> = emptyList()
+    private var currentSearchQuery: String = ""
+    private var currentAlbumFilter: String? = null
+
+    init {
+        loadMusic()
+    }
+
+    fun loadMusic() {
+        _isLoading.postValue(true)
+        _errorMessage.postValue(null)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val songsData = repository.getSongs()
+                val albumsData = repository.getAlbums()
+
+                allSongs = songsData
+                _songs.postValue(songsData)
+                _albums.postValue(albumsData)
+                _filteredSongs.postValue(songsData)
+                _isLoading.postValue(false)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Failed to load music: ${e.message}")
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun searchSongs(query: String) {
+        currentSearchQuery = query
+        applyFilters()
+    }
+
+    fun filterByAlbum(albumName: String?) {
+        currentAlbumFilter = albumName
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        var filtered = allSongs
+
+        // Apply search filter
+        if (currentSearchQuery.isNotEmpty()) {
+            filtered = filtered.filter { song ->
+                song.name.contains(currentSearchQuery, ignoreCase = true) ||
+                        song.desc.contains(currentSearchQuery, ignoreCase = true) ||
+                        song.album.contains(currentSearchQuery, ignoreCase = true)
+            }
+        }
+
+        // Apply album filter
+        currentAlbumFilter?.let { albumName ->
+            if (albumName != "All") {
+                filtered = filtered.filter { it.album == albumName }
+            }
+        }
+
+        _filteredSongs.postValue(filtered)
+    }
+
+    fun clearFilters() {
+        currentSearchQuery = ""
+        currentAlbumFilter = null
+        _filteredSongs.postValue(allSongs)
+    }
+
+    fun playSong(song: Song) {
+        _currentPlayingSong.postValue(song)
+    }
+
+    fun stopPlayback() {
+        _currentPlayingSong.postValue(null)
+    }
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/util/Constants.kt
+================================================
+package iset.tn.mobile_frontend.util
+
+object Constants {
+
+
+    // Shared Preferences
+    const val PREF_NAME = "music_auth_prefs"
+    const val KEY_TOKEN = "auth_token"
+    const val KEY_USER_ID = "user_id"
+    const val KEY_USERNAME = "username"
+    const val KEY_EMAIL = "email"
+
+    private const val BASE_IP = "http://10.0.2.2"
+    private const val AUTH_PORT = 8084
+    private const val MUSIC_PORT = 3000
+
+    fun getBaseUrl(type: String): String {
+        val port = when (type.lowercase()) {
+            "auth" -> AUTH_PORT
+            "music" -> MUSIC_PORT
+            else -> throw IllegalArgumentException("Unknown API type: $type")
+        }
+        return "$BASE_IP:$port/api/"
+    }
+}
+
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/util/PreferenceManager.kt
+================================================
+package com.integration.musicapp.util
+
+import android.content.Context
+import android.content.SharedPreferences
+import iset.tn.mobile_frontend.util.Constants
+
+class PreferenceManager(context: Context) {
+
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+
+    fun saveAuthToken(token: String) {
+        sharedPreferences.edit().putString(Constants.KEY_TOKEN, token).apply()
+    }
+
+    fun getAuthToken(): String? {
+        return sharedPreferences.getString(Constants.KEY_TOKEN, null)
+    }
+
+    fun saveUserData(userId: String, username: String, email: String) {
+        sharedPreferences.edit().apply {
+            putString(Constants.KEY_USER_ID, userId)
+            putString(Constants.KEY_USERNAME, username)
+            putString(Constants.KEY_EMAIL, email)
+            apply()
+        }
+    }
+
+    fun getUserId(): String? = sharedPreferences.getString(Constants.KEY_USER_ID, null)
+    fun getUsername(): String? = sharedPreferences.getString(Constants.KEY_USERNAME, null)
+    fun getEmail(): String? = sharedPreferences.getString(Constants.KEY_EMAIL, null)
+
+    fun clearAll() {
+        sharedPreferences.edit().clear().apply()
+    }
+
+    fun isLoggedIn(): Boolean = getAuthToken() != null
+}
+
+
+================================================
+FILE: app/src/main/java/iset/tn/mobile_frontend/util/Resource.kt
+================================================
+package com.integration.musicapp.util
+
+sealed class Resource<T>(
+    val data: T? = null,
+    val message: String? = null
+) {
+    class Success<T>(data: T) : Resource<T>(data)
+    class Error<T>(message: String, data: T? = null) : Resource<T>(data, message)
+    class Loading<T> : Resource<T>()
+}
+
+
+================================================
+FILE: app/src/main/res/drawable/active_filters_bg.xml
+================================================
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorPrimaryLight" />
+    <corners android:radius="12dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/background_gradient_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#2563EB"
+        android:endColor="#1E40AF" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/baseline_music_note_24.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M12,3v10.55c-0.59,-0.34 -1.27,-0.55 -2,-0.55 -2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4V7h4V3h-6z"/>
+    
+</vector>
+
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_button_primary.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <gradient
+            android:startColor="#667EEA"
+            android:endColor="#764BA2"
+            android:angle="135" />
+        <corners android:radius="16dp" />
+    </shape>
+
+</selector>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_error_message.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFF5F5" />
+    <stroke
+        android:width="1dp"
+        android:color="#FED7D7" />
+    <corners android:radius="8dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_filter_chip.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#DBEAFE" />
+    <corners android:radius="16dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2563EB" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_form_card.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android"
+        android:shape="rectangle">
+        <solid android:color="#FFFFFF"/>
+        <corners android:radius="20dp"/>
+    </shape>
+
+</selector>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_form_card_modern.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/white" />
+    <corners
+        android:topLeftRadius="32dp"
+        android:topRightRadius="32dp"
+        android:bottomLeftRadius="32dp"
+        android:bottomRightRadius="32dp" />
+    <padding
+        android:left="16dp"
+        android:top="16dp"
+        android:right="16dp"
+        android:bottom="16dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_gradient_light.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#F8FAFC"
+        android:endColor="#F1F5F9" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_gradient_premium.xml
+================================================
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#F8FAFF"
+        android:endColor="#F0F4FF" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_icon_circle.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <solid android:color="#33FFFFFF"/>
+        <corners android:radius="100dp"/>
+        <stroke android:color="#55FFFFFF" android:width="2dp"/>
+    </shape>
+
+</selector>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_input.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <solid android:color="#FFFFFF"/>
+        <corners android:radius="14dp"/>
+        <stroke android:width="2dp" android:color="#e5e7eb"/>
+    </shape>
+
+</selector>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_login_gradient.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#2563EB"
+        android:endColor="#1E40AF" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_neu_circle.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#2563EB" />
+    <stroke
+        android:width="1dp"
+        android:color="#3B82F6" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_spinner_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/white" />
+    <stroke
+        android:width="2dp"
+        android:color="#2563EB" />
+    <corners android:radius="16dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/bg_white_rounded_top.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/white" />
+    <corners
+        android:topLeftRadius="32dp"
+        android:topRightRadius="32dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/border_bottom.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="1dp"
+        android:color="#e5e7eb" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/border_top.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="1dp"
+        android:color="#e5e7eb" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/button_ripple.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#20000000">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="135"
+                android:startColor="#667eea"
+                android:endColor="#764ba2" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+</ripple>
+
+
+================================================
+FILE: app/src/main/res/drawable/edittext_background.xml
+================================================
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/white" />
+    <stroke android:width="1dp" android:color="@color/grey_300" />
+    <corners android:radius="8dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/features_background.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#f8fafc"
+        android:endColor="#f1f5f9" />
+    <corners android:radius="40dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/filter_chip.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#DBEAFE" />
+    <corners android:radius="16dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2563EB" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/filter_chip_premium.xml
+================================================
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F0F4FF" />
+    <corners android:radius="10dp" />
+    <stroke
+        android:width="1dp"
+        android:color="@color/colorPrimary" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/filters_background.xml
+================================================
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/grey_50" />
+    <stroke android:width="1dp" android:color="@color/grey_200" />
+    <corners android:radius="12dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_hero_background.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#667eea"
+        android:endColor="#764ba2" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_line.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="0"
+        android:startColor="#667eea"
+        android:endColor="#764ba2" />
+    <size android:height="4dp" />
+    <corners android:radius="2dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_orb_1.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="70%"
+        android:centerX="0.5"
+        android:centerY="0.5"
+        android:startColor="#667eea"
+        android:endColor="#00FFFFFF" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_orb_2.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="70%"
+        android:centerX="0.5"
+        android:centerY="0.5"
+        android:startColor="#764ba2"
+        android:endColor="#00FFFFFF" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_overlay_dark.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="90"
+        android:startColor="#80000000"
+        android:endColor="#40000000" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_overlay_light.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="90"
+        android:startColor="#00000000"
+        android:endColor="#1A000000" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/gradient_overlay_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="90"
+        android:startColor="#002563EB"
+        android:centerColor="#802563EB"
+        android:endColor="#E62563EB" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/header_wave_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M0,32L48,37.3C96,43,192,53,288,58.7C384,64,480,64,576,58.7C672,53,768,43,864,37.3C960,32,1056,32,1152,37.3C1248,43,1344,53,1392,58.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" />
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/header_wave_premium.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="32dp"
+    android:viewportWidth="120"
+    android:viewportHeight="32">
+    <path
+        android:fillColor="@color/colorPrimary"
+        android:pathData="M0,0h120v24c-20-6-40-6-60,0-20-6-40-6-60,0V0z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/header_wave_primary.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="32dp"
+    android:viewportWidth="120"
+    android:viewportHeight="32">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M0,0h120v24c-15-8-30-8-45,0-15-8-30-8-45,0-15-8-30-8-45,0-15-8-30-8-45,0V0z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/hero_gradient_overlay.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#2563eb"
+        android:endColor="#1d4ed8"
+        android:alpha="0.85" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_arrow_back_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M20,11L7.83,11l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13L20,13v-2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_arrow_back_white.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M20,11L7.83,11l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13L20,13v-2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_business_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M12,7L6,7v2h6zM18,19h-6v-8h-2v8L6,19v-7H4v7c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2v-7h-2v7zM12,1L8,1v2h4zM18,3h-4L14,1h4c1.1,0 2,0.9 2,2v4c0,1.1 -0.9,2 -2,2h-4v-2h4L18,3zM6,3h4v2L6,5L6,3z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_calendar_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M19,3h-1L18,1h-2v2L8,3L8,1L6,1v2L5,3c-1.11,0 -1.99,0.9 -1.99,2L3,19c0,1.1 0.89,2 2,2h14c1.1,0 2,-0.9 2,-2L21,5c0,-1.1 -0.9,-2 -2,-2zM19,19L5,19L5,8h14v11zM9,10L7,10v2h2v-2zM13,10h-2v2h2v-2zM17,10h-2v2h2v-2zM9,14L7,14v2h2v-2zM13,14h-2v2h2v-2zM17,14h-2v2h2v-2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_category.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M11,13H5v-2h6V5h2v6h6v2h-6v6h-2v-6z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_category_mauve.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M12,2l-5.5,9h11L12,2z M12,5.84L13.93,9h-3.87L12,5.84z M17.5,13c-2.49,0 -4.5,2.01 -4.5,4.5s2.01,4.5 4.5,4.5 4.5,-2.01 4.5,-4.5 -2.01,-4.5 -4.5,-4.5z M17.5,20c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z M3,21.5h8v-8H3v8z M5,15.5h4v4H5v-4z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_close_small.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M19,6.41L17.59,5 12,10.59 6.41,5 5,6.41 10.59,12 5,17.59 6.41,19 12,13.41 17.59,19 19,17.59 13.41,12z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_email_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M20,4L4,4c-1.1,0 -1.99,0.9 -1.99,2L2,18c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2L22,6c0,-1.1 -0.9,-2 -2,-2zM20,8l-8,5 -8,-5L4,6l8,5 8,-5v2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_error_red.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#E53E3E"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM13,17h-2v-2h2v2zM13,13h-2L11,7h2v6z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_launcher_background.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M0,0h108v108h-108z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M9,0L9,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,0L19,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,0L29,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,0L39,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,0L49,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,0L59,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,0L69,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,0L79,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M89,0L89,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M99,0L99,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,9L108,9"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,19L108,19"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,29L108,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,39L108,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,49L108,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,59L108,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,69L108,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,79L108,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,89L108,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,99L108,99"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,29L89,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,39L89,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,49L89,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,59L89,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,69L89,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,79L89,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,19L29,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,19L39,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,19L49,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,19L59,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,19L69,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,19L79,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+</vector>
+
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_launcher_foreground.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="85.84757"
+                android:endY="92.4963"
+                android:startX="42.9492"
+                android:startY="49.59793"
+                android:type="linear">
+                <item
+                    android:color="#44000000"
+                    android:offset="0.0" />
+                <item
+                    android:color="#00000000"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_location_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M12,2C8.13,2 5,5.13 5,9c0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7zM12,11.5c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_login_white.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:autoMirrored="true" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="960" android:viewportWidth="960" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M480,880Q397,880 324,848.5Q251,817 197,763Q143,709 111.5,636Q80,563 80,480Q80,397 111.5,324Q143,251 197,197Q251,143 324,111.5Q397,80 480,80Q563,80 636,111.5Q709,143 763,197Q817,251 848.5,324Q880,397 880,480Q880,563 848.5,636Q817,709 763,763Q709,817 636,848.5Q563,880 480,880ZM480,800Q534,800 584,782.5Q634,765 676,732L228,284Q195,326 177.5,376Q160,426 160,480Q160,614 253,707Q346,800 480,800ZM732,676Q765,634 782.5,584Q800,534 800,480Q800,346 707,253Q614,160 480,160Q426,160 376,177.5Q326,195 284,228L732,676ZM480,480Q480,480 480,480Q480,480 480,480Q480,480 480,480Q480,480 480,480Q480,480 480,480Q480,480 480,480Q480,480 480,480Q480,480 480,480Z"/>
+    
+</vector>
+
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_logout.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M17,7l-1.41,1.41L18.17,11H8v2h10.17l-2.58,2.58L17,17l5,-5zM4,5h8V3H4C2.9,3 2,3.9 2,5v14c0,1.1 0.9,2 2,2h8v-2H4V5z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_password_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M18,8h-1L17,6c0,-2.76 -2.24,-5 -5,-5S7,3.24 7,6v2L6,8c-1.1,0 -2,0.9 -2,2v10c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2L20,10c0,-1.1 -0.9,-2 -2,-2zM12,17c-1.1,0 -2,-0.9 -2,-2s0.9,-2 2,-2 2,0.9 2,2 -0.9,2 -2,2zM15.1,8L8.9,8L8.9,6c0,-1.71 1.39,-3.1 3.1,-3.1 1.71,0 3.1,1.39 3.1,3.1v2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_person_add_white.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zM6,10L6,7L4,7v3L1,10h2v3h2v-3h2zM15,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_person_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M12,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zM12,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_phone_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M6.62,10.79c1.44,2.83 3.76,5.14 6.59,6.59l2.2,-2.2c0.27,-0.27 0.67,-0.36 1.02,-0.24 1.12,0.37 2.33,0.57 3.57,0.57 0.55,0 1,0.45 1,1V20c0,0.55 -0.45,1 -1,1 -9.39,0 -17,-7.61 -17,-17 0,-0.55 0.45,-1 1,-1h3.5c0.55,0 1,0.45 1,1 0,1.25 0.2,2.45 0.57,3.57 0.11,0.35 0.03,0.74 -0.25,1.02l-2.2,2.2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_refresh.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M17.65,6.35C16.2,4.9 14.21,4 12,4c-4.42,0 -7.99,3.58 -7.99,8s3.57,8 7.99,8c3.73,0 6.84,-2.55 7.73,-6h-2.08c-0.82,2.33,-3.04,4,-5.65,4 -3.31,0 -6,-2.69 -6,-6s2.69,-6 6,-6c1.66,0 3.14,0.69 4.22,1.78L13,11h7V4l-2.35,2.35z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_refresh_white.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M17.65,6.35C16.2,4.9 14.21,4 12,4c-4.42,0 -7.99,3.58 -7.99,8s3.57,8 7.99,8c3.73,0 6.84,-2.55 7.73,-6h-2.08c-0.82,2.33,-3.04,4,-5.65,4 -3.31,0 -6,-2.69 -6,-6s2.69,-6 6,-6c1.66,0 3.14,0.69 4.22,1.78L13,11h7V4l-2.35,2.35z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_role_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M12,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zM12,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_search.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#6B7280"
+        android:pathData="M15.5,14h-0.79l-0.28,-0.27C15.41,12.59 16,11.11 16,9.5 16,5.91 13.09,3 9.5,3S3,5.91 3,9.5 5.91,16 9.5,16c1.61,0 3.09,-0.59 4.23,-1.57l0.27,0.28v0.79l5,4.99L20.49,19l-4.99,-5zM9.5,14C7.01,14 5,11.99 5,9.5S7.01,5 9.5,5 14,7.01 14,9.5 11.99,14 9.5,14z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_search_mauve.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M15.5,14h-0.79l-0.28,-0.27C15.41,12.59 16,11.11 16,9.5 16,5.91 13.09,3 9.5,3S3,5.91 3,9.5 5.91,16 9.5,16c1.61,0 3.09,-0.59 4.23,-1.57l0.27,0.28v0.79l5,4.99L20.49,19l-4.99,-5zM9.5,14C7.01,14 5,11.99 5,9.5S7.01,5 9.5,5 14,7.01 14,9.5 11.99,14 9.5,14z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_search_white.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M15.5,14h-0.79l-0.28,-0.27C15.41,12.59 16,11.11 16,9.5 16,5.91 13.09,3 9.5,3S3,5.91 3,9.5 5.91,16 9.5,16c1.61,0 3.09,-0.59 4.23,-1.57l0.27,0.28v0.79l5,4.99L20.49,19l-4.99,-5zM9.5,14C7.01,14 5,11.99 5,9.5S7.01,5 9.5,5 14,7.01 14,9.5 11.99,14 9.5,14z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_sort.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M3,18h6v-2H3v2zM3,6v2h18V6H3zM3,13h12v-2H3v2z"/>
+</vector>
+
+
+================================================
+FILE: app/src/main/res/drawable/ic_visibility_white.xml
+================================================
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="960" android:viewportWidth="960" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M480,240Q447,240 423.5,216.5Q400,193 400,160Q400,127 423.5,103.5Q447,80 480,80Q513,80 536.5,103.5Q560,127 560,160Q560,193 536.5,216.5Q513,240 480,240ZM360,880L360,360L120,360L120,280L840,280L840,360L600,360L600,880L520,880L520,640L440,640L440,880L360,880Z"/>
+    
+</vector>
+
+
+
+================================================
+FILE: app/src/main/res/drawable/login_background.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#667eea"
+        android:endColor="#764ba2" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/rating_background.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FEF3C7" />
+    <corners android:radius="20dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/register_background.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#667eea"
+        android:endColor="#764ba2" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/spinner_background.xml
+================================================
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/white" />
+    <stroke android:width="1dp" android:color="@color/grey_300" />
+    <corners android:radius="8dp" />
+</shape>
+
+
+================================================
+FILE: app/src/main/res/drawable/wave_bottom_mauve.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M0,32L48,37.3C96,43,192,53,288,58.7C384,64,480,64,576,58.7C672,53,768,43,864,37.3C960,32,1056,32,1152,37.3C1248,43,1344,53,1392,58.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" />
+</vector>
+
+
+================================================
+FILE: app/src/main/res/layout/activity_main.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Toolbar -->
+
+    <!-- NavHostFragment -->
+    <fragment
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+================================================
+FILE: app/src/main/res/layout/dropdown_item_simple.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:textSize="16sp"
+    android:textColor="@color/black"
+    android:background="?attr/selectableItemBackground" />
+
+
+================================================
+FILE: app/src/main/res/layout/filter_chip_layout.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/filter_chip"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="6dp">
+
+    <TextView
+        android:id="@+id/chipText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtre"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp" />
+
+    <ImageButton
+        android:id="@+id/chipClose"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="center"
+        android:src="@drawable/ic_close_small"
+        app:tint="@color/colorPrimary" />
+
+</LinearLayout>
+
+
+================================================
+FILE: app/src/main/res/layout/fragment_home.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient_mauve"
+    android:padding="24dp">
+
+    <!-- Background Image avec overlay -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:alpha="0.2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Gradient Overlay Mauve -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/gradient_overlay_mauve"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Content Container -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3">
+
+        <!-- Logo/Icon -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/baseline_music_note_24"
+            app:tint="@color/white"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Welcome Title -->
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bienvenue sur"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="normal"
+            android:letterSpacing="0.02"
+            android:layout_marginBottom="8dp" />
+
+        <!-- App Name -->
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="music app"
+            android:textColor="@color/white"
+            android:textSize="42sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.03"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Tagline -->
+        <TextView
+            android:id="@+id/tvTagline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="DÃ©couvrez le monde de music avec des expÃ©riences de music app"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAlignment="center"
+            android:lineSpacingExtra="4dp"
+            android:alpha="0.9"
+            android:layout_marginBottom="48dp" />
+
+    </LinearLayout>
+
+    <!-- Bottom Action Buttons -->
+    <LinearLayout
+        android:id="@+id/bottomButtonsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.8">
+
+        <!-- Login Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Se connecter"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02"
+            app:icon="@drawable/ic_login_white"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.Material3.Button"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/mauve_primary" />
+
+        <!-- Register Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="CrÃ©er un compte"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02"
+            app:icon="@drawable/ic_person_add_white"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:textColor="@color/white"
+            app:strokeColor="@color/white"
+            app:strokeWidth="2dp" />
+
+        <!-- Guest Access -->
+        <TextView
+            android:id="@+id/tvGuest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:padding="16dp"
+            android:alpha="0.9"
+            android:layout_marginTop="24dp"
+            android:drawablePadding="8dp"
+             />
+
+    </LinearLayout>
+
+    <!-- Bottom Wave Decoration -->
+    <ImageView
+        android:id="@+id/waveDecoration"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:src="@drawable/wave_bottom_mauve"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+================================================
+FILE: app/src/main/res/layout/fragment_login.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_gradient"
+    android:padding="0dp"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header avec vague dÃ©corative -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:background="@drawable/header_wave_mauve">
+
+            <!-- BOUTON RETOUR -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="16dp"
+                android:text="Retour"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_arrow_back_white"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/white" />
+
+            <!-- Overlay sombre -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_overlay_dark" />
+
+            <!-- Contenu header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:padding="24dp">
+
+                <!-- Logo circulaire avec effet nÃ©omorphisme -->
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_neu_circle"
+                    android:elevation="8dp"
+                    android:stateListAnimator="@null">
+
+                    <ImageView
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/baseline_music_note_24"
+                        app:tint="@android:color/white" />
+
+                </LinearLayout>
+
+                <!-- Titres -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:letterSpacing="0.02"
+                    android:text="Content de vous revoir"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:alpha="0.9"
+                    android:text="Connectez-vous Ã  votre compte"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- Carte formulaire -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_form_card_modern"
+            android:layout_marginTop="-40dp"
+            android:paddingTop="40dp"
+            android:padding="24dp"
+            android:elevation="16dp"
+            app:cardCornerRadius="32dp">
+
+            <!-- Champ Email -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="@android:color/white"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#2563EB"
+                app:hintTextColor="#2563EB"
+                app:startIconDrawable="@drawable/ic_email_mauve"
+                app:startIconTint="@color/mauve_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Adresse email"
+                    android:inputType="textEmailAddress"
+                    android:textColor="#1e293b"
+                    android:textSize="16sp"
+                    android:padding="16dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Champ Mot de passe -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="@android:color/white"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#2563EB"
+                app:hintTextColor="#2563EB"
+                app:startIconDrawable="@drawable/ic_password_mauve"
+                app:startIconTint="@color/mauve_primary"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/mauve_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Mot de passe"
+                    android:inputType="textPassword"
+                    android:textColor="#1e293b"
+                    android:textSize="16sp"
+                    android:padding="16dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Mot de passe oubliÃ© -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mot de passe oubliÃ© ?"
+                android:textColor="#2563EB"
+                android:textStyle="bold"
+                android:layout_gravity="end"
+                android:layout_marginBottom="24dp"
+                android:padding="8dp" />
+
+            <!-- Message d'erreur -->
+            <TextView
+                android:id="@+id/textError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_dark"
+                android:background="@drawable/bg_error_message"
+                android:padding="12dp"
+                android:text=""
+                android:visibility="gone"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_error_red"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Bouton Connexion -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Se connecter"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02"
+                app:icon="@drawable/ic_login_white"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:cornerRadius="16dp"
+                android:backgroundTint="@color/mauve_primary"
+                android:layout_marginBottom="24dp"
+                android:elevation="4dp" />
+
+            <!-- SÃ©parateur -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#e5e7eb"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ou"
+                    android:textColor="#6b7280"
+                    android:background="@android:color/white"
+                    android:paddingHorizontal="16dp"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+            <!-- Bouton CrÃ©er un compte -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="CrÃ©er un compte"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02"
+                app:icon="@drawable/ic_person_add_white"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:cornerRadius="16dp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:textColor="@color/mauve_primary"
+                app:strokeColor="@color/mauve_primary"
+                app:strokeWidth="2dp" />
+
+        </LinearLayout>
+
+        <!-- Footer -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Â© 2024 music app. Tous droits rÃ©servÃ©s."
+            android:textColor="#9ca3af"
+            android:textSize="12sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp" />
+
+    </LinearLayout>
+
+</ScrollView>
+
+
+================================================
+FILE: app/src/main/res/layout/fragment_music.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_gradient"
+    android:padding="0dp"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:background="@drawable/header_wave_mauve">
+
+            <!-- Logout Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="16dp"
+                android:text="Logout"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_logout"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/white" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_overlay_dark" />
+
+            <!-- Header Content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:letterSpacing="0.02"
+                    android:text="Music Library"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:alpha="0.9"
+                    android:text="Discover your favorite music"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- Main Content Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_form_card_modern"
+            android:layout_marginTop="-40dp"
+            android:paddingTop="40dp"
+            android:padding="24dp"
+            android:elevation="16dp"
+            app:cardCornerRadius="32dp">
+
+            <!-- Search Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#E5E7EB"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:boxBackgroundMode="none"
+                        app:hintTextColor="#2563EB"
+                        app:startIconDrawable="@drawable/ic_search_mauve"
+                        app:startIconTint="@color/mauve_primary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/searchEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Search songs..."
+                            android:background="@null"
+                            android:textColor="#1e293b"
+                            android:textSize="16sp"
+                            android:padding="12dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/searchButton"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        app:icon="@drawable/ic_search_white"
+                        app:iconTint="@android:color/white"
+                        app:backgroundTint="@color/mauve_primary"
+                        app:cornerRadius="12dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Filters Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <!-- Album Filter -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxBackgroundColor="@android:color/white"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxStrokeColor="#2563EB"
+                        app:hintTextColor="#2563EB">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/filterAlbumSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Filter by album"
+                            android:inputType="none"
+                            android:textColor="#1e293b"
+                            android:textSize="16sp"
+                            android:padding="16dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Refresh Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/refreshButton"
+                    style="@style/Widget.Material3.Button.Icon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    app:icon="@drawable/ic_refresh_white"
+                    app:iconTint="@android:color/white"
+                    app:backgroundTint="@color/mauve_primary"
+                    app:cornerRadius="14dp" />
+
+            </LinearLayout>
+
+            <!-- Results Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/resultsCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0 songs found"
+                    android:textColor="#374151"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:indeterminateTint="@color/mauve_primary" />
+
+            <!-- Songs List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Now Playing Section -->
+            <LinearLayout
+                android:id="@+id/nowPlayingSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/bg_filter_chip"
+                android:visibility="gone"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/tvNowPlaying"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Now Playing: Song Name"
+                    android:textColor="@color/mauve_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Â© 2024 Music App. All rights reserved."
+                android:textColor="#9ca3af"
+                android:textSize="12sp"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
+
+
+================================================
+FILE: app/src/main/res/layout/fragment_offres.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_gradient"
+    android:padding="0dp"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header avec vague dÃ©corative -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:background="@drawable/header_wave_mauve">
+
+            <!-- BOUTON DÃ‰CONNEXION -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="16dp"
+                android:text="DÃ©connexion"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_logout"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/white" />
+
+            <!-- Overlay sombre -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_overlay_dark" />
+
+            <!-- Contenu header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:padding="24dp">
+
+                <!-- Titres -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:letterSpacing="0.02"
+                    android:text="Explorer les offres"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:alpha="0.9"
+                    android:text="Trouvez la destination parfaite"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- Carte principale -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_form_card_modern"
+            android:layout_marginTop="-40dp"
+            android:paddingTop="40dp"
+            android:padding="24dp"
+            android:elevation="16dp"
+            app:cardCornerRadius="32dp">
+
+            <!-- Barre de recherche -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#E5E7EB"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:boxBackgroundMode="none"
+                        app:hintTextColor="#2563EB"
+                        app:startIconDrawable="@drawable/ic_search_mauve"
+                        app:startIconTint="@color/mauve_primary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/searchEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Destination, hÃ´tel, activitÃ©..."
+                            android:background="@null"
+                            android:textColor="#1e293b"
+                            android:textSize="16sp"
+                            android:padding="12dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Bouton Recherche -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/searchButton"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        app:icon="@drawable/ic_search_white"
+                        app:iconTint="@android:color/white"
+                        app:backgroundTint="@color/mauve_primary"
+                        app:cornerRadius="12dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section Filtres -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <!-- Filtre Type -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxBackgroundColor="@android:color/white"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxStrokeColor="#2563EB"
+                        app:hintTextColor="#2563EB"
+                        app:startIconDrawable="@drawable/ic_category_mauve"
+                        app:startIconTint="@color/mauve_primary">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/filterTypeSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Type d'offre"
+                            android:inputType="none"
+                            android:textColor="#1e293b"
+                            android:textSize="16sp"
+                            android:padding="16dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Bouton Actualiser -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/refreshButton"
+                    style="@style/Widget.Material3.Button.Icon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    app:icon="@drawable/ic_refresh_white"
+                    app:iconTint="@android:color/white"
+                    app:backgroundTint="@color/mauve_primary"
+                    app:cornerRadius="14dp" />
+
+            </LinearLayout>
+
+            <!-- Section Tri par prix -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Trier par prix"
+                        android:textColor="#374151"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp" />
+
+                    <RadioGroup
+                        android:id="@+id/sortRadioGroup"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+
+                        <!-- RadioButton style moderne -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            app:cardBackgroundColor="?attr/colorSurface"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeColor="#2563EB"
+                            app:strokeWidth="1dp">
+
+                            <RadioButton
+                                android:id="@+id/sortAsc"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:button="@null"
+                                android:gravity="center"
+                                android:text="Prix Croissant"
+                                android:textColor="#374151"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            app:cardBackgroundColor="?attr/colorSurface"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeColor="#2563EB"
+                            app:strokeWidth="1dp">
+
+                            <RadioButton
+                                android:id="@+id/sortDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:button="@null"
+                                android:gravity="center"
+                                android:text="Prix DÃ©croissant"
+                                android:textColor="#374151"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </RadioGroup>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Filtres actifs -->
+            <LinearLayout
+                android:id="@+id/activeFiltersContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="Tous types"
+                    android:textColor="#2563EB"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_filter_chip"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="Prix croissant"
+                    android:textColor="#2563EB"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- En-tÃªte rÃ©sultats -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/resultsCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0 offres trouvÃ©es"
+                    android:textColor="#374151"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/activeFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="12sp"
+                    android:textColor="#2563EB"
+                    android:background="@drawable/bg_filter_chip"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:visibility="gone"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Liste des offres -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Â© 2024 music app. Tous droits rÃ©servÃ©s."
+                android:textColor="#9ca3af"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
+
+
+================================================
+FILE: app/src/main/res/layout/fragment_register.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_gradient"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:background="@drawable/header_wave_mauve">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="16dp"
+                android:text="Back"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_arrow_back_white"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/white" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_overlay_dark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:padding="24dp">
+
+                <LinearLayout
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_neu_circle"
+                    android:elevation="8dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_person_add_white"
+                        app:tint="@android:color/white" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Join Us"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="16dp"
+                    android:letterSpacing="0.02" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create your Music App account"
+                    android:textColor="@android:color/white"
+                    android:alpha="0.9"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- Form Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_form_card_modern"
+            android:layout_marginTop="-30dp"
+            android:paddingTop="40dp"
+            android:padding="24dp"
+            android:elevation="16dp"
+            app:cardCornerRadius="32dp">
+
+            <!-- Email -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="@android:color/white"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#2563EB"
+                app:hintTextColor="#2563EB"
+                app:startIconDrawable="@drawable/ic_email_mauve"
+                app:startIconTint="@color/mauve_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email address"
+                    android:inputType="textEmailAddress"
+                    android:textColor="#1e293b"
+                    android:textSize="16sp"
+                    android:padding="16dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Username -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="@android:color/white"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#2563EB"
+                app:hintTextColor="#2563EB"
+                app:startIconDrawable="@drawable/ic_person_mauve"
+                app:startIconTint="@color/mauve_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:inputType="text"
+                    android:textColor="#1e293b"
+                    android:textSize="16sp"
+                    android:padding="16dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="@android:color/white"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#2563EB"
+                app:hintTextColor="#2563EB"
+                app:startIconDrawable="@drawable/ic_password_mauve"
+                app:startIconTint="@color/mauve_primary"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/mauve_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:textColor="#1e293b"
+                    android:textSize="16sp"
+                    android:padding="16dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Error Message -->
+            <TextView
+                android:id="@+id/textError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_dark"
+                android:background="@drawable/bg_error_message"
+                android:padding="12dp"
+                android:text=""
+                android:visibility="gone"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_error_red"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Register Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Create Account"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02"
+                app:icon="@drawable/ic_person_add_white"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:cornerRadius="16dp"
+                android:backgroundTint="@color/mauve_primary"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp" />
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Â© 2024 Music App. All rights reserved."
+                android:textColor="#9ca3af"
+                android:textSize="12sp"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+
+
+================================================
+FILE: app/src/main/res/layout/item_offre.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/titreOffre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Titre"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/typeOffre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type"
+        android:textColor="@android:color/darker_gray"/>
+
+    <TextView
+        android:id="@+id/prixOffre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prix"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_green_dark"/>
+</LinearLayout>
+
+
+
+================================================
+FILE: app/src/main/res/layout/item_song.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#E5E7EB"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Song Image Placeholder -->
+        <View
+            android:id="@+id/ivSongImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_filter_chip"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Song Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSongName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Song Name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1e293b"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/tvSongDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="14sp"
+                android:textColor="#64748b"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tvSongAlbum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Album Name"
+                android:textSize="12sp"
+                android:textColor="#2563EB"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <!-- Duration -->
+        <TextView
+            android:id="@+id/tvSongDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3:45"
+            android:textSize="14sp"
+            android:textColor="#64748b"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+
+
+================================================
+FILE: app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+
+
+================================================
+FILE: app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+
+
+================================================
+FILE: app/src/main/res/mipmap-hdpi/ic_launcher.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-mdpi/ic_launcher.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+================================================
+[Binary file]
+
+
+================================================
+FILE: app/src/main/res/navigation/nav_graph.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <!-- Home Fragment -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="iset.tn.mobile_frontend.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_home_to_login"
+            app:destination="@id/loginFragment" />
+
+        <action
+            android:id="@+id/action_home_to_register"
+            app:destination="@id/registerFragment" />
+
+        <action
+            android:id="@+id/action_home_to_music"
+            app:destination="@id/musicFragment" />
+
+    </fragment>
+
+    <!-- Login Fragment -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="iset.tn.mobile_frontend.ui.login.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/homeFragment" />
+
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+
+        <action
+            android:id="@+id/action_login_to_music"
+            app:destination="@id/musicFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <!-- Register Fragment -->
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="iset.tn.mobile_frontend.ui.register.RegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_register">
+
+        <action
+            android:id="@+id/action_register_to_login"
+            app:destination="@id/loginFragment" />
+
+        <action
+            android:id="@+id/action_register_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <!-- Music Fragment -->
+    <fragment
+        android:id="@+id/musicFragment"
+        android:name="iset.tn.mobile_frontend.ui.music.MusicFragment"
+        android:label="Music"
+        tools:layout="@layout/fragment_music" />
+
+</navigation>
+
+
+================================================
+FILE: app/src/main/res/values/arrays.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="offer_types">
+        <item>Tous les types</item>
+        <item>Vol</item>
+        <item>HÃ´tel</item>
+        <item>Circuit</item>
+    </string-array>
+</resources>
+
+
+================================================
+FILE: app/src/main/res/values/colors.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--home-->
+    <!-- Primary Colors -->
+    <color name="primary">#2A6DFF</color>
+    <color name="primary_light">#4A86FF</color>
+    <color name="primary_dark">#1A56E0</color>
+
+    <!-- Secondary Colors -->
+    <color name="secondary">#FF6B6B</color>
+    <color name="accent">#00C9A7</color>
+
+    <!-- Neutral Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#2D3748</color>
+    <color name="gray">#A0AEC0</color>
+    <color name="gray_light">#EDF2F7</color>
+    <!-- Palette Mauve Professionnelle -->
+    <color name="mauve_primary">#0A1A4B</color>          <!-- Dark Blue -->
+    <color name="mauve_primary_light">#1E3A8A</color>   <!-- Deep Blue -->
+    <color name="mauve_primary_dark">#0F2557</color>    <!-- Navy-ish -->
+    <color name="mauve_secondary">#3B82F6</color>       <!-- Bright Blue -->
+    <color name="mauve_accent">#93C5FD</color>          <!-- Light Blue -->
+    <color name="transparent">#00000000</color>
+
+
+
+
+
+
+
+
+    <color name="primary_color">#2563eb</color>
+    <color name="secondary_color">#f59e0b</color>
+    <color name="accent_color">#10b981</color>
+    <color name="purple_500">#667eea</color>
+
+    <color name="primary_gradient_start">#667eea</color>
+    <color name="primary_gradient_end">#764ba2</color>
+
+    <!-- Couleurs neutres -->
+    <color name="light_background">#f8fafc</color>
+    <color name="light_gray">#e2e8f0</color>
+    <color name="gray_color">#64748b</color>
+    <color name="dark_color">#1e293b</color>
+
+    <!-- Ã‰tats -->
+    <color name="success_color">#10b981</color>
+    <color name="success_background">#ecfdf5</color>
+    <color name="error_color">#ef4444</color>
+    <color name="error_background">#fef2f2</color>
+    <color name="colorPrimaryLight">#64B5F6</color>
+
+    <!-- Couleurs principales -->
+        <color name="colorPrimary">#2196F3</color>
+        <color name="colorPrimaryDark">#1976D2</color>
+        <color name="colorAccent">#FF4081</color>
+
+        <!-- Couleurs Material Design 3 -->
+        <color name="onPrimary">#FFFFFF</color>
+        <color name="primaryContainer">#EADDFF</color>
+        <color name="onPrimaryContainer">#21005D</color>
+
+        <color name="onSecondary">#FFFFFF</color>
+        <color name="secondaryContainer">#E8DEF8</color>
+        <color name="onSecondaryContainer">#1D192B</color>
+
+        <!-- Couleurs de fond -->
+
+        <color name="background">#FEF7FF</color>
+        <color name="surface">#FFFFFF</color>
+        <color name="onSurface">#1C1B1F</color>
+
+        <!-- Nuances de gris -->
+        <color name="grey_50">#FAFAFA</color>
+        <color name="grey_100">#F5F5F5</color>
+        <color name="grey_200">#EEEEEE</color>
+        <color name="grey_300">#E0E0E0</color>
+        <color name="grey_400">#BDBDBD</color>
+        <color name="grey_500">#9E9E9E</color>
+        <color name="grey_600">#757575</color>
+        <color name="grey_700">#616161</color>
+        <color name="grey_800">#424242</color>
+        <color name="grey_900">#212121</color>
+
+        <!-- Couleurs de statut -->
+        <color name="status_available">#4CAF50</color>
+        <color name="status_soon">#FF9800</color>
+        <color name="status_complete">#F44336</color>
+        <color name="status_promotion">#9C27B0</color>
+
+        <!-- Couleurs pour les types d'offres -->
+        <color name="type_vol">#2196F3</color>
+        <color name="type_hotel">#4CAF50</color>
+        <color name="type_circuit">#FF9800</color>
+        <color name="type_pack">#9C27B0</color>
+
+        <!-- Couleurs pour les boutons et actions -->
+        <color name="button_primary">#2196F3</color>
+        <color name="button_primary_light">#E3F2FD</color>
+        <color name="button_success">#4CAF50</color>
+        <color name="button_warning">#FF9800</color>
+        <color name="button_danger">#F44336</color>
+
+        <!-- Couleurs pour les filtres -->
+        <color name="filter_active">#E3F2FD</color>
+        <color name="filter_active_text">#1976D2</color>
+        <color name="filter_inactive">#F5F5F5</color>
+
+        <!-- Couleurs pour les cartes et surfaces -->
+        <color name="card_background">#FFFFFF</color>
+        <color name="card_elevation">#08000000</color>
+        <color name="card_stroke">#1E000000</color>
+
+        <!-- Couleurs pour le texte -->
+        <color name="text_primary">#212121</color>
+        <color name="text_secondary">#757575</color>
+        <color name="text_hint">#BDBDBD</color>
+        <color name="text_disabled">#E0E0E0</color>
+
+        <!-- Couleurs pour les bordures et sÃ©parateurs -->
+        <color name="border_light">#E0E0E0</color>
+        <color name="border_medium">#BDBDBD</color>
+        <color name="divider">#EEEEEE</color>
+
+        <!-- Couleurs pour les Ã©tats -->
+        <color name="pressed_state">#1A000000</color>
+        <color name="focus_state">#1F000000</color>
+        <color name="hover_state">#0F000000</color>
+
+        <!-- Couleurs spÃ©cifiques aux spinners -->
+        <color name="spinner_background">#FFFFFF</color>
+        <color name="spinner_border">#E0E0E0</color>
+        <color name="spinner_text">#212121</color>
+
+        <!-- Couleurs pour les indicateurs -->
+        <color name="indicator_success">#4CAF50</color>
+        <color name="indicator_warning">#FF9800</color>
+        <color name="indicator_error">#F44336</color>
+        <color name="indicator_info">#2196F3</color>
+
+
+
+
+
+
+    <color name="mauve_dark">#1E40AF</color>
+    <color name="mauve_light">#3B82F6</color>
+
+</resources>
+
+
+================================================
+FILE: app/src/main/res/values/dimens.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Espacements -->
+    <dimen name="item_spacing">16dp</dimen>
+    <dimen name="card_corner_radius">20dp</dimen>
+    <dimen name="button_corner_radius">12dp</dimen>
+
+    <!-- Ã‰lÃ©vations -->
+    <dimen name="card_elevation">8dp</dimen>
+    <dimen name="button_elevation">4dp</dimen>
+
+    <!-- Paddings -->
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">24dp</dimen>
+    <dimen name="padding_xlarge">32dp</dimen>
+</resources>
+
+
+================================================
+FILE: app/src/main/res/values/strings.xml
+================================================
+<resources>
+    <string name="app_name">MusicApp</string>
+    <plurals name="offres_trouvees">
+        <item quantity="one">%d offre trouvÃ©e</item>
+        <item quantity="other">%d offres trouvÃ©es</item>
+    </plurals>
+</resources>
+
+
+================================================
+FILE: app/src/main/res/values/styles.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PrimaryButtonStyle" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <style name="SecondaryButtonStyle" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Button.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+</resources>
+
+
+================================================
+FILE: app/src/main/res/values/themes.xml
+================================================
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Voyage_intelligent" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Voyage_intelligent" parent="Base.Theme.Voyage_intelligent" />
+</resources>
+
+
+================================================
+FILE: app/src/main/res/values-night/themes.xml
+================================================
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Voyage_intelligent" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    </style>
+</resources>
+
+
+================================================
+FILE: app/src/main/res/xml/backup_rules.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+
+
+================================================
+FILE: app/src/main/res/xml/data_extraction_rules.xml
+================================================
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+
+
+================================================
+FILE: app/src/test/java/iset/tn/mobile_frontend/ExampleUnitTest.kt
+================================================
+package iset.tn.mobile_frontend
+
+import org.junit.Test
+
+import org.junit.Assert.*
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
+}
+
+
+================================================
+FILE: gradle/libs.versions.toml
+================================================
+[versions]
+agp = "8.13.1"
+kotlin = "2.0.21"
+coreKtx = "1.17.0"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+appcompat = "1.7.1"
+material = "1.13.0"
+activity = "1.11.0"
+constraintlayout = "2.2.1"
+navigationFragmentKtx = "2.9.6"
+navigationUiKtx = "2.9.6"
+
+
+retrofit = "2.9.0"
+converterGson = "2.9.0"
+okhttp = "4.12.0"
+loggingInterceptor = "4.12.0"
+uiText = "1.9.5"
+
+[libraries]
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
+
+okhttp-client = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptor" }
+
+
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+
+
+
+================================================
+FILE: gradle/wrapper/gradle-wrapper.properties
+================================================
+#Tue Nov 18 15:30:35 CET 2025
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+
+

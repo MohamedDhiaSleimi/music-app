@@ -1,8 +1,4 @@
-version: '3.8'
-
 services:
-
-  # MongoDB Database
   mongodb:
     image: mongo:7.0
     container_name: music-app-mongodb
@@ -21,48 +17,82 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend Service
-  backend:
+  # Auth Service (Java)
+  auth-service:
     build:
       context: ./backend/auth-service
       dockerfile: Dockerfile
-    container_name: music-app-backend
+    container_name: music-app-auth-service
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8084:8080"
     env_file:
-      - ./backend/auth-service/.env # Load backend .env file
+      - ./backend/auth-service/.env
     environment:
-      # Override MongoDB URI to use Docker network
       MONGODB_URI: mongodb://mongodb:27017/musicapp
-      # All other variables come from .env file
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
       - music-app-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # Frontend Service
+  # Music Service (Node.js)
+  music-service:
+    build:
+      context: ./backend/music-service
+      dockerfile: Dockerfile
+    container_name: music-app-music-service
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/music-service/.env
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/musicapp
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - music-app-network
+
+  # Frontend
   frontend:
     build:
       context: ./frontend/music-app-frontend
       dockerfile: Dockerfile
       args:
-        # Pass build-time variables
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8080/api}
+        - VITE_MUSIC_API_BASE_URL=${VITE_MUSIC_API_BASE_URL:-http://localhost:3000/api}
         - VITE_OAUTH_GOOGLE_URL=${VITE_OAUTH_GOOGLE_URL:-http://localhost:8080/oauth2/authorization/google}
     container_name: music-app-frontend
     restart: unless-stopped
     ports:
       - "5173:80"
     depends_on:
-      - backend
+      - auth-service
+      - music-service
+    networks:
+      - music-app-network
+
+  # Admin Panel (optional - separate service)
+  admin-panel:
+    build:
+      context: ./spotify-admin
+      dockerfile: Dockerfile
+    container_name: music-app-admin
+    restart: unless-stopped
+    ports:
+      - "5174:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000/api
+    depends_on:
+      - music-service
     networks:
       - music-app-network
 

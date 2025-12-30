@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="offer_types">
+        <item>Tous les types</item>
+        <item>Vol</item>
+        <item>Hôtel</item>
+        <item>Circuit</item>
+    </string-array>
+</resources>

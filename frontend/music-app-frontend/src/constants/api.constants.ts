@@ -27,3 +27,25 @@ export const API_ENDPOINTS = {
 export const STORAGE_KEYS = {
   TOKEN: 'token',
 };
+
+
+// Music API Endpoints
+export const MUSIC_API_BASE_URL = import.meta.env.VITE_MUSIC_API_BASE_URL || 'http://localhost:3000/api';
+
+export const MUSIC_ENDPOINTS = {
+  SONGS: {
+    LIST: '/song/list',
+    ADD: '/song/add',
+    REMOVE: '/song/remove',
+  },
+  ALBUMS: {
+    LIST: '/album/list',
+    ADD: '/album/add',
+    REMOVE: '/album/remove',
+  },
+  FAVORITES: {
+    LIST: '/favorite/list',
+    ADD: '/favorite/add',
+    REMOVE: '/favorite/remove',
+  },
+};

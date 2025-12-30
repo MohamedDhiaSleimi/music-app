@@ -57,7 +57,7 @@ public class AuthService {
             LocalDateTime gracePeriodEnd = user.getDeactivationRequestedAt().plusSeconds(gracePeriod / 1000);
             if (LocalDateTime.now().isBefore(gracePeriodEnd)) {
                 user.setDeactivationRequestedAt(null);
-                user.setStatus(user.isEmailVerified() ? AccountStatus.ACTIVE : AccountStatus.PENDING_VERIFICATION);
+                user.setStatus(user.getStatus().isVerified() ? AccountStatus.ACTIVE : AccountStatus.PENDING_VERIFICATION);
             }
         }
 
@@ -114,7 +114,7 @@ public class AuthService {
         if (user.getDeactivationRequestedAt() == null) {
             throw new RuntimeException(AppConstants.ERROR_NO_DEACTIVATION_REQUEST);
         }
-        user.setStatus(user.isEmailVerified() ? AccountStatus.ACTIVE : AccountStatus.PENDING_VERIFICATION);
+        user.setStatus(user.getStatus().isVerified() ? AccountStatus.ACTIVE : AccountStatus.PENDING_VERIFICATION);
         user.setDeactivationRequestedAt(null);
         userRepository.save(user);
     }

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Input from './Input';
 
-interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface PasswordInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string;
   error?: string;
 }
@@ -20,13 +21,17 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           className={className}
           {...props}
         />
+
+        {/* Toggle Button - properly aligned inside the input field */}
         <button
           type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-4 top-[52px] -translate-y-1/2 text-gray-400 hover:text-white transition"
+          onClick={() => setShowPassword((prev) => !prev)}
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition"
           tabIndex={-1}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? (
+            // Eye Slash - Hidden
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -36,8 +41,14 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
               />
             </svg>
           ) : (
+            // Eye - Visible
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

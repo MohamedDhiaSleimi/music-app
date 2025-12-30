@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Music App Blue Primary Palette -->
+    <color name="blue_primary">#2563EB</color>
+    <color name="blue_primary_light">#3B82F6</color>
+    <color name="blue_primary_dark">#1E40AF</color>
+    <color name="blue_secondary">#0EA5E9</color>
+    <color name="blue_accent">#60A5FA</color>
+    <color name="blue_light">#DBEAFE</color>
+    <color name="blue_dark">#1E3A8A</color>
+
+    <!-- Neutral Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#2D3748</color>
+    <color name="gray">#A0AEC0</color>
+    <color name="gray_light">#EDF2F7</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Background Colors -->
+    <color name="light_background">#f8fafc</color>
+    <color name="light_gray">#e2e8f0</color>
+    <color name="gray_color">#64748b</color>
+    <color name="dark_color">#1e293b</color>
+
+    <!-- Status Colors -->
+    <color name="success_color">#10b981</color>
+    <color name="success_background">#ecfdf5</color>
+    <color name="error_color">#ef4444</color>
+    <color name="error_background">#fef2f2</color>
+    <color name="warning_color">#f59e0b</color>
+    <color name="info_color">#3b82f6</color>
+
+    <!-- Material Design Colors -->
+    <color name="colorPrimary">@color/blue_primary</color>
+    <color name="colorPrimaryDark">@color/blue_primary_dark</color>
+    <color name="colorPrimaryLight">@color/blue_primary_light</color>
+    <color name="colorAccent">@color/blue_secondary</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+    <color name="text_disabled">#E0E0E0</color>
+
+    <!-- Grey Shades -->
+    <color name="grey_50">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+
+    <!-- Surface Colors -->
+    <color name="background">#F0F9FF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="onSurface">#1C1B1F</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#FFFFFF</color>
+
+    <!-- Card Colors -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_elevation">#08000000</color>
+    <color name="card_stroke">#1E000000</color>
+
+    <!-- Border & Divider -->
+    <color name="border_light">#E0E0E0</color>
+    <color name="border_medium">#BDBDBD</color>
+    <color name="divider">#EEEEEE</color>
+
+    <!-- State Colors -->
+    <color name="pressed_state">#1A000000</color>
+    <color name="focus_state">#1F000000</color>
+    <color name="hover_state">#0F000000</color>
+
+    <!-- Legacy Support (keeping old names for backwards compatibility) -->
+    <color name="primary">#2563EB</color>
+    <color name="primary_light">#3B82F6</color>
+    <color name="primary_dark">#1E40AF</color>
+    <color name="secondary">#0EA5E9</color>
+    <color name="accent">#60A5FA</color>
+
+    <!-- Mauve colors (kept for compatibility with existing drawables) -->
+    <color name="mauve_primary">@color/blue_primary</color>
+    <color name="mauve_primary_light">@color/blue_primary_light</color>
+    <color name="mauve_primary_dark">@color/blue_primary_dark</color>
+    <color name="mauve_secondary">@color/blue_secondary</color>
+    <color name="mauve_accent">@color/blue_accent</color>
+    <color name="mauve_light">@color/blue_light</color>
+    <color name="mauve_dark">@color/blue_dark</color>
+</resources>

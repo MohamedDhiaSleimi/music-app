@@ -53,12 +53,6 @@ public class User {
     private LocalDateTime emailVerificationTokenExpiry;
 
 
-
-    @Deprecated
-    public boolean isEmailVerified() {
-        return status.isVerified();
-    }
-
     @Deprecated
     public boolean isActive() {
         return status.isActive();

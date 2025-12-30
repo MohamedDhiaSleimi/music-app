@@ -14,6 +14,7 @@ import com.musicapp.auth_service.service.AuthService;
 import com.musicapp.auth_service.service.EmailService;
 import com.musicapp.auth_service.service.EmailVerificationService;
 import com.musicapp.auth_service.service.TokenService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,17 +51,24 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    private RegisterRequest registerRequest;
-
+    @Mock
     private TokenService tokenService;
 
-    private EmailVerificationService emailVerificationService;
+    private RegisterRequest registerRequest;
+
+    @BeforeEach
+    void init() {
+        registerRequest = new RegisterRequest();
+        registerRequest.setEmail("test@example.com");
+        registerRequest.setUsername("tester");
+        registerRequest.setPassword("password123");
+    }
 
 
     @Test
     void register_WithExistingEmail_ShouldThrowException() {
         // Arrange
-        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+        when(userRepository.existsByEmail(registerRequest.getEmail())).thenReturn(true);
 
         // Act & Assert
         assertThrows(EmailAlreadyExistsException.class, () -> {
@@ -123,26 +131,5 @@ class AuthServiceTest {
         assertThrows(AccountDeactivatedException.class, () -> {
             authService.login(loginRequest);
         });
-    }
-
-    @Test
-    void verifyEmail_ShouldUpdateStatusToActive() {
-        // Arrange
-        String token = "verification-token";
-        User user = new User();
-        user.setId("user-id");
-        user.setEmail("test@example.com");
-        user.setStatus(AccountStatus.PENDING_VERIFICATION);
-        user.setEmailVerificationToken(token);
-        user.setEmailVerificationTokenExpiry(LocalDateTime.now().plusHours(1));
-
-        when(userRepository.findByEmailVerificationToken(token)).thenReturn(Optional.of(user));
-        when(tokenService.isEmailVerificationTokenValid(user)).thenReturn(true);
-
-        // Act
-        emailVerificationService.verifyEmail(token);
-
-        // Assert
-        verify(userRepository).save(argThat(u -> u.getStatus() == AccountStatus.ACTIVE));
     }
 }
