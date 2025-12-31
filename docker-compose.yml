@@ -25,7 +25,7 @@ services:
     container_name: music-app-auth-service
     restart: unless-stopped
     ports:
-      - "8084:8080"
+      - "8080:8080"
     env_file:
       - ./backend/auth-service/.env
     environment:

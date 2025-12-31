@@ -8,7 +8,6 @@ export default function MusicApp() {
 
   return (
     <div className="h-screen bg-black">
-      {songsData.length !== 0 ? (
         <>
           <div className="h-[90%] flex">
             <Sidebar />
@@ -16,7 +15,6 @@ export default function MusicApp() {
           </div>
           <Player />
         </>
-      ) : null}
       <audio ref={audioRef} src={track?.file || ""} preload="auto"></audio>
     </div>
   );
