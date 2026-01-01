@@ -4,6 +4,11 @@ import DisplayAlbum from "./DisplayAlbum";
 import DisplayFavorites from "./DisplayFavorites";
 import { useEffect, useRef } from "react";
 import { useMusic } from "../../context/MusicContext";
+import DisplayPlaylists from "./DisplayPlaylists";
+import DisplayPlaylistDetail from "./DisplayPlaylistDetail";
+import DisplayDiscoverPlaylists from "./DisplayDiscoverPlaylists";
+import DisplaySharedPlaylist from "./DisplaySharedPlaylist";
+import DisplayPublicPlaylist from "./DisplayPublicPlaylist";
 
 export default function Display() {
   const { albumsData } = useMusic();
@@ -31,6 +36,11 @@ export default function Display() {
           <Route path="/" element={<DisplayHome />} />
           <Route path="/album/:id" element={<DisplayAlbum />} />
           <Route path="/favorites" element={<DisplayFavorites />} />
+          <Route path="/playlists" element={<DisplayPlaylists />} />
+          <Route path="/playlists/:id" element={<DisplayPlaylistDetail />} />
+          <Route path="/playlists/shared/:shareCode" element={<DisplaySharedPlaylist />} />
+          <Route path="/discover" element={<DisplayDiscoverPlaylists />} />
+          <Route path="/discover/:playlistId" element={<DisplayPublicPlaylist />} />
         </Routes>
     </div>
   );

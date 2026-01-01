@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   useRef,
   useMemo,
   type ReactNode,
@@ -12,7 +13,7 @@ import {
 import { musicApi } from "../services/musicApi";
 import { useAuth } from "./AuthContext";
 
-interface Song {
+export interface Song {
   _id: string;
   name: string;
   desc: string;
@@ -22,12 +23,22 @@ interface Song {
   duration: string;
 }
 
-interface Album {
+export interface Album {
   _id: string;
   name: string;
   desc: string;
   image: string;
   bgColour: string;
+}
+
+export interface Playlist {
+  _id: string;
+  name: string;
+  description?: string;
+  ownerId: string;
+  isPublic: boolean;
+  songs: Song[];
+  shareCode?: string;
 }
 
 interface MusicContextType {
@@ -39,6 +50,9 @@ interface MusicContextType {
   albums: Album[];
   songsData: Song[];
   albumsData: Album[];
+  playlists: Playlist[];
+  discoverPlaylists: Playlist[];
+  sharedPlaylist: Playlist | null;
 
   filteredSongsData: Song[];
   filteredAlbumsData: Album[];
@@ -46,8 +60,20 @@ interface MusicContextType {
   favoriteSongIds: Set<string>;
   favoriteUpdatingIds: Set<string>;
   isFavoritesLoading: boolean;
+  isPlaylistsLoading: boolean;
+  isDiscoverLoading: boolean;
   isFavorite: (songId: string) => boolean;
   toggleFavorite: (songId: string) => Promise<void>;
+  createPlaylist: (payload: { name: string; description?: string; isPublic?: boolean }) => Promise<Playlist | null>;
+  deletePlaylist: (playlistId: string) => Promise<void>;
+  addSongToPlaylist: (playlistId: string, songId: string) => Promise<void>;
+  removeSongFromPlaylist: (playlistId: string, songId: string) => Promise<void>;
+  setPlaylistVisibility: (playlistId: string, isPublic: boolean) => Promise<void>;
+  sharePlaylist: (playlistId: string) => Promise<string | null>;
+  refreshPlaylists: () => Promise<void>;
+  loadPublicPlaylists: () => Promise<void>;
+  fetchSharedPlaylist: (shareCode: string) => Promise<void>;
+  getPublicPlaylist: (playlistId: string) => Promise<Playlist | null>;
 
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -102,6 +128,11 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const [favoriteUpdatingIds, setFavoriteUpdatingIds] = useState<Set<string>>(
     new Set()
   );
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [discoverPlaylists, setDiscoverPlaylists] = useState<Playlist[]>([]);
+  const [sharedPlaylist, setSharedPlaylist] = useState<Playlist | null>(null);
+  const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(false);
+  const [isDiscoverLoading, setIsDiscoverLoading] = useState(false);
 
   const [track, setTrack] = useState<Song | null>(null);
   const [playStatus, setPlayStatus] = useState(false);
@@ -157,12 +188,167 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const refreshPlaylists = useCallback(async () => {
+    if (!user?.userId) {
+      setPlaylists([]);
+      return;
+    }
+
+    setIsPlaylistsLoading(true);
+    try {
+      const playlistsData = await musicApi.getPlaylists(user.userId);
+      setPlaylists(playlistsData);
+    } catch (error) {
+      console.error("Failed to load playlists:", error);
+      setPlaylists([]);
+    } finally {
+      setIsPlaylistsLoading(false);
+    }
+  }, [user?.userId]);
+
+  const loadPublicPlaylists = useCallback(async () => {
+    setIsDiscoverLoading(true);
+    try {
+      const data = await musicApi.discoverPublicPlaylists(user?.userId);
+      setDiscoverPlaylists(data);
+    } catch (error) {
+      console.error("Failed to load public playlists:", error);
+      setDiscoverPlaylists([]);
+    } finally {
+      setIsDiscoverLoading(false);
+    }
+  }, [user?.userId]);
+
+  const createPlaylist = async ({
+    name,
+    description,
+    isPublic = false,
+  }: {
+    name: string;
+    description?: string;
+    isPublic?: boolean;
+  }): Promise<Playlist | null> => {
+    if (!user?.userId || !name.trim()) return null;
+    try {
+      const playlist = await musicApi.createPlaylist({
+        name: name.trim(),
+        description: description?.trim() || "",
+        isPublic,
+        userId: user.userId,
+      });
+      setPlaylists((prev) => [playlist, ...prev]);
+      return playlist as Playlist;
+    } catch (error) {
+      console.error("Failed to create playlist:", error);
+      return null;
+    }
+  };
+
+  const deletePlaylist = async (playlistId: string) => {
+    if (!user?.userId) return;
+    try {
+      await musicApi.deletePlaylist(playlistId, user.userId);
+      setPlaylists((prev) => prev.filter((p) => p._id !== playlistId));
+    } catch (error) {
+      console.error("Failed to delete playlist:", error);
+    }
+  };
+
+  const updatePlaylistInState = (updated: Playlist) => {
+    setPlaylists((prev) =>
+      prev.map((playlist) => (playlist._id === updated._id ? updated : playlist))
+    );
+  };
+
+  const addSongToPlaylist = async (playlistId: string, songId: string) => {
+    if (!user?.userId) return;
+    try {
+      const playlist = await musicApi.addSongToPlaylist(
+        playlistId,
+        songId,
+        user.userId
+      );
+      if (playlist) updatePlaylistInState(playlist);
+    } catch (error) {
+      console.error("Failed to add song to playlist:", error);
+    }
+  };
+
+  const removeSongFromPlaylist = async (playlistId: string, songId: string) => {
+    if (!user?.userId) return;
+    try {
+      const playlist = await musicApi.removeSongFromPlaylist(
+        playlistId,
+        songId,
+        user.userId
+      );
+      if (playlist) updatePlaylistInState(playlist);
+    } catch (error) {
+      console.error("Failed to remove song from playlist:", error);
+    }
+  };
+
+  const setPlaylistVisibility = async (playlistId: string, isPublic: boolean) => {
+    if (!user?.userId) return;
+    try {
+      const playlist = await musicApi.setPlaylistVisibility(
+        playlistId,
+        isPublic,
+        user.userId
+      );
+      if (playlist) updatePlaylistInState(playlist);
+    } catch (error) {
+      console.error("Failed to update playlist visibility:", error);
+    }
+  };
+
+  const sharePlaylist = async (playlistId: string) => {
+    if (!user?.userId) return null;
+    try {
+      const { sharePath, shareCode } = await musicApi.sharePlaylist(
+        playlistId,
+        user.userId
+      );
+      const path = sharePath || `/playlists/shared/${shareCode}`;
+      const absoluteLink = new URL(path, window.location.origin).toString();
+      return absoluteLink;
+    } catch (error) {
+      console.error("Failed to share playlist:", error);
+      return null;
+    }
+  };
+
+  const fetchSharedPlaylist = useCallback(async (shareCode: string) => {
+    try {
+      const playlist = await musicApi.getSharedPlaylist(shareCode);
+      setSharedPlaylist(playlist);
+    } catch (error) {
+      console.error("Failed to fetch shared playlist:", error);
+      setSharedPlaylist(null);
+    }
+  }, []);
+
+  const getPublicPlaylist = useCallback(async (playlistId: string) => {
+    try {
+      const playlist = await musicApi.getPublicPlaylist(playlistId);
+      return playlist as Playlist;
+    } catch (error) {
+      console.error("Failed to fetch public playlist:", error);
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     if (user?.userId) {
       fetchFavorites(user.userId);
+      refreshPlaylists();
+      loadPublicPlaylists();
     } else {
       setFavoriteSongs([]);
       setFavoriteSongIds(new Set());
+      setPlaylists([]);
+      setDiscoverPlaylists([]);
+      setSharedPlaylist(null);
     }
   }, [user?.userId]);
 
@@ -319,14 +505,29 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         albums,
         songsData: filteredSongsData,
         albumsData: filteredAlbumsData,
+        playlists,
+        discoverPlaylists,
+        sharedPlaylist,
         filteredSongsData,
         filteredAlbumsData,
         favoriteSongs,
         favoriteSongIds,
         favoriteUpdatingIds,
         isFavoritesLoading,
+        isPlaylistsLoading,
+        isDiscoverLoading,
         isFavorite,
         toggleFavorite,
+        createPlaylist,
+        deletePlaylist,
+        addSongToPlaylist,
+        removeSongFromPlaylist,
+        setPlaylistVisibility,
+        sharePlaylist,
+        refreshPlaylists,
+        loadPublicPlaylists,
+        fetchSharedPlaylist,
+        getPublicPlaylist,
         searchQuery,
         setSearchQuery,
         viewFilter,

@@ -35,7 +35,7 @@ export default function Navbar() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search songs & albums..."
+            placeholder="Search songs, albums & playlists..."
             className="w-96 px-5 py-3 bg-[#242424] rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
 

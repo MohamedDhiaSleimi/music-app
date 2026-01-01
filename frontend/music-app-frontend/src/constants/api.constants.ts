@@ -48,4 +48,12 @@ export const MUSIC_ENDPOINTS = {
     ADD: '/favorite/add',
     REMOVE: '/favorite/remove',
   },
+  PLAYLISTS: {
+    BASE: '/playlist',
+    CREATE: '/playlist/create',
+    USER: '/playlist/user',
+    PUBLIC_DISCOVER: '/playlist/public/discover',
+    PUBLIC: '/playlist/public',
+    SHARED: '/playlist/shared',
+  },
 };

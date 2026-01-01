@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import { useMusic } from "../../context/MusicContext";
 import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 
 export default function Player() {
   const {
@@ -24,14 +24,35 @@ export default function Player() {
     isFavorite,
     toggleFavorite,
     favoriteUpdatingIds,
+    playlists,
+    isPlaylistsLoading,
+    refreshPlaylists,
+    addSongToPlaylist,
+    createPlaylist,
   } = useMusic();
 
   const { logout } = useAuth();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
+  const [newPlaylistName, setNewPlaylistName] = useState("");
+  const [isWorking, setIsWorking] = useState(false);
 
   if (!track) return null;
 
   const isTrackFavorite = track ? isFavorite(track._id) : false;
   const isTrackUpdating = track ? favoriteUpdatingIds.has(track._id) : false;
+
+  useEffect(() => {
+    if (isPickerOpen) {
+      refreshPlaylists();
+    }
+  }, [isPickerOpen, refreshPlaylists]);
+
+  useEffect(() => {
+    if (playlists.length > 0 && !selectedPlaylistId) {
+      setSelectedPlaylistId(playlists[0]._id);
+    }
+  }, [playlists, selectedPlaylistId]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -39,14 +60,36 @@ export default function Player() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleAddToPlaylist = async () => {
+    if (!track || !selectedPlaylistId) return;
+    setIsWorking(true);
+    await addSongToPlaylist(selectedPlaylistId, track._id);
+    setIsWorking(false);
+    setIsPickerOpen(false);
+  };
+
+  const handleCreateAndAdd = async () => {
+    if (!track || !newPlaylistName.trim()) return;
+    setIsWorking(true);
+    const created = await createPlaylist({ name: newPlaylistName });
+    const playlistId = created?._id;
+    if (playlistId) {
+      await addSongToPlaylist(playlistId, track._id);
+      setSelectedPlaylistId(playlistId);
+    }
+    setNewPlaylistName("");
+    setIsWorking(false);
+    setIsPickerOpen(false);
+  };
+
   return (
     <div className="h-[10%] bg-[#181818] border-t border-neutral-800 px-4 flex items-center justify-between text-white">
       {/* Left: Current Track */}
-      <div className="flex items-center gap-4 w-[30%]">
+      <div className="flex items-center gap-4 w-full lg:w-[30%] flex-wrap relative">
         <img src={track.image} alt={track.name} className="w-14 h-14 rounded" />
         <div>
           <h4 className="font-semibold text-sm">{track.name}</h4>
-          <p className="text-xs text-gray-400">{track.desc}</p>
+          <p className="text-xs text-gray-400 break-all">{track.desc}</p>
         </div>
         <button
           onClick={() => toggleFavorite(track._id)}
@@ -64,6 +107,76 @@ export default function Player() {
             </svg>
           )}
         </button>
+        <button
+          onClick={() => setIsPickerOpen((prev) => !prev)}
+          className="ml-2 px-3 py-1 rounded-full bg-[#2d2d2d] text-xs font-semibold hover:bg-[#3d3d3d]"
+        >
+          + Playlist
+        </button>
+
+        {isPickerOpen && (
+          <div className="absolute left-0 top-16 z-20 w-80 bg-[#121212] border border-[#2f2f2f] rounded-lg p-3 shadow-xl">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-semibold">Add to playlist</p>
+              <button
+                onClick={() => setIsPickerOpen(false)}
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {isPlaylistsLoading ? (
+              <p className="text-gray-400 text-sm">Loading playlists...</p>
+            ) : playlists.length > 0 ? (
+              <>
+                <select
+                  value={selectedPlaylistId}
+                  onChange={(e) => setSelectedPlaylistId(e.target.value)}
+                  className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2"
+                >
+                  {playlists.map((playlist) => (
+                    <option key={playlist._id} value={playlist._id}>
+                      {playlist.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleAddToPlaylist}
+                  disabled={!selectedPlaylistId || isWorking}
+                  className="w-full bg-white text-black font-semibold rounded py-2 disabled:opacity-60"
+                >
+                  {isWorking ? "Adding..." : "Add"}
+                </button>
+                <div className="mt-3 text-xs text-gray-400">
+                  No playlist you want? Create a new one below.
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-400 text-sm mb-2">
+                You have no playlists yet.
+              </p>
+            )}
+
+            <div className="mt-3 border-t border-[#2f2f2f] pt-3">
+              <p className="text-sm font-semibold mb-2">Create new</p>
+              <input
+                type="text"
+                value={newPlaylistName}
+                onChange={(e) => setNewPlaylistName(e.target.value)}
+                placeholder="Playlist name"
+                className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2"
+              />
+              <button
+                onClick={handleCreateAndAdd}
+                disabled={!newPlaylistName.trim() || isWorking}
+                className="w-full bg-green-500 text-black font-semibold rounded py-2 disabled:opacity-60"
+              >
+                {isWorking ? "Creating..." : "Create & Add"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Center: Controls */}
