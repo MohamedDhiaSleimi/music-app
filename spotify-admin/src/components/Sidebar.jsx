@@ -23,6 +23,10 @@ function Sidebar() {
                     <img src={assets.album_icon} className='w-5' alt="List Album" />
                     <p className='hidden sm:block'>List Album</p>
                 </NavLink>
+                <NavLink to={"/playlists"} className="flex items-center gap-2.5 text-gray-800 bg-white border border-black p-2 pr-[max(8vw,10px)] drop-shadow-[-4px_4px_#00ff5b] text-sm font-medium">
+                    <img src={assets.song_icon} className='w-5' alt="Manage Playlists" />
+                    <p className='hidden sm:block'>Manage Playlists</p>
+                </NavLink>
             </div>
         </div>
     )

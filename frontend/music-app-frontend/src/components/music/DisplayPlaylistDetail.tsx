@@ -16,6 +16,7 @@ export default function DisplayPlaylistDetail() {
     refreshPlaylists,
     isPlaylistsLoading,
     playWithId,
+    playPlaylist,
   } = useMusic();
   const navigate = useNavigate();
 
@@ -108,6 +109,12 @@ export default function DisplayPlaylistDetail() {
             <p className="text-gray-400">{playlist.description || "No description"}</p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => playPlaylist(playlist._id)}
+              className="px-4 py-2 rounded bg-white text-black text-sm font-semibold hover:scale-105 transition"
+            >
+              Play all
+            </button>
             <span
               className={`px-3 py-1 rounded-full text-xs font-semibold ${
                 playlist.isPublic

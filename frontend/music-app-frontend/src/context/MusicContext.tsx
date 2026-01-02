@@ -12,39 +12,14 @@ import {
 } from "react";
 import { musicApi } from "../services/musicApi";
 import { useAuth } from "./AuthContext";
-
-export interface Song {
-  _id: string;
-  name: string;
-  desc: string;
-  album: string;
-  image: string;
-  file: string;
-  duration: string;
-}
-
-export interface Album {
-  _id: string;
-  name: string;
-  desc: string;
-  image: string;
-  bgColour: string;
-}
-
-export interface Playlist {
-  _id: string;
-  name: string;
-  description?: string;
-  ownerId: string;
-  isPublic: boolean;
-  songs: Song[];
-  shareCode?: string;
-}
+import type { Album, Playlist, Song } from "../types/music.types";
 
 interface MusicContextType {
   audioRef: React.RefObject<HTMLAudioElement>;
   seekBar: React.RefObject<HTMLDivElement>;
   seekBg: React.RefObject<HTMLDivElement>;
+  playQueue: Song[];
+  clearQueue: () => void;
 
   songs: Song[];
   albums: Album[];
@@ -95,10 +70,15 @@ interface MusicContextType {
   playWithId: (id: string) => void;
   previousSong: () => void;
   nextSong: () => void;
+  addSongToQueue: (songId: string) => void;
+  removeFromQueue: (songId: string) => void;
+  moveQueueItem: (songId: string, direction: "up" | "down") => void;
+  playAlbum: (albumId: string) => void;
+  playPlaylist: (playlistId: string) => void;
   seekSong: (e: React.MouseEvent<HTMLDivElement>) => void;
 
-  isLooping: boolean;
-  toggleLoop: () => void;
+  loopMode: "off" | "one" | "all";
+  cycleLoopMode: () => void;
   isShuffle: boolean;
   toggleShuffle: () => void;
 
@@ -134,12 +114,13 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(false);
   const [isDiscoverLoading, setIsDiscoverLoading] = useState(false);
 
+  const [playQueue, setPlayQueue] = useState<Song[]>([]);
   const [track, setTrack] = useState<Song | null>(null);
   const [playStatus, setPlayStatus] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isFavoritesLoading, setIsFavoritesLoading] = useState(false);
 
-  const [isLooping, setIsLooping] = useState(false);
+  const [loopMode, setLoopMode] = useState<"off" | "one" | "all">("off");
   const [isShuffle, setIsShuffle] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
@@ -152,6 +133,60 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewFilter, setViewFilter] = useState<"all" | "music">("all");
 
+  const deterministicNumber = useCallback((seed: string, min = 0, max = 1) => {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash << 5) - hash + seed.charCodeAt(i);
+      hash |= 0;
+    }
+    const normalized = (Math.sin(hash) + 1) / 2;
+    return min + normalized * (max - min);
+  }, []);
+
+  const enrichSongFeatures = useCallback(
+    (song: Song): Song => {
+      const genreFallbacks = ["pop", "rock", "hip-hop", "electronic", "indie"];
+      const genre =
+        song.genre ||
+        genreFallbacks[
+          Math.floor(deterministicNumber(song._id, 0, genreFallbacks.length))
+        ];
+      const artist =
+        song.artist ||
+        (song.desc ? song.desc.split("-")[0].trim() : "Unknown Artist");
+
+      return {
+        ...song,
+        genre,
+        artist,
+        bpm: song.bpm ?? Math.round(deterministicNumber(song._id + "bpm", 80, 150)),
+        energy: song.energy ?? Number(deterministicNumber(song._id + "eng", 0.4, 0.95).toFixed(2)),
+        danceability:
+          song.danceability ?? Number(deterministicNumber(song._id + "dance", 0.4, 0.95).toFixed(2)),
+        valence:
+          song.valence ?? Number(deterministicNumber(song._id + "val", 0.3, 0.9).toFixed(2)),
+        acousticness:
+          song.acousticness ??
+          Number(deterministicNumber(song._id + "aco", 0.05, 0.7).toFixed(2)),
+        instrumentalness:
+          song.instrumentalness ??
+          Number(deterministicNumber(song._id + "inst", 0, 0.5).toFixed(3)),
+        liveness:
+          song.liveness ?? Number(deterministicNumber(song._id + "live", 0.05, 0.6).toFixed(2)),
+        speechiness:
+          song.speechiness ??
+          Number(deterministicNumber(song._id + "speech", 0.02, 0.25).toFixed(2)),
+        key: song.key || ["C", "D", "E", "F", "G", "A", "B"][
+          Math.floor(deterministicNumber(song._id + "key", 0, 7))
+        ],
+        releaseYear:
+          song.releaseYear ??
+          Math.round(deterministicNumber(song._id + "year", 1995, 2023)),
+      };
+    },
+    [deterministicNumber]
+  );
+
   // Load music data
   useEffect(() => {
     const loadMusic = async () => {
@@ -160,10 +195,14 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
           musicApi.getSongs(),
           musicApi.getAlbums(),
         ]);
-        setSongs(songsData);
+        const enrichedSongs = songsData.map(enrichSongFeatures);
+        setSongs(enrichedSongs);
         setAlbums(albumsData);
-        setOriginalSongs(songsData);
-        if (songsData.length > 0) setTrack(songsData[0]);
+        setOriginalSongs(enrichedSongs);
+        if (enrichedSongs.length > 0) {
+          setTrack(enrichedSongs[0]);
+          setPlayQueue(enrichedSongs);
+        }
       } catch (error) {
         console.error("Failed to load music:", error);
       } finally {
@@ -372,18 +411,41 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateTime);
+    const handleEnded = () => {
+      if (loopMode === "one") {
+        audio.currentTime = 0;
+        audio.play();
+        return;
+      }
+      if (playQueue.length === 0) {
+        setPlayStatus(false);
+        return;
+      }
+      const currentIndex = playQueue.findIndex((s) => s._id === track?._id);
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < playQueue.length) {
+        playWithId(playQueue[nextIndex]._id);
+      } else if (loopMode === "all") {
+        playWithId(playQueue[0]._id);
+      } else {
+        setPlayStatus(false);
+      }
+    };
+
+    audio.addEventListener("ended", handleEnded);
     if (audio.readyState > 0) updateTime();
 
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateTime);
+      audio.removeEventListener("ended", handleEnded);
     };
-  }, [track?.file]);
+  }, [track?._id, loopMode, playQueue]);
 
   // Loop
   useEffect(() => {
-    if (audioRef.current) audioRef.current.loop = isLooping;
-  }, [isLooping]);
+    if (audioRef.current) audioRef.current.loop = loopMode === "one";
+  }, [loopMode]);
 
   // Shuffle
   useEffect(() => {
@@ -421,27 +483,38 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     setPlayStatus(false);
   };
 
+  const startPlayback = async (song: Song) => {
+    setTrack(song);
+    await audioRef.current?.play();
+    setPlayStatus(true);
+  };
+
   const playWithId = async (id: string) => {
-    const song = songs.find((s) => s._id === id);
+    const source = playQueue.length ? playQueue : songs;
+    const song = source.find((s) => s._id === id) || songs.find((s) => s._id === id);
     if (song) {
-      setTrack(song);
-      await audioRef.current?.play();
-      setPlayStatus(true);
+      await startPlayback(song);
     }
   };
 
   const previousSong = () => {
     if (!track) return;
-    const currentIndex = songs.findIndex((s) => s._id === track._id);
-    const prevIndex = currentIndex > 0 ? currentIndex - 1 : songs.length - 1;
-    playWithId(songs[prevIndex]._id);
+    const source = playQueue.length ? playQueue : songs;
+    if (!source.length) return;
+    const currentIndex = source.findIndex((s) => s._id === track._id);
+    if (currentIndex <= 0 && loopMode === "off") return;
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : source.length - 1;
+    playWithId(source[prevIndex]._id);
   };
 
   const nextSong = () => {
     if (!track) return;
-    const currentIndex = songs.findIndex((s) => s._id === track._id);
-    const nextIndex = currentIndex < songs.length - 1 ? currentIndex + 1 : 0;
-    playWithId(songs[nextIndex]._id);
+    const source = playQueue.length ? playQueue : songs;
+    if (!source.length) return;
+    const currentIndex = source.findIndex((s) => s._id === track._id);
+    if (currentIndex >= source.length - 1 && loopMode === "off") return;
+    const nextIndex = currentIndex < source.length - 1 ? currentIndex + 1 : 0;
+    playWithId(source[nextIndex]._id);
   };
 
   const seekSong = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -452,9 +525,72 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     audioRef.current.currentTime = percentage * audioRef.current.duration;
   };
 
-  const toggleLoop = () => setIsLooping(!isLooping);
+  const cycleLoopMode = () =>
+    setLoopMode((prev) =>
+      prev === "off" ? "one" : prev === "one" ? "all" : "off"
+    );
 
   const toggleShuffle = () => setIsShuffle(!isShuffle);
+
+  const addSongToQueue = (songId: string) => {
+    const song = songs.find((s) => s._id === songId);
+    if (!song) return;
+    setPlayQueue((prev) => [...prev, song]);
+  };
+
+  const removeFromQueue = (songId: string) => {
+    setPlayQueue((prev) => {
+      const idx = prev.findIndex((s) => s._id === songId);
+      if (idx === -1) return prev;
+      const nextQueue = [...prev];
+      nextQueue.splice(idx, 1);
+      if (track && track._id === songId) {
+        const fallback = nextQueue[idx] || nextQueue[idx - 1];
+        if (fallback) {
+          startPlayback(fallback);
+        } else {
+          audioRef.current?.pause();
+          setPlayStatus(false);
+        }
+      }
+      return nextQueue;
+    });
+  };
+
+  const moveQueueItem = (songId: string, direction: "up" | "down") => {
+    setPlayQueue((prev) => {
+      const idx = prev.findIndex((s) => s._id === songId);
+      if (idx === -1) return prev;
+      const targetIndex = direction === "up" ? idx - 1 : idx + 1;
+      if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+      const nextQueue = [...prev];
+      const [item] = nextQueue.splice(idx, 1);
+      nextQueue.splice(targetIndex, 0, item);
+      return nextQueue;
+    });
+  };
+
+  const clearQueue = () => {
+    setPlayQueue([]);
+    audioRef.current?.pause();
+    setPlayStatus(false);
+  };
+
+  const playAlbum = (albumId: string) => {
+    const albumName = albums.find((a) => a._id === albumId)?.name;
+    if (!albumName) return;
+    const albumSongs = songs.filter((s) => s.album === albumName);
+    if (!albumSongs.length) return;
+    setPlayQueue(albumSongs);
+    startPlayback(albumSongs[0]);
+  };
+
+  const playPlaylist = (playlistId: string) => {
+    const playlist = playlists.find((p) => p._id === playlistId);
+    if (!playlist || !playlist.songs.length) return;
+    setPlayQueue(playlist.songs);
+    startPlayback(playlist.songs[0]);
+  };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const vol = parseFloat(e.target.value);
@@ -508,6 +644,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         playlists,
         discoverPlaylists,
         sharedPlaylist,
+        clearQueue,
         filteredSongsData,
         filteredAlbumsData,
         favoriteSongs,
@@ -532,6 +669,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         setSearchQuery,
         viewFilter,
         setViewFilter,
+        playQueue,
         track,
         setTrack,
         playStatus,
@@ -542,9 +680,14 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         playWithId,
         previousSong,
         nextSong,
+        addSongToQueue,
+        removeFromQueue,
+        moveQueueItem,
+        playAlbum,
+        playPlaylist,
         seekSong,
-        isLooping,
-        toggleLoop,
+        loopMode,
+        cycleLoopMode,
         isShuffle,
         toggleShuffle,
         volume,

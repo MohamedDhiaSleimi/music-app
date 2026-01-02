@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { MUSIC_API_BASE_URL, MUSIC_ENDPOINTS } from '../constants/api.constants';
+import type { Album, Playlist, Song } from '../types/music.types';
 
 export const musicApiClient = axios.create({
   baseURL: MUSIC_API_BASE_URL,
@@ -7,14 +8,14 @@ export const musicApiClient = axios.create({
 });
 
 export const musicApi = {
-  getSongs: async () => {
+  getSongs: async (): Promise<Song[]> => {
     const response = await musicApiClient.get(MUSIC_ENDPOINTS.SONGS.LIST);
-    return response.data.songs;
+    return response.data.songs as Song[];
   },
 
-  getAlbums: async () => {
+  getAlbums: async (): Promise<Album[]> => {
     const response = await musicApiClient.get(MUSIC_ENDPOINTS.ALBUMS.LIST);
-    return response.data.albums;
+    return response.data.albums as Album[];
   },
 
   addSong: async (formData: FormData) => {
@@ -41,9 +42,9 @@ export const musicApi = {
     return response.data;
   },
 
-  getFavorites: async (userId: string) => {
+  getFavorites: async (userId: string): Promise<Song[]> => {
     const response = await musicApiClient.get(`${MUSIC_ENDPOINTS.FAVORITES.LIST}/${userId}`);
-    return response.data.songs;
+    return response.data.songs as Song[];
   },
 
   addFavorite: async (userId: string, songId: string) => {
@@ -56,9 +57,9 @@ export const musicApi = {
     return response.data;
   },
 
-  getPlaylists: async (userId: string) => {
+  getPlaylists: async (userId: string): Promise<Playlist[]> => {
     const response = await musicApiClient.get(`${MUSIC_ENDPOINTS.PLAYLISTS.USER}/${userId}`);
-    return response.data.playlists;
+    return response.data.playlists as Playlist[];
   },
 
   createPlaylist: async (payload: { name: string; description?: string; isPublic?: boolean; songs?: string[]; userId: string }) => {
@@ -105,27 +106,27 @@ export const musicApi = {
     return response.data;
   },
 
-  getSharedPlaylist: async (shareCode: string) => {
+  getSharedPlaylist: async (shareCode: string): Promise<Playlist> => {
     const response = await musicApiClient.get(`${MUSIC_ENDPOINTS.PLAYLISTS.SHARED}/${shareCode}`);
-    return response.data.playlist;
+    return response.data.playlist as Playlist;
   },
 
-  discoverPublicPlaylists: async (userId?: string) => {
+  discoverPublicPlaylists: async (userId?: string): Promise<Playlist[]> => {
     const response = await musicApiClient.get(MUSIC_ENDPOINTS.PLAYLISTS.PUBLIC_DISCOVER, {
       params: { userId },
     });
-    return response.data.playlists;
+    return response.data.playlists as Playlist[];
   },
 
-  getPublicPlaylist: async (playlistId: string) => {
+  getPublicPlaylist: async (playlistId: string): Promise<Playlist> => {
     const response = await musicApiClient.get(`${MUSIC_ENDPOINTS.PLAYLISTS.PUBLIC}/${playlistId}`);
-    return response.data.playlist;
+    return response.data.playlist as Playlist;
   },
 
-  getPlaylistById: async (playlistId: string, userId?: string) => {
+  getPlaylistById: async (playlistId: string, userId?: string): Promise<Playlist> => {
     const response = await musicApiClient.get(`${MUSIC_ENDPOINTS.PLAYLISTS.BASE}/${playlistId}`, {
       params: { userId },
     });
-    return response.data.playlist;
+    return response.data.playlist as Playlist;
   },
 };

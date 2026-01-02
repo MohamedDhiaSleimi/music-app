@@ -42,12 +42,12 @@ const removeAlbum = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const album = await Album.findOne({ _id: id });
-        console.log('album', album)
-        const albumSongs = await Song.find({ album: album.name })
-        albumSongs.map(async (item) => {
-            await Song.findByIdAndDelete(item._id)
-        })
+        const album = await Album.findById(id);
+        if (!album) {
+            return res.status(404).json({ success: false, message: "Album not found" });
+        }
+
+        await Song.updateMany({ album: album.name }, { $set: { album: "" } });
         await Album.findByIdAndDelete(id);
         res.status(200).json({ success: true, message: "Album removed success" });
     } catch (error) {

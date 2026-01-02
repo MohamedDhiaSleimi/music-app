@@ -8,13 +8,14 @@ export default function Player() {
     playStatus,
     play,
     pause,
+    playWithId,
     previousSong,
     nextSong,
     audioRef,
     seekSong,
     seekBg,
-    isLooping,
-    toggleLoop,
+    loopMode,
+    cycleLoopMode,
     isShuffle,
     toggleShuffle,
     volume,
@@ -24,6 +25,11 @@ export default function Player() {
     isFavorite,
     toggleFavorite,
     favoriteUpdatingIds,
+    addSongToQueue,
+    playQueue,
+    removeFromQueue,
+    moveQueueItem,
+    clearQueue,
     playlists,
     isPlaylistsLoading,
     refreshPlaylists,
@@ -33,6 +39,7 @@ export default function Player() {
 
   const { logout } = useAuth();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [isWorking, setIsWorking] = useState(false);
@@ -83,13 +90,15 @@ export default function Player() {
   };
 
   return (
-    <div className="h-[10%] bg-[#181818] border-t border-neutral-800 px-4 flex items-center justify-between text-white">
+    <div className="h-[10%] bg-gradient-to-r from-[#0b1728] via-[#0f111a] to-[#0b1728] border-t border-white/10 px-4 flex items-center justify-between text-white shadow-[0_-10px_40px_-24px_rgba(0,0,0,0.9)]">
       {/* Left: Current Track */}
-      <div className="flex items-center gap-4 w-full lg:w-[30%] flex-wrap relative">
-        <img src={track.image} alt={track.name} className="w-14 h-14 rounded" />
+      <div className="flex items-center gap-4 w-full lg:w-[32%] flex-wrap relative bg-white/5 border border-white/10 rounded-2xl p-2 backdrop-blur">
+        <div className="w-14 h-14 rounded-lg overflow-hidden bg-black/40 flex-shrink-0">
+          <img src={track.image} alt={track.name} className="w-full h-full object-cover" />
+        </div>
         <div>
-          <h4 className="font-semibold text-sm">{track.name}</h4>
-          <p className="text-xs text-gray-400 break-all">{track.desc}</p>
+          <h4 className="font-semibold text-sm leading-tight">{track.name}</h4>
+          <p className="text-xs text-gray-400 break-all leading-snug">{track.desc}</p>
         </div>
         <button
           onClick={() => toggleFavorite(track._id)}
@@ -109,78 +118,187 @@ export default function Player() {
         </button>
         <button
           onClick={() => setIsPickerOpen((prev) => !prev)}
-          className="ml-2 px-3 py-1 rounded-full bg-[#2d2d2d] text-xs font-semibold hover:bg-[#3d3d3d]"
+          className="ml-2 px-3 py-1 rounded-full bg-gradient-to-r from-green-500/80 to-blue-500/70 text-black text-xs font-semibold hover:from-green-400 hover:to-blue-400 shadow-md shadow-green-500/20"
         >
           + Playlist
         </button>
+        <button
+          onClick={() => addSongToQueue(track._id)}
+          className="ml-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+        >
+          + Queue
+        </button>
+        <button
+          onClick={() => setIsQueueOpen(true)}
+          className="ml-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+        >
+          Queue
+        </button>
 
         {isPickerOpen && (
-          <div className="absolute left-0 top-16 z-20 w-80 bg-[#121212] border border-[#2f2f2f] rounded-lg p-3 shadow-xl">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold">Add to playlist</p>
-              <button
-                onClick={() => setIsPickerOpen(false)}
-                className="text-gray-400 hover:text-white text-sm"
-              >
-                ✕
-              </button>
-            </div>
-
-            {isPlaylistsLoading ? (
-              <p className="text-gray-400 text-sm">Loading playlists...</p>
-            ) : playlists.length > 0 ? (
-              <>
-                <select
-                  value={selectedPlaylistId}
-                  onChange={(e) => setSelectedPlaylistId(e.target.value)}
-                  className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2"
-                >
-                  {playlists.map((playlist) => (
-                    <option key={playlist._id} value={playlist._id}>
-                      {playlist.name}
-                    </option>
-                  ))}
-                </select>
+          <div className="fixed inset-0 z-30 flex items-center justify-center px-4">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsPickerOpen(false)}
+            />
+            <div className="relative w-full max-w-md bg-[#0f111a] border border-white/10 rounded-2xl p-5 shadow-2xl shadow-black/50">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold">Add to playlist</p>
                 <button
-                  onClick={handleAddToPlaylist}
-                  disabled={!selectedPlaylistId || isWorking}
-                  className="w-full bg-white text-black font-semibold rounded py-2 disabled:opacity-60"
+                  onClick={() => setIsPickerOpen(false)}
+                  className="text-gray-400 hover:text-white text-sm"
                 >
-                  {isWorking ? "Adding..." : "Add"}
+                  ✕
                 </button>
-                <div className="mt-3 text-xs text-gray-400">
-                  No playlist you want? Create a new one below.
-                </div>
-              </>
-            ) : (
-              <p className="text-gray-400 text-sm mb-2">
-                You have no playlists yet.
-              </p>
-            )}
+              </div>
 
-            <div className="mt-3 border-t border-[#2f2f2f] pt-3">
-              <p className="text-sm font-semibold mb-2">Create new</p>
-              <input
-                type="text"
-                value={newPlaylistName}
-                onChange={(e) => setNewPlaylistName(e.target.value)}
-                placeholder="Playlist name"
-                className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2"
-              />
-              <button
-                onClick={handleCreateAndAdd}
-                disabled={!newPlaylistName.trim() || isWorking}
-                className="w-full bg-green-500 text-black font-semibold rounded py-2 disabled:opacity-60"
-              >
-                {isWorking ? "Creating..." : "Create & Add"}
-              </button>
+              {isPlaylistsLoading ? (
+                <p className="text-gray-400 text-sm">Loading playlists...</p>
+              ) : playlists.length > 0 ? (
+                <>
+                  <select
+                    value={selectedPlaylistId}
+                    onChange={(e) => setSelectedPlaylistId(e.target.value)}
+                    className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2 border border-white/10"
+                  >
+                    {playlists.map((playlist) => (
+                      <option key={playlist._id} value={playlist._id}>
+                        {playlist.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleAddToPlaylist}
+                    disabled={!selectedPlaylistId || isWorking}
+                    className="w-full bg-white text-black font-semibold rounded py-2 disabled:opacity-60"
+                  >
+                    {isWorking ? "Adding..." : "Add"}
+                  </button>
+                  <div className="mt-3 text-xs text-gray-400">
+                    No playlist you want? Create a new one below.
+                  </div>
+                </>
+              ) : (
+                <p className="text-gray-400 text-sm mb-2">
+                  You have no playlists yet.
+                </p>
+              )}
+
+              <div className="mt-3 border-t border-[#2f2f2f] pt-3">
+                <p className="text-sm font-semibold mb-2">Create new</p>
+                <input
+                  type="text"
+                  value={newPlaylistName}
+                  onChange={(e) => setNewPlaylistName(e.target.value)}
+                  placeholder="Playlist name"
+                  className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2 border border-white/10"
+                />
+                <button
+                  onClick={handleCreateAndAdd}
+                  disabled={!newPlaylistName.trim() || isWorking}
+                  className="w-full bg-green-500 text-black font-semibold rounded py-2 disabled:opacity-60"
+                >
+                  {isWorking ? "Creating..." : "Create & Add"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isQueueOpen && (
+          <div className="fixed inset-0 z-40 flex items-center justify-center px-4">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsQueueOpen(false)}
+            />
+            <div className="relative w-full max-w-3xl bg-[#0f111a] border border-white/10 rounded-2xl p-5 shadow-2xl shadow-black/50">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-400">Up next</p>
+                  <h3 className="text-lg font-semibold">Current queue</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={clearQueue}
+                    className="px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={() => setIsQueueOpen(false)}
+                    className="px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              <div className="max-h-[60vh] overflow-y-auto space-y-2">
+                {playQueue.length === 0 ? (
+                  <p className="text-gray-400 text-sm">Queue is empty. Add songs to start building it.</p>
+                ) : (
+                  playQueue.map((song, idx) => {
+                    const isCurrent = track?._id === song._id;
+                    return (
+                      <div
+                        key={song._id + idx}
+                        className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2 border ${
+                          isCurrent
+                            ? "bg-white/10 border-white/30"
+                            : "bg-white/5 border-white/10"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/40 flex-shrink-0">
+                            <img src={song.image} alt={song.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-sm truncate">{song.name}</p>
+                            <p className="text-xs text-gray-400 truncate">{song.album}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs text-gray-400 w-8 text-center">{idx + 1}</span>
+                          <button
+                            onClick={() => moveQueueItem(song._id, "up")}
+                            disabled={idx === 0}
+                            className="px-2 py-1 rounded-full bg-white/10 text-xs hover:bg-white/20 border border-white/15 disabled:opacity-40"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            onClick={() => moveQueueItem(song._id, "down")}
+                            disabled={idx === playQueue.length - 1}
+                            className="px-2 py-1 rounded-full bg-white/10 text-xs hover:bg-white/20 border border-white/15 disabled:opacity-40"
+                          >
+                            ↓
+                          </button>
+                          <button
+                            onClick={() => playWithId(song._id)}
+                            className="px-3 py-1 rounded-full bg-white text-black text-xs font-semibold hover:scale-105 transition"
+                          >
+                            Play
+                          </button>
+                          <button
+                            onClick={() => removeFromQueue(song._id)}
+                            className="px-2 py-1 rounded-full bg-red-500/20 text-red-200 text-xs hover:bg-red-500/30 border border-red-500/30"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* Center: Controls */}
-      <div className="flex flex-col items-center gap-2 w-[40%]">
+      <div className="flex flex-col items-center gap-2 w-[38%] bg-white/5 border border-white/10 rounded-2xl px-4 py-2 backdrop-blur">
         <div className="flex items-center gap-6">
           <button
             onClick={toggleShuffle}
@@ -202,7 +320,7 @@ export default function Player() {
           </button>
           <button
             onClick={playStatus ? pause : play}
-            className="bg-white text-black rounded-full p-3 hover:scale-105 transition shadow-lg"
+            className="bg-gradient-to-br from-white to-gray-200 text-black rounded-full p-4 hover:scale-105 transition shadow-lg shadow-white/20"
           >
             {playStatus ? (
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -223,17 +341,17 @@ export default function Player() {
             </svg>
           </button>
           <button
-            onClick={toggleLoop}
+            onClick={cycleLoopMode}
             className={`${
-              isLooping ? "text-green-500" : "text-gray-400"
+              loopMode !== "off" ? "text-green-500" : "text-gray-400"
             } hover:text-white relative`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
             </svg>
-            {isLooping && (
-              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs">
-                1
+            {loopMode !== "off" && (
+              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-[10px] font-semibold">
+                {loopMode === "one" ? "1" : "∞"}
               </span>
             )}
           </button>
@@ -248,10 +366,10 @@ export default function Player() {
           <div
             ref={seekBg}
             onClick={seekSong}
-            className="relative flex-1 h-1 bg-gray-600 rounded-full cursor-pointer group"
+            className="relative flex-1 h-1.5 bg-white/15 rounded-full cursor-pointer group"
           >
             <div
-              className="absolute h-full bg-white rounded-full transition-all"
+              className="absolute h-full rounded-full transition-all bg-gradient-to-r from-green-400 via-blue-400 to-purple-400"
               style={{
                 width: audioRef.current?.duration
                   ? `${
@@ -263,7 +381,7 @@ export default function Player() {
               }}
             />
             <div
-              className="absolute h-3 w-3 bg-white rounded-full -top-1 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute h-4 w-4 bg-white rounded-full -top-1 left-0 opacity-0 group-hover:opacity-100 shadow-lg shadow-green-400/30 transition-opacity"
               style={{
                 left: audioRef.current?.duration
                   ? `${
@@ -282,7 +400,7 @@ export default function Player() {
 
       {/* Right: Volume + Logout */}
       <div className="flex items-center gap-4 w-[30%] justify-end">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-full backdrop-blur">
           <button onClick={toggleMute}>
             {isMuted || volume === 0 ? (
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -305,13 +423,13 @@ export default function Player() {
             step="0.01"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-24 h-1 bg-gray-600 rounded-full appearance-none cursor-pointer"
+            className="w-28 h-1 bg-gray-600 rounded-full appearance-none cursor-pointer accent-green-400"
           />
         </div>
 
         <button
           onClick={logout}
-          className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm font-medium transition"
+          className="bg-white/10 border border-red-400/40 text-red-100 hover:bg-red-500 hover:text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-lg shadow-red-500/20"
         >
           Logout
         </button>

@@ -11,7 +11,7 @@ import DisplaySharedPlaylist from "./DisplaySharedPlaylist";
 import DisplayPublicPlaylist from "./DisplayPublicPlaylist";
 
 export default function Display() {
-  const { albumsData } = useMusic();
+  const { albums } = useMusic();
   const displayRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const isAlbum = location.pathname.includes("album");
@@ -19,7 +19,7 @@ export default function Display() {
   
   // Find album in the full albums list, not filtered
   const bgColor = isAlbum && albumId
-    ? albumsData.find((a) => a._id === albumId)?.bgColour || "#121212"
+    ? albums.find((a) => a._id === albumId)?.bgColour || "#121212"
     : "#121212";
 
   useEffect(() => {
@@ -31,7 +31,10 @@ export default function Display() {
   }, [isAlbum, bgColor]);
 
   return (
-    <div ref={displayRef} className="w-[100%] m-2 px-6 pt-4 rounded bg-[#121212] text-white overflow-auto lg:w-[75%] lg:ml-0">
+    <div
+      ref={displayRef}
+      className="w-[100%] m-2 px-6 pt-4 rounded-3xl bg-[#0c0c12]/80 backdrop-blur-xl border border-white/5 text-white overflow-auto shadow-[0_20px_60px_-24px_rgba(0,0,0,0.75)] lg:w-[75%] lg:ml-0"
+    >
         <Routes>
           <Route path="/" element={<DisplayHome />} />
           <Route path="/album/:id" element={<DisplayAlbum />} />

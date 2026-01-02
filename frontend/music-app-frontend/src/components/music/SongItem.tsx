@@ -1,15 +1,11 @@
 import type { MouseEvent } from "react";
 import { useMusic } from "../../context/MusicContext";
+import type { Song } from "../../types/music.types";
 
-interface SongItemProps {
-  _id: string;
-  image: string;
-  name: string;
-  desc: string;
-}
+type SongItemProps = Pick<Song, "_id" | "image" | "name" | "desc">;
 
 export default function SongItem({ _id, image, name, desc }: SongItemProps) {
-  const { playWithId, isFavorite, toggleFavorite, favoriteUpdatingIds } = useMusic();
+  const { playWithId, isFavorite, toggleFavorite, favoriteUpdatingIds, addSongToQueue } = useMusic();
   const isSongFavorite = isFavorite(_id);
   const isUpdating = favoriteUpdatingIds.has(_id);
 
@@ -21,14 +17,16 @@ export default function SongItem({ _id, image, name, desc }: SongItemProps) {
   return (
     <div
       onClick={() => playWithId(_id)}
-      className="min-w-[180px] p-2 px-3 rounded cursor-pointer hover:bg-[#ffffff26]"
+      className="group min-w-[190px] p-3 rounded-2xl cursor-pointer bg-white/5 border border-white/10 hover:border-white/30 hover:-translate-y-1 transition shadow-md shadow-black/30"
     >
-      <div className="relative">
-        <img className="rounded" src={image} alt={name} />
+      <div className="relative rounded-xl overflow-hidden">
+        <img className="w-full h-44 object-cover" src={image} alt={name} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-100 transition" />
+
         <button
           onClick={handleToggleFavorite}
           disabled={isUpdating}
-          className={`absolute top-2 right-2 p-2 rounded-full bg-black/60 hover:bg-black/80 transition ${isUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80 transition ${isUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
           aria-label={isSongFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           {isSongFavorite ? (
@@ -41,9 +39,27 @@ export default function SongItem({ _id, image, name, desc }: SongItemProps) {
             </svg>
           )}
         </button>
+
+        <div className="absolute bottom-3 left-3 flex items-center gap-2 text-xs font-medium text-white/90">
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/20 backdrop-blur">
+            ▶
+          </span>
+          <span className="opacity-80">Tap to play</span>
+        </div>
+        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              addSongToQueue(_id);
+            }}
+            className="px-3 py-1 rounded-full bg-white/80 text-black text-xs font-semibold hover:scale-105 transition"
+          >
+            + Queue
+          </button>
+        </div>
       </div>
-      <p className="font-bold mt-2 mb-1">{name}</p>
-      <p className="text-slate-200 text-sm">{desc}</p>
+      <p className="font-bold mt-3 mb-1 text-white leading-tight">{name}</p>
+      <p className="text-slate-200 text-sm opacity-90 leading-relaxed max-h-10 overflow-hidden text-ellipsis">{desc}</p>
     </div>
   );
 }

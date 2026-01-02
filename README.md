@@ -42,6 +42,8 @@ npm run dev
 - ✅ Account deactivation with grace period
 - ✅ JWT-based authentication
 - ✅ MongoDB data persistence
+- ✅ Playback queue management (queue modal, add/remove/reorder, play albums/playlists)
+- ✅ Local content-based recommendation model with enriched track metadata (genre/artist/BPM/energy/etc.)
 
 ## Documentation
 

@@ -290,6 +290,21 @@ const discoverPublicPlaylists = async (req, res) => {
   }
 };
 
+const listAllPlaylists = async (_req, res) => {
+  try {
+    const playlists = await Playlist.find({})
+      .sort({ updatedAt: -1 })
+      .populate("songs");
+
+    return res.status(200).json({ success: true, playlists });
+  } catch (error) {
+    console.error("Failed at listAllPlaylists", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Could not load playlists" });
+  }
+};
+
 const getUserPlaylists = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -387,4 +402,5 @@ export {
   getUserPlaylists,
   getPlaylistById,
   getPublicPlaylistById,
+  listAllPlaylists,
 };

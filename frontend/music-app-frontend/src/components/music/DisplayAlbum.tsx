@@ -2,21 +2,22 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useMusic } from "../../context/MusicContext";
 import Navbar from "./Navbar";
+import type { Album } from "../../types/music.types";
 
 export default function DisplayAlbum() {
   const { id } = useParams();
-  const { albumsData, songsData, playWithId, track, playStatus, play, pause } = useMusic();
-  const [album, setAlbum] = useState<any>(null);
+  const { albums, songs, playWithId, track, playStatus, play, pause, playAlbum } = useMusic();
+  const [album, setAlbum] = useState<Album | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   useEffect(() => {
-    const found = albumsData.find((item) => item._id === id);
+    const found = albums.find((item) => item._id === id) || null;
     setAlbum(found);
-  }, [albumsData, id]);
+  }, [albums, id]);
 
   if (!album) return null;
 
-  const albumSongs = songsData.filter((s) => s.album === album.name);
+  const albumSongs = songs.filter((s) => s.album === album.name);
 
   return (
     <>
@@ -27,6 +28,20 @@ export default function DisplayAlbum() {
           <p>Playlist</p>
           <h2 className="text-5xl font-bold mb-2 md:text-7xl">{album.name}</h2>
           <h4>{album.desc}</h4>
+          <div className="flex gap-3">
+            <button
+              onClick={() => playAlbum(album._id)}
+              className="px-4 py-2 rounded-full bg-white text-black font-semibold hover:scale-105 transition"
+            >
+              Play album
+            </button>
+            <button
+              onClick={() => albumSongs[0] && playWithId(albumSongs[0]._id)}
+              className="px-4 py-2 rounded-full border border-white/30 text-white hover:bg-white/10"
+            >
+              Play first track
+            </button>
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-3 sm:grid-cols-[0.5fr_2fr_2fr_0.5fr] mt-10 mb-4 pl-2 text-[#a7a7a7]">

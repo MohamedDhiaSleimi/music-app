@@ -4,6 +4,7 @@ import {
   createPlaylist,
   deletePlaylist,
   discoverPublicPlaylists,
+  listAllPlaylists,
   getPlaylistById,
   getPublicPlaylistById,
   getSharedPlaylist,
@@ -24,6 +25,7 @@ playlistRouter.post("/:playlistId/share", sharePlaylist);
 playlistRouter.get("/shared/:shareCode", getSharedPlaylist);
 playlistRouter.get("/public/discover", discoverPublicPlaylists);
 playlistRouter.get("/public/:playlistId", getPublicPlaylistById);
+playlistRouter.get("/all", listAllPlaylists);
 playlistRouter.get("/user/:userId", getUserPlaylists);
 playlistRouter.get("/:playlistId", getPlaylistById);
 
