@@ -20,15 +20,15 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   const spinner = (
     <div className="text-center">
       <div
-        className={`animate-spin rounded-full border-b-2 border-green-400 ${sizeClasses[size]} mx-auto mb-4`}
+        className={`animate-spin rounded-full border-b-2 border-blue-500 ${sizeClasses[size]} mx-auto mb-4`}
       ></div>
-      {message && <p className="text-gray-400">{message}</p>}
+      {message && <p className="text-gray-600">{message}</p>}
     </div>
   );
 
   if (fullScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
         {spinner}
       </div>
     );

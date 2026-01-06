@@ -2,18 +2,24 @@ import { v2 as cloudinary } from "cloudinary"
 import Album from "../models/Album.js";
 import Song from './../models/Song.js';
 
+const DEFAULT_ALBUM_IMAGE_URL = process.env.DEFAULT_ALBUM_IMAGE_URL || "http://localhost:3000/static/default-album.png";
+
 const addAlbum = async (req, res) => {
     try {
         const { name, desc, bgColour } = req.body;
         const imageFile = req.file;
 
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+        let imageUrl = DEFAULT_ALBUM_IMAGE_URL;
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+            imageUrl = imageUpload.secure_url;
+        }
 
         const albumData = {
             name,
             desc,
             bgColour,
-            image: imageUpload.secure_url,
+            image: imageUrl,
         }
 
         const album = Album(albumData);

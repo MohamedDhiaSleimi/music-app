@@ -1,7 +1,7 @@
 services:
   mongodb:
     image: mongo:7.0
-    container_name: music-app-mongodb
+    container_name: rahma_zeined-music-app-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
@@ -22,7 +22,7 @@ services:
     build:
       context: ./backend/auth-service
       dockerfile: Dockerfile
-    container_name: music-app-auth-service
+    container_name: rahma_zeined-music-app-auth-service
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -47,7 +47,7 @@ services:
     build:
       context: ./backend/music-service
       dockerfile: Dockerfile
-    container_name: music-app-music-service
+    container_name: rahma_zeined-music-app-music-service
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -70,7 +70,7 @@ services:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8080/api}
         - VITE_MUSIC_API_BASE_URL=${VITE_MUSIC_API_BASE_URL:-http://localhost:3000/api}
         - VITE_OAUTH_GOOGLE_URL=${VITE_OAUTH_GOOGLE_URL:-http://localhost:8080/oauth2/authorization/google}
-    container_name: music-app-frontend
+    container_name: rahma_zeined-music-app-frontend
     restart: unless-stopped
     ports:
       - "5173:80"
@@ -85,7 +85,7 @@ services:
     build:
       context: ./spotify-admin
       dockerfile: Dockerfile
-    container_name: music-app-admin
+    container_name: rahma_zeined-music-app-admin
     restart: unless-stopped
     ports:
       - "5174:80"

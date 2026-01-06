@@ -18,20 +18,19 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           type={showPassword ? 'text' : 'password'}
           label={label}
           error={error}
-          className={className}
+          className={`pr-12 ${className}`}
           {...props}
         />
 
-        {/* Toggle Button - properly aligned inside the input field */}
+        {/* Toggle Button */}
         <button
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
           tabIndex={-1}
           aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? (
-            // Eye Slash - Hidden
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -41,7 +40,6 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
               />
             </svg>
           ) : (
-            // Eye - Visible
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"

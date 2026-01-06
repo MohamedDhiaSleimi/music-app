@@ -15,9 +15,9 @@ import { useAuth } from "./AuthContext";
 import type { Album, Playlist, Song } from "../types/music.types";
 
 interface MusicContextType {
-  audioRef: React.RefObject<HTMLAudioElement>;
-  seekBar: React.RefObject<HTMLDivElement>;
-  seekBg: React.RefObject<HTMLDivElement>;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+  seekBar: React.RefObject<HTMLDivElement | null>;
+  seekBg: React.RefObject<HTMLDivElement | null>;
   playQueue: Song[];
   clearQueue: () => void;
 
@@ -630,6 +630,8 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isFavorite = (songId: string) => favoriteSongIds.has(songId);
+
+  // ... (toute la partie avant reste inchangée) ...
 
   return (
     <MusicContext.Provider

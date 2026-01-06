@@ -1,21 +1,33 @@
 import { v2 as cloudinary } from "cloudinary"
 import Song from "../models/Song.js";
 
+const DEFAULT_SONG_IMAGE_URL = process.env.DEFAULT_SONG_IMAGE_URL || "http://localhost:3000/static/default-song.png";
+
 const addSong = async (req, res) => {
     try {
         const { name, desc, album } = req.body;
-        const audioFile = req.files.audio[0];
-        const imageFile = req.files.image[0];
+        const audioFile = req.files?.audio?.[0];
+        const imageFile = req.files?.image?.[0];
+
+        if (!audioFile) {
+            return res.status(400).json({ success: false, message: "Audio file is required" });
+        }
 
         const audioUpload = await cloudinary.uploader.upload(audioFile.path, { resource_type: "video" });
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+        let imageUrl = DEFAULT_SONG_IMAGE_URL;
+
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+            imageUrl = imageUpload.secure_url;
+        }
+
         const duration = `${Math.floor(audioUpload.duration / 60)}:${Math.floor(audioUpload.duration % 60)}`;
 
         const songData = {
             name,
             desc,
             album,
-            image: imageUpload.secure_url,
+            image: imageUrl,
             file: audioUpload.secure_url,
             duration
         }

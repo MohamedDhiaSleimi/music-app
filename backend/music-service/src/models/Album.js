@@ -15,7 +15,8 @@ const albumSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true
+        required: true,
+        default: process.env.DEFAULT_ALBUM_IMAGE_URL || "http://localhost:3000/static/default-album.png"
     }
 })
 

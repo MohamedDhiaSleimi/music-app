@@ -17,6 +17,7 @@ connectCloudinary();
 //middlewares
 app.use(express.json())
 app.use(cors())
+app.use("/static", express.static("public"))
 
 //initializing routes
 app.use("/api/song", songRouter)
