@@ -35,6 +35,10 @@ export default function Player() {
     refreshPlaylists,
     addSongToPlaylist,
     createPlaylist,
+    isBuffering,
+    setIsMuted,
+    setVolume,
+    currentQueueIndex,
   } = useMusic();
 
   const { logout } = useAuth();
@@ -43,6 +47,8 @@ export default function Player() {
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [isWorking, setIsWorking] = useState(false);
+  const [showSaveQueue, setShowSaveQueue] = useState(false);
+  const [saveQueueName, setSaveQueueName] = useState("");
 
   if (!track) return null;
 
@@ -52,6 +58,7 @@ export default function Player() {
   useEffect(() => {
     if (isPickerOpen) {
       refreshPlaylists();
+      setIsQueueOpen(false);
     }
   }, [isPickerOpen, refreshPlaylists]);
 
@@ -62,6 +69,7 @@ export default function Player() {
   }, [playlists, selectedPlaylistId]);
 
   const formatTime = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
@@ -76,7 +84,7 @@ export default function Player() {
   };
 
   const handleCreateAndAdd = async () => {
-    if (!track || !newPlaylistName.trim()) return;
+    if (!track || !newPlaylistName.trim() || newPlaylistName.trim().length < 3) return;
     setIsWorking(true);
     const created = await createPlaylist({ name: newPlaylistName });
     const playlistId = created?._id;
@@ -89,12 +97,49 @@ export default function Player() {
     setIsPickerOpen(false);
   };
 
+  const handlePlayNext = (songId: string) => {
+    moveQueueItem(songId, "up");
+  };
+
+  const handleSaveQueue = async () => {
+    if (!saveQueueName.trim() || playQueue.length === 0) return;
+    setIsWorking(true);
+    const playlist = await createPlaylist({
+      name: saveQueueName.trim(),
+      songs: playQueue.map((s) => s._id),
+    } as any);
+    setIsWorking(false);
+    setShowSaveQueue(false);
+    setSaveQueueName("");
+    if (playlist) {
+      alert("Queue saved as playlist!");
+    }
+  };
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsQueueOpen(false);
+        setIsPickerOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const handleClearQueue = () => {
+    if (window.confirm("Clear the entire queue?")) {
+      clearQueue();
+    }
+  };
+
   return (
-    <div className="h-[10%] bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-t border-gray-200 px-6 flex items-center justify-between shadow-lg">
+    <>
+      <div className="h-[10%] bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-t border-gray-200 px-6 flex items-center justify-between shadow-lg">
       {/* Left: Current Track */}
       <div className="flex items-center gap-4 w-full lg:w-[32%] flex-wrap relative bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
         <div className="w-14 h-14 rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex-shrink-0">
-          <img src={track.image} alt={track.name} className="w-full h-full object-cover" />
+          <img src={track.image} alt={track.name} className="w-full h-full object-cover" loading="lazy" />
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="font-semibold text-gray-800 text-sm leading-tight truncate">{track.name}</h4>
@@ -130,7 +175,10 @@ export default function Player() {
             + Queue
           </button>
           <button
-            onClick={() => setIsQueueOpen(true)}
+            onClick={() => {
+              setIsPickerOpen(false);
+              setIsQueueOpen(true);
+            }}
             className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200 border border-gray-300 transition-all"
           >
             Queue
@@ -164,11 +212,14 @@ export default function Player() {
                     onChange={(e) => setSelectedPlaylistId(e.target.value)}
                     className="w-full bg-gray-50 text-gray-800 px-4 py-3 rounded-xl mb-4 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    {playlists.map((playlist) => (
-                      <option key={playlist._id} value={playlist._id}>
-                        {playlist.name}
-                      </option>
-                    ))}
+                    {playlists.map((playlist) => {
+                      const alreadyHasSong = playlist.songs?.some((s: any) => s._id === track?._id || s === track?._id);
+                      return (
+                        <option key={playlist._id} value={playlist._id}>
+                          {playlist.name}{alreadyHasSong ? " (already has song)" : ""}
+                        </option>
+                      );
+                    })}
                   </select>
                   <button
                     onClick={handleAddToPlaylist}
@@ -223,11 +274,11 @@ export default function Player() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={clearQueue}
+                    onClick={handleClearQueue}
                     className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-sm font-semibold hover:bg-red-100 border border-red-200 transition-all"
                   >
                     Clear All
-                  </button>
+              </button>
                   <button
                     onClick={() => setIsQueueOpen(false)}
                     className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 border border-gray-300 transition-all"
@@ -247,7 +298,10 @@ export default function Player() {
                   </div>
                 ) : (
                   playQueue.map((song, idx) => {
-                    const isCurrent = track?._id === song._id;
+                    const isCurrent =
+                      currentQueueIndex !== null
+                        ? currentQueueIndex === idx
+                        : track?._id === song._id;
                     return (
                       <div
                         key={song._id + idx}
@@ -259,7 +313,7 @@ export default function Player() {
                       >
                         <div className="flex items-center gap-4 min-w-0 flex-1">
                           <div className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex-shrink-0">
-                            <img src={song.image} alt={song.name} className="w-full h-full object-cover" />
+                            <img src={song.image} alt={song.name} className="w-full h-full object-cover" loading="lazy" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="font-semibold text-gray-800 text-sm truncate">{song.name}</p>
@@ -282,6 +336,12 @@ export default function Player() {
                             className="p-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             ↓
+                          </button>
+                          <button
+                            onClick={() => handlePlayNext(song._id)}
+                            className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold hover:bg-blue-100 border border-blue-200 transition-all"
+                          >
+                            Play Next
                           </button>
                           <button
                             onClick={() => playWithId(song._id)}
@@ -379,7 +439,7 @@ export default function Player() {
                 width: audioRef.current?.duration
                   ? `${
                       (audioRef.current.currentTime /
-                        audioRef.current.duration) *
+                        (audioRef.current.duration || 1)) *
                       100
                     }%`
                   : "0%",
@@ -391,7 +451,7 @@ export default function Player() {
                 left: audioRef.current?.duration
                   ? `${
                       (audioRef.current.currentTime /
-                        audioRef.current.duration) *
+                        (audioRef.current.duration || 1)) *
                       100
                     }%`
                   : "0%",
@@ -403,6 +463,12 @@ export default function Player() {
             {formatTime(Math.floor(audioRef.current?.duration || 0))}
           </span>
         </div>
+        {isBuffering && (
+          <div className="text-xs text-gray-500 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
+            Buffering...
+          </div>
+        )}
       </div>
 
       {/* Right: Volume + Logout */}
@@ -430,8 +496,17 @@ export default function Player() {
             step="0.01"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-32 h-1.5 bg-gray-300 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-blue-500 [&::-webkit-slider-thumb]:to-purple-500"
+            className={`w-32 h-1.5 bg-gray-300 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-blue-500 [&::-webkit-slider-thumb]:to-purple-500 ${isMuted ? "opacity-50" : ""}`}
           />
+          <button
+            onClick={() => {
+              setIsMuted(false);
+              setVolume(0.5);
+            }}
+            className="text-xs text-gray-500 hover:text-gray-800"
+          >
+            Reset
+          </button>
         </div>
 
         <button
@@ -442,5 +517,36 @@ export default function Player() {
         </button>
       </div>
     </div>
+
+    {showSaveQueue && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowSaveQueue(false)} />
+        <div className="relative w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 shadow-2xl">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Save current queue</h3>
+          <input
+            value={saveQueueName}
+            onChange={(e) => setSaveQueueName(e.target.value)}
+            placeholder="Playlist name"
+            className="w-full bg-gray-50 text-gray-800 px-4 py-3 rounded-xl mb-4 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setShowSaveQueue(false)}
+              className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 border border-gray-300 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveQueue}
+              disabled={!saveQueueName.trim() || isWorking}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-semibold hover:from-blue-600 hover:to-purple-600 transition-all disabled:opacity-60"
+            >
+              {isWorking ? "Saving..." : "Save"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

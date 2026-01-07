@@ -2,6 +2,31 @@ import { v2 as cloudinary } from "cloudinary"
 import Song from "../models/Song.js";
 
 const DEFAULT_SONG_IMAGE_URL = process.env.DEFAULT_SONG_IMAGE_URL || "http://localhost:3000/static/default-song.png";
+const RECOMMENDATION_SERVICE_URL = process.env.RECOMMENDATION_SERVICE_URL || "http://localhost:4003";
+
+const scheduleFeatureExtraction = (songDoc) => {
+    if (!songDoc?._id || !songDoc?.file) return;
+
+    const payload = {
+        songId: songDoc._id.toString(),
+        file: songDoc.file,
+        name: songDoc.name,
+        album: songDoc.album
+    };
+
+    // Fire-and-forget to keep song creation fast
+    setImmediate(async () => {
+        try {
+            await fetch(`${RECOMMENDATION_SERVICE_URL}/api/recommendation/extract`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+        } catch (notifyErr) {
+            console.error("Recommendation service notify failed", notifyErr.message);
+        }
+    });
+};
 
 const addSong = async (req, res) => {
     try {
@@ -34,6 +59,8 @@ const addSong = async (req, res) => {
 
         const song = Song(songData);
         await song.save();
+
+        scheduleFeatureExtraction(song);
 
         res.status(201).json({ success: true, message: "Song Added" })
 

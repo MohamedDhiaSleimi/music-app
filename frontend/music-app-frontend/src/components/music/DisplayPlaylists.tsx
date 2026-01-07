@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useMusic } from "../../context/MusicContext";
+import { Skeleton } from "../ui/Skeleton";
 
 export default function DisplayPlaylists() {
   const {
@@ -35,7 +36,7 @@ export default function DisplayPlaylists() {
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formState.name.trim()) return;
+    if (!formState.name.trim() || formState.name.trim().length < 3) return;
     setCreating(true);
     await createPlaylist(formState);
     setFormState({ name: "", description: "", isPublic: false });
@@ -51,7 +52,7 @@ export default function DisplayPlaylists() {
         await navigator.clipboard.writeText(link);
         setShareMessage("Share link copied to clipboard");
       } catch {
-        setShareMessage(link);
+        setShareMessage(`Copy this link: ${link}`);
       }
     }
   };
@@ -175,7 +176,21 @@ export default function DisplayPlaylists() {
             )}
           </div>
           
-          {filteredPlaylists.length === 0 ? (
+          {isPlaylistsLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-5 shadow animate-pulse space-y-4">
+                  <Skeleton className="h-6 w-2/3" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-10 w-24" />
+                    <Skeleton className="h-10 w-24" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredPlaylists.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
                 <span className="text-3xl">🎵</span>
@@ -246,7 +261,11 @@ export default function DisplayPlaylists() {
                       {sharingId === playlist._id ? "Sharing..." : "Share"}
                     </button>
                     <button
-                      onClick={() => deletePlaylist(playlist._id)}
+                      onClick={() => {
+                        if (window.confirm("Delete this playlist?")) {
+                          deletePlaylist(playlist._id);
+                        }
+                      }}
                       className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all shadow-sm"
                     >
                       Delete

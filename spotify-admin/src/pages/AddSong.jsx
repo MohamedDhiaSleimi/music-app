@@ -4,6 +4,8 @@ import axios from 'axios';
 import { url } from "../App";
 import { toast } from "react-toastify";
 
+const fakerUrl = import.meta.env.VITE_FAKER_URL || "http://localhost:4002";
+
 function AddSong() {
 
     const [image, setImage] = useState(false);
@@ -12,6 +14,7 @@ function AddSong() {
     const [desc, setDesc] = useState("");
     const [album, setAlbum] = useState("none");
     const [loading, setLoading] = useState(false);
+    const [seeding, setSeeding] = useState(false);
     const [albumData, setAlbumData] = useState([]);
 
     const onSubmitHandler = async (e) => {
@@ -65,6 +68,23 @@ function AddSong() {
         loadAlbumData();
     }, [])
 
+    const runFaker = async () => {
+        setSeeding(true);
+        try {
+            const response = await axios.post(`${fakerUrl}/api/faker/seed`, { userCount: 12 });
+            if (response.data?.success) {
+                toast.success(`Faker seeded: ${response.data.songsCreated || 0} songs`);
+                loadAlbumData();
+            } else {
+                toast.error("Faker seed failed");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Faker seed error");
+        }
+        setSeeding(false);
+    };
+
     return loading ? (
         <div className="grid place-items-center min-h-[80vh]">
             <div className="w-16 h-16 place-self-center border-4 border-gray-400 border-t-green-800 rounded-full animate-spin">
@@ -73,6 +93,17 @@ function AddSong() {
         </div>
     ) : (
         <form onSubmit={onSubmitHandler} className="flex flex-col items-start gap-8 text-gray-600">
+            <div className="flex items-center gap-4">
+                <button
+                    type="button"
+                    onClick={runFaker}
+                    disabled={seeding}
+                    className="text-base bg-gray-800 text-white py-2.5 px-6 cursor-pointer rounded"
+                >
+                    {seeding ? "Seeding..." : "Run Faker Seeder"}
+                </button>
+                <p className="text-sm text-gray-500">Generates sample users/songs/playlists from local /home/mds/Music</p>
+            </div>
             <div className="flex gap-8">
                 <div className="flex flex-col gap-4">
                     <p>Upload Song</p>

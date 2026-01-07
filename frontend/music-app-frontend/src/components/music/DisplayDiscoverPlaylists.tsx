@@ -2,6 +2,8 @@ import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useMusic } from "../../context/MusicContext";
+import { RecommendationCard } from "./RecommendationCard";
+import { Skeleton } from "../ui/Skeleton";
 
 export default function DisplayDiscoverPlaylists() {
   const {
@@ -9,6 +11,8 @@ export default function DisplayDiscoverPlaylists() {
     loadPublicPlaylists,
     isDiscoverLoading,
     searchQuery,
+    recommendations,
+    isRecommendationLoading,
   } = useMusic();
   const navigate = useNavigate();
 
@@ -30,6 +34,31 @@ export default function DisplayDiscoverPlaylists() {
     <>
       <Navbar />
       <div className="mt-6 text-white">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-3">Because you liked</h2>
+          {isRecommendationLoading ? (
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <div key={idx} className="min-w-[220px]">
+                  <Skeleton className="h-32 w-full mb-3" />
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-3 w-full" />
+                </div>
+              ))}
+            </div>
+          ) : recommendations.length > 0 ? (
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {recommendations.slice(0, 4).map((rec, idx) => (
+                <RecommendationCard
+                  key={rec.id || idx}
+                  item={rec}
+                  accent={`linear-gradient(135deg, hsl(${(idx * 45) % 360},70%,65%), hsl(${(idx * 45 + 20) % 360},65%,55%))`}
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
+
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Discover public playlists</h1>
           {isDiscoverLoading && (

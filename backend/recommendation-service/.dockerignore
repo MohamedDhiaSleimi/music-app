@@ -1,0 +1,36 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual envs
+env/
+venv/
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local env/config
+.env
+.env.*
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+
+# OS/Junk
+.DS_Store
+Thumbs.db
+
+# VCS
+.git/
+.gitignore
+
+# Misc
+*.log

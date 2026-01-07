@@ -7,6 +7,7 @@ import connectCloudinary from "./src/config/cloudinary.js";
 import albumRouter from "./src/routes/albumRoute.js";
 import favoriteRouter from "./src/routes/favoriteRoute.js";
 import playlistRouter from "./src/routes/playlistRoute.js";
+import activityRouter from "./src/routes/activityRoute.js";
 
 //app config
 const app = express();
@@ -24,6 +25,7 @@ app.use("/api/song", songRouter)
 app.use("/api/album", albumRouter)
 app.use("/api/favorite", favoriteRouter)
 app.use("/api/playlist", playlistRouter)
+app.use("/api/activity", activityRouter)
 app.get('/', (req, res) => res.send("API Working"));
 
 

@@ -55,6 +55,7 @@ services:
       - ./backend/music-service/.env
     environment:
       MONGODB_URI: mongodb://mongodb:27017/musicapp
+      RECOMMENDATION_SERVICE_URL: http://recommendation-service:4003
     depends_on:
       mongodb:
         condition: service_healthy
@@ -70,6 +71,7 @@ services:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8080/api}
         - VITE_MUSIC_API_BASE_URL=${VITE_MUSIC_API_BASE_URL:-http://localhost:3000/api}
         - VITE_OAUTH_GOOGLE_URL=${VITE_OAUTH_GOOGLE_URL:-http://localhost:8080/oauth2/authorization/google}
+        - VITE_RECOMMENDATION_API_BASE_URL=${VITE_RECOMMENDATION_API_BASE_URL:-http://localhost:4003/api/recommendation}
     container_name: rahma_zeined-music-app-frontend
     restart: unless-stopped
     ports:
@@ -77,6 +79,31 @@ services:
     depends_on:
       - auth-service
       - music-service
+    networks:
+      - music-app-network
+
+  faker-service:
+    build:
+      context: ./backend/faker-service
+      dockerfile: Dockerfile
+    container_name: rahma_zeined-faker-service
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/musicapp
+      - PORT=4002
+      - MUSIC_DIR=/music
+      - AUTH_REGISTER_URL=http://auth-service:8080/api/auth/register
+      - DEFAULT_SONG_IMAGE_URL=http://music-service:3000/static/default-song.png
+      - DEFAULT_ALBUM_IMAGE_URL=http://music-service:3000/static/default-album.png
+      # Use host-reachable base URL so media links work in the browser
+      - FAKER_BASE_URL=http://localhost:4002
+      - RECOMMENDATION_SERVICE_URL=http://recommendation-service:4003
+    volumes:
+      - /home/mds/Music:/music:ro
+    ports:
+      - "4002:4002"
+    depends_on:
+      - mongodb
+      - auth-service
     networks:
       - music-app-network
 
@@ -93,6 +120,25 @@ services:
       - VITE_API_BASE_URL=http://localhost:3000/api
     depends_on:
       - music-service
+    networks:
+      - music-app-network
+
+  recommendation-service:
+    build:
+      context: ./backend/recommendation-service
+      dockerfile: Dockerfile
+    container_name: rahma_zeined-recommendation-service
+    restart: unless-stopped
+    environment:
+      - PORT=4003
+      - MONGODB_URI=mongodb://mongodb:27017/musicapp
+      - MONGODB_DB=musicapp
+      - FEATURE_COLLECTION=song_features
+    ports:
+      - "4003:4003"
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - music-app-network
 

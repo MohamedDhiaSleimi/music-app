@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build artifacts
+dist/
+
+# Local env/config
+.env
+.env.*
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+
+# OS/Junk
+.DS_Store
+Thumbs.db
+
+# VCS
+.git/
+.gitignore
+
+# Misc
+*.log

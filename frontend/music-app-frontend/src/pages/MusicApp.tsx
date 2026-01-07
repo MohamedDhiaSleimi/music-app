@@ -8,10 +8,13 @@ import Display from "../components/music/Display";
 import Player from "../components/music/Player";
 import Sidebar from "../components/music/Sidebar";
 import { useMusic } from "../context/MusicContext";
+import { musicApi } from "../services/musicApi";
+import type { Activity } from "../types/activity.types";
+import { Skeleton } from "../components/ui/Skeleton";
 
 export default function MusicApp() {
   const { user, logout } = useAuth();
-  const { audioRef, track } = useMusic();
+  const { audioRef, track, playlists, favoriteSongs, songs, discoverPlaylists, logActivity, isLoading } = useMusic();
   const [searchParams] = useSearchParams();
   const showVerificationPending = searchParams.get("verification") === "pending";
 
@@ -22,12 +25,105 @@ export default function MusicApp() {
   const [showVerificationBanner, setShowVerificationBanner] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+  const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
+  const [recommendedPlaylists, setRecommendedPlaylists] = useState<any[]>([]);
+  const [stats, setStats] = useState([
+    { label: "Listening Time", value: "—", change: "0", icon: "⏱️", color: "text-blue-600" },
+    { label: "Playlists", value: "0", change: "0", icon: "📁", color: "text-purple-600" },
+    { label: "Liked Songs", value: "0", change: "0", icon: "❤️", color: "text-pink-600" },
+    { label: "Albums", value: "0", change: "0", icon: "💿", color: "text-green-600" },
+  ]);
+  const [topArtists, setTopArtists] = useState<
+    { id: string | number; name: string; genre: string; listeners: string; icon: string; bgColor: string }[]
+  >([]);
 
   useEffect(() => {
     if (showVerificationPending) {
       setShowVerificationBanner(true);
     }
   }, [showVerificationPending]);
+
+  useEffect(() => {
+    const loadHomeData = async () => {
+      if (!user?.userId) return;
+      try {
+        const activity = await musicApi.getRecentActivity(user.userId);
+        if (activity.length === 0) {
+          await logActivity("visit", { source: "home" });
+          const refreshed = await musicApi.getRecentActivity(user.userId);
+          setRecentActivity(refreshed);
+        } else {
+          setRecentActivity(activity);
+        }
+      } catch (err) {
+        console.error("Failed to load activity", err);
+        await logActivity("visit", { source: "home" });
+      }
+    };
+    loadHomeData();
+  }, [user?.userId, logActivity]);
+
+  useEffect(() => {
+    // Recommended playlists: prefer discover, otherwise user playlists
+    if (discoverPlaylists.length > 0) {
+      setRecommendedPlaylists(
+        discoverPlaylists.slice(0, 4).map((p) => ({
+          id: p._id,
+          title: p.name,
+          description: p.description || "Discover new tracks",
+          count: p.songs.length,
+          color: "from-blue-400 to-cyan-300",
+        }))
+      );
+    } else if (playlists.length > 0) {
+      setRecommendedPlaylists(
+        playlists.slice(0, 4).map((p) => ({
+          id: p._id,
+          title: p.name,
+          description: p.description || "Curated by you",
+          count: p.songs.length,
+          color: "from-purple-400 to-pink-300",
+        }))
+      );
+    }
+  }, [discoverPlaylists, playlists]);
+
+  useEffect(() => {
+    // Stats derived from real data
+    const liked = favoriteSongs.length;
+    const playlistCount = playlists.length;
+    const albumCount = new Set(songs.map((s) => s.album)).size;
+    const totalSeconds = songs.reduce((acc, s) => {
+      const [m, sec] = (s.duration || "0:0").split(":").map(Number);
+      return acc + (Number.isFinite(m) && Number.isFinite(sec) ? m * 60 + sec : 0);
+    }, 0);
+    const hours = Math.max(1, Math.round(totalSeconds / 3600));
+    setStats([
+      { label: "Listening Time", value: `${hours} hrs`, change: "+0", icon: "⏱️", color: "text-blue-600" },
+      { label: "Playlists", value: `${playlistCount}`, change: "+0", icon: "📁", color: "text-purple-600" },
+      { label: "Liked Songs", value: `${liked}`, change: "+0", icon: "❤️", color: "text-pink-600" },
+      { label: "Albums", value: `${albumCount}`, change: "+0", icon: "💿", color: "text-green-600" },
+    ]);
+
+    // Top artists extracted from songs meta
+    const artistCounts = new Map<string, number>();
+    songs.forEach((s) => {
+      const artist = (s as any).artist || (s.desc ? s.desc.split("-")[0].trim() : "Unknown");
+      artistCounts.set(artist, (artistCounts.get(artist) || 0) + 1);
+    });
+    const artists = Array.from(artistCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([name], idx) => ({
+        id: idx,
+        name,
+        genre: "Mixed",
+        listeners: `${artistCounts.get(name) || 0} tracks`,
+        icon: "🎤",
+        bgColor: "bg-gradient-to-br from-purple-100 to-blue-100",
+      }));
+    setTopArtists(artists);
+  }, [favoriteSongs, playlists, songs]);
 
   const deactivateMutation = useMutation({
     mutationFn: authApi.deactivateAccount,
@@ -49,34 +145,28 @@ export default function MusicApp() {
     deactivateMutation.mutate();
   };
 
-  // Données de démonstration
-  const recentActivity = [
-    { id: 1, type: "playlist", title: "Morning Vibes", action: "Created", time: "2 hours ago", icon: "🎵", color: "bg-gradient-to-br from-blue-500 to-cyan-400" },
-    { id: 2, type: "like", title: "Blinding Lights", action: "Liked", time: "Yesterday", icon: "❤️", color: "bg-gradient-to-br from-pink-500 to-rose-400" },
-    { id: 3, type: "share", title: "Summer Hits 2024", action: "Shared", time: "2 days ago", icon: "📤", color: "bg-gradient-to-br from-green-500 to-emerald-400" },
-    { id: 4, type: "follow", title: "Artist: The Weeknd", action: "Followed", time: "1 week ago", icon: "👤", color: "bg-gradient-to-br from-purple-500 to-violet-400" },
-  ];
-
-  const recommendedPlaylists = [
-    { id: 1, title: "Focus Flow", description: "Concentration boosting tracks", count: 24, color: "from-blue-400 to-cyan-300" },
-    { id: 2, title: "Chill Vibes", description: "Relax and unwind", count: 18, color: "from-purple-400 to-pink-300" },
-    { id: 3, title: "Workout Energy", description: "High intensity beats", count: 32, color: "from-orange-400 to-red-300" },
-    { id: 4, title: "Indie Discoveries", description: "Fresh independent artists", count: 28, color: "from-green-400 to-emerald-300" },
-  ];
-
-  const topArtists = [
-    { id: 1, name: "The Weeknd", genre: "R&B/Pop", listeners: "83M", icon: "👑", bgColor: "bg-gradient-to-br from-red-100 to-pink-100" },
-    { id: 2, name: "Taylor Swift", genre: "Pop", listeners: "76M", icon: "🎤", bgColor: "bg-gradient-to-br from-purple-100 to-blue-100" },
-    { id: 3, name: "Drake", genre: "Hip Hop", listeners: "68M", icon: "🔥", bgColor: "bg-gradient-to-br from-green-100 to-teal-100" },
-    { id: 4, name: "Bad Bunny", genre: "Reggaeton", listeners: "72M", icon: "🐰", bgColor: "bg-gradient-to-br from-yellow-100 to-orange-100" },
-  ];
-
-  const stats = [
-    { label: "Listening Time", value: "142 hrs", change: "+12%", icon: "⏱️", color: "text-blue-600" },
-    { label: "Playlists", value: "24", change: "+3", icon: "📁", color: "text-purple-600" },
-    { label: "Liked Songs", value: "312", change: "+28", icon: "❤️", color: "text-pink-600" },
-    { label: "Following", value: "48", change: "+5", icon: "👥", color: "text-green-600" },
-  ];
+  const recentActivityCards =
+    (recentActivity.length
+      ? recentActivity
+      : [
+          {
+            _id: "welcome",
+            type: "visit",
+            metadata: { title: "Welcome back", action: "Visit" },
+            createdAt: new Date().toISOString(),
+          } as Activity,
+        ]
+    ).map((activity, idx) => ({
+      id: (activity as any)._id || idx,
+      type: activity.type,
+      title:
+        (activity.metadata as any)?.title ||
+        activity.type.replace("_", " "),
+      action: (activity.metadata as any)?.action || activity.type,
+      time: new Date(activity.createdAt).toLocaleString(),
+      icon: "🎵",
+      color: "bg-gradient-to-br from-blue-500 to-cyan-400",
+    }));
 
   // Navigation entre la page d'accueil et le lecteur
   const NavigationBar = () => (
@@ -175,22 +265,29 @@ export default function MusicApp() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
-                  <div className="flex items-baseline space-x-2 mt-2">
-                    <p className="text-3xl font-bold text-gray-800">{stat.value}</p>
-                    <span className="text-green-600 font-medium text-sm">↑ {stat.change}</span>
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg">
+                  <Skeleton className="h-4 w-24 mb-3" />
+                  <Skeleton className="h-8 w-32" />
+                </div>
+              ))
+            : stats.map((stat, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
+                      <div className="flex items-baseline space-x-2 mt-2">
+                        <p className="text-3xl font-bold text-gray-800">{stat.value}</p>
+                        <span className="text-green-600 font-medium text-sm">↑ {stat.change}</span>
+                      </div>
+                    </div>
+                    <div className={`text-3xl ${stat.color}`}>
+                      {stat.icon}
+                    </div>
                   </div>
                 </div>
-                <div className={`text-3xl ${stat.color}`}>
-                  {stat.icon}
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
 
         {/* Main Dashboard Grid */}
@@ -206,28 +303,37 @@ export default function MusicApp() {
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {recommendedPlaylists.map((playlist) => (
-                  <div
-                    key={playlist.id}
-                    className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer"
-                  >
-                    <div className={`w-20 h-20 bg-gradient-to-br ${playlist.color} rounded-2xl mb-4 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                      <span className="text-3xl text-white">♪</span>
-                    </div>
-                    <h3 className="font-bold text-xl mb-2 text-gray-800 group-hover:text-blue-600 transition-colors">
-                      {playlist.title}
-                    </h3>
-                    <p className="text-gray-600 mb-3">{playlist.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-500">{playlist.count} tracks</span>
-                      <button className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-full flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                {isLoading
+                  ? Array.from({ length: 4 }).map((_, idx) => (
+                      <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg space-y-3">
+                        <Skeleton className="w-20 h-20 rounded-2xl" />
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    ))
+                  : recommendedPlaylists.map((playlist) => (
+                      <div
+                        key={playlist.id}
+                        className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer"
+                      >
+                        <div className={`w-20 h-20 bg-gradient-to-br ${playlist.color} rounded-2xl mb-4 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                          <span className="text-3xl text-white">♪</span>
+                        </div>
+                        <h3 className="font-bold text-xl mb-2 text-gray-800 group-hover:text-blue-600 transition-colors">
+                          {playlist.title}
+                        </h3>
+                        <p className="text-gray-600 mb-3">{playlist.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500">{playlist.count} tracks</span>
+                          <button className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-full flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
               </div>
             </div>
 
@@ -238,16 +344,24 @@ export default function MusicApp() {
                 <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">See All</button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {topArtists.map((artist) => (
-                  <div key={artist.id} className="text-center group cursor-pointer">
-                    <div className={`w-24 h-24 ${artist.bgColor} rounded-2xl mx-auto mb-3 flex items-center justify-center transition-transform group-hover:scale-105 shadow-lg`}>
-                      <span className="text-4xl">{artist.icon}</span>
-                    </div>
-                    <h4 className="font-bold text-gray-800 mb-1">{artist.name}</h4>
-                    <p className="text-sm text-gray-600">{artist.genre}</p>
-                    <p className="text-xs text-blue-600 mt-1 font-medium">{artist.listeners} listeners</p>
-                  </div>
-                ))}
+                {isLoading
+                  ? Array.from({ length: 4 }).map((_, idx) => (
+                      <div key={idx} className="text-center">
+                        <Skeleton className="w-24 h-24 rounded-2xl mx-auto mb-3" />
+                        <Skeleton className="h-4 w-20 mx-auto mb-2" />
+                        <Skeleton className="h-3 w-16 mx-auto" />
+                      </div>
+                    ))
+                  : topArtists.map((artist) => (
+                      <div key={artist.id} className="text-center group cursor-pointer">
+                        <div className={`w-24 h-24 ${artist.bgColor} rounded-2xl mx-auto mb-3 flex items-center justify-center transition-transform group-hover:scale-105 shadow-lg`}>
+                          <span className="text-4xl">{artist.icon}</span>
+                        </div>
+                        <h4 className="font-bold text-gray-800 mb-1">{artist.name}</h4>
+                        <p className="text-sm text-gray-600">{artist.genre}</p>
+                        <p className="text-xs text-blue-600 mt-1 font-medium">{artist.listeners} listeners</p>
+                      </div>
+                    ))}
               </div>
             </div>
           </div>
@@ -330,24 +444,30 @@ export default function MusicApp() {
                 <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">See All</button>
               </div>
               <div className="space-y-4">
-                {recentActivity.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 hover:bg-white rounded-xl transition-all group cursor-pointer"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 ${activity.color} rounded-xl flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform`}>
-                        {activity.icon}
+                {isLoading
+                  ? Array.from({ length: 4 }).map((_, idx) => (
+                      <div key={idx} className="p-4 bg-gray-50 rounded-xl">
+                        <Skeleton className="h-12 w-full" />
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-800">{activity.title}</p>
-                        <p className="text-sm text-gray-600">
-                          {activity.action} • {activity.time}
-                        </p>
+                    ))
+                  : recentActivityCards.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 hover:bg-white rounded-xl transition-all group cursor-pointer"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-12 h-12 ${activity.color} rounded-xl flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform`}>
+                            {activity.icon}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800">{activity.title}</p>
+                            <p className="text-sm text-gray-600">
+                              {activity.action} • {activity.time}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    ))}
               </div>
             </div>
           </div>
@@ -384,7 +504,7 @@ export default function MusicApp() {
         </div>
         <Player />
       </div>
-      <audio ref={audioRef} src={track?.file || ""} preload="auto"></audio>
+      <audio ref={audioRef} src={track?.file || ""} preload="metadata"></audio>
     </div>
   );
 

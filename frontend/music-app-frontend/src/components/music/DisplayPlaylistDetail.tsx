@@ -145,11 +145,11 @@ export default function DisplayPlaylistDetail() {
                 <span>▶️</span>
                 Play all
               </button>
-              <button
-                onClick={() => setPlaylistVisibility(playlist._id, !playlist.isPublic)}
-                className="px-5 py-2.5 rounded-xl bg-white border border-gray-300 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-all"
-              >
-                {playlist.isPublic ? "Make private" : "Make public"}
+      <button
+        onClick={() => setPlaylistVisibility(playlist._id, !playlist.isPublic)}
+        className="px-5 py-2.5 rounded-xl bg-white border border-gray-300 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-all"
+      >
+        {playlist.isPublic ? "Make private" : "Make public"}
               </button>
               <button
                 onClick={handleShare}
@@ -158,12 +158,12 @@ export default function DisplayPlaylistDetail() {
                 <span>🔗</span>
                 Share
               </button>
-              <button
-                onClick={handleDelete}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all shadow-md"
-              >
-                Delete
-              </button>
+      <button
+        onClick={handleDelete}
+        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all shadow-md"
+      >
+        Delete
+      </button>
             </div>
           </div>
         </div>
