@@ -144,17 +144,17 @@ export default function ProfileSettingsPage() {
 
   if (profileError) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-rose-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">
             {UI_MESSAGES.ERRORS.PROFILE_LOAD_FAILED}
           </h2>
-          <p className="text-gray-400 mb-6">Please try again later</p>
+          <p className="text-slate-600 mb-6">Please try again later</p>
           <Button onClick={() => navigate("/")}>
             {UI_MESSAGES.BUTTONS.GO_HOME}
           </Button>
@@ -164,15 +164,15 @@ export default function ProfileSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen">
       {/* Header */}
-      <nav className="bg-neutral-900 border-b border-neutral-800">
+      <nav className="bg-white/80 border-b border-slate-200 backdrop-blur">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
               <AppLogo size="sm" showText />
             </Link>
-            <Link to="/" className="text-gray-400 hover:text-white transition">
+            <Link to="/" className="text-slate-500 hover:text-slate-700 transition">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -215,8 +215,8 @@ export default function ProfileSettingsPage() {
         )}
 
         {/* Profile Photo Section */}
-        <div className="bg-neutral-900 rounded-2xl p-6 mb-6 border border-neutral-800">
-          <h2 className="text-xl font-bold text-white mb-6">Profile Photo</h2>
+        <div className="bg-white/80 rounded-2xl p-6 mb-6 border border-slate-200 shadow-lg">
+          <h2 className="text-xl font-bold text-slate-900 mb-6">Profile Photo</h2>
 
           <div className="flex items-start gap-8">
             <div className="flex-shrink-0">
@@ -224,10 +224,10 @@ export default function ProfileSettingsPage() {
                 <img
                   src={profile.profileImageUrl}
                   alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-neutral-800"
+                  className="w-32 h-32 rounded-full object-cover border-4 border-white"
                 />
               ) : (
-                <div className="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white text-5xl font-bold">
+                <div className="w-32 h-32 bg-gradient-to-br from-teal-600 to-amber-400 rounded-full flex items-center justify-center text-white text-5xl font-bold">
                   {profile?.username?.[0]?.toUpperCase() || "U"}
                 </div>
               )}
@@ -270,7 +270,7 @@ export default function ProfileSettingsPage() {
                       {UI_MESSAGES.BUTTONS.CANCEL}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-slate-500">
                     Enter a direct link to a publicly accessible image
                   </p>
                 </div>
@@ -280,14 +280,14 @@ export default function ProfileSettingsPage() {
         </div>
 
         {/* Username Section */}
-        <div className="bg-neutral-900 rounded-2xl p-6 mb-6 border border-neutral-800">
-          <h2 className="text-xl font-bold text-white mb-6">Username</h2>
+        <div className="bg-white/80 rounded-2xl p-6 mb-6 border border-slate-200 shadow-lg">
+          <h2 className="text-xl font-bold text-slate-900 mb-6">Username</h2>
 
           {!editingUsername ? (
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white text-2xl font-medium">{profile?.username}</p>
-                <p className="text-gray-400 text-sm mt-1">
+                <p className="text-slate-900 text-2xl font-medium">{profile?.username}</p>
+                <p className="text-slate-500 text-sm mt-1">
                   {UI_MESSAGES.DESCRIPTIONS.USERNAME_DISPLAY}
                 </p>
               </div>
@@ -317,7 +317,7 @@ export default function ProfileSettingsPage() {
                   {UI_MESSAGES.BUTTONS.CANCEL}
                 </Button>
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-slate-500">
                 {UI_MESSAGES.DESCRIPTIONS.USERNAME_HINT}
               </p>
             </div>
@@ -325,46 +325,46 @@ export default function ProfileSettingsPage() {
         </div>
 
         {/* Account Information */}
-        <div className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800">
-          <h2 className="text-xl font-bold text-white mb-6">Account Information</h2>
+        <div className="bg-white/80 rounded-2xl p-6 border border-slate-200 shadow-lg">
+          <h2 className="text-xl font-bold text-slate-900 mb-6">Account Information</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-sm text-gray-400">Email</p>
-              <p className="text-white font-medium">{profile?.email}</p>
+              <p className="text-sm text-slate-500">Email</p>
+              <p className="text-slate-900 font-medium">{profile?.email}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-400">Account Type</p>
-              <p className="text-white font-medium capitalize">
+              <p className="text-sm text-slate-500">Account Type</p>
+              <p className="text-slate-900 font-medium capitalize">
                 {profile?.provider === "local" ? "Email & Password" : `${profile?.provider} Account`}
               </p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-400">Email Verified</p>
+              <p className="text-sm text-slate-500">Email Verified</p>
               <div className="flex items-center gap-2 mt-1">
                 {profile?.emailVerified ? (
                   <>
-                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-green-400 font-medium">Verified</span>
+                    <span className="text-emerald-600 font-medium">Verified</span>
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.742-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-yellow-400 font-medium">Not verified</span>
+                    <span className="text-amber-600 font-medium">Not verified</span>
                   </>
                 )}
               </div>
             </div>
 
             <div>
-              <p className="text-sm text-gray-400">Member Since</p>
-              <p className="text-white font-medium">
+              <p className="text-sm text-slate-500">Member Since</p>
+              <p className="text-slate-900 font-medium">
                 {profile?.createdAt && new Date(profile.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
@@ -375,8 +375,8 @@ export default function ProfileSettingsPage() {
 
             {profile?.lastLogin && (
               <div>
-                <p className="text-sm text-gray-400">Last Login</p>
-                <p className="text-white font-medium">
+                <p className="text-sm text-slate-500">Last Login</p>
+                <p className="text-slate-900 font-medium">
                   {new Date(profile.lastLogin).toLocaleString("en-US", {
                     year: "numeric",
                     month: "short",

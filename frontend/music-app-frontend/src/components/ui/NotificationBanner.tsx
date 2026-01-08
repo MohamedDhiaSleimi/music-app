@@ -20,28 +20,28 @@ const NotificationBanner: React.FC<NotificationBannerProps> = ({
 }) => {
   const colors = {
     success: {
-      bg: 'bg-green-500/10',
-      border: 'border-green-500/20',
-      text: 'text-green-400',
-      iconBg: 'bg-green-500/20',
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-200',
+      text: 'text-emerald-700',
+      iconBg: 'bg-emerald-100',
     },
     error: {
-      bg: 'bg-red-500/10',
-      border: 'border-red-500/20',
-      text: 'text-red-400',
-      iconBg: 'bg-red-500/20',
+      bg: 'bg-rose-50',
+      border: 'border-rose-200',
+      text: 'text-rose-700',
+      iconBg: 'bg-rose-100',
     },
     warning: {
-      bg: 'bg-yellow-500/10',
-      border: 'border-yellow-500/20',
-      text: 'text-yellow-400',
-      iconBg: 'bg-yellow-500/20',
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      text: 'text-amber-700',
+      iconBg: 'bg-amber-100',
     },
     info: {
-      bg: 'bg-blue-500/10',
-      border: 'border-blue-500/20',
-      text: 'text-blue-400',
-      iconBg: 'bg-blue-500/20',
+      bg: 'bg-sky-50',
+      border: 'border-sky-200',
+      text: 'text-sky-700',
+      iconBg: 'bg-sky-100',
     },
   };
 
@@ -76,7 +76,7 @@ const NotificationBanner: React.FC<NotificationBannerProps> = ({
   const style = colors[type];
 
   return (
-    <div className={`${style.bg} border ${style.border} rounded-lg p-6`}>
+    <div className={`${style.bg} border ${style.border} rounded-2xl p-6`}>
       <div className="flex items-start">
         <div className="flex-shrink-0">
           <svg className={`w-6 h-6 ${style.text}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -7,7 +7,7 @@ export default function MusicApp() {
   const { audioRef } = useMusic();
 
   return (
-    <div className="h-screen bg-black">
+    <div className="h-screen text-slate-900">
         <>
           <div className="h-[90%] flex flex-col lg:flex-row">
             <Sidebar />

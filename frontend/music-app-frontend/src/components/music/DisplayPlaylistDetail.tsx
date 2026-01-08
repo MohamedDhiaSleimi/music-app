@@ -51,7 +51,7 @@ export default function DisplayPlaylistDetail() {
     return (
       <>
         <Navbar />
-        <p className="text-white mt-6">Loading playlist...</p>
+        <p className="text-slate-500 mt-6">Loading playlist...</p>
       </>
     );
   }
@@ -60,11 +60,11 @@ export default function DisplayPlaylistDetail() {
     return (
       <>
         <Navbar />
-        <div className="text-white mt-6">
+        <div className="text-slate-700 mt-6">
           <p>Playlist not found.</p>
           <button
             onClick={() => navigate("/playlists")}
-            className="mt-4 px-4 py-2 bg-white text-black rounded font-semibold"
+            className="mt-4 app-button app-button-primary"
           >
             Back to playlists
           </button>
@@ -109,19 +109,19 @@ export default function DisplayPlaylistDetail() {
   return (
     <>
       <Navbar />
-      <div className="mt-6 flex flex-col gap-6 text-white">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#121212] p-4 rounded">
+      <div className="mt-6 flex flex-col gap-6 text-slate-900">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 app-surface p-5">
           <div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-slate-500 uppercase tracking-[0.2em]">
               {isTemporary ? "Daily discover" : "Playlist"}
             </p>
             <h1 className="text-3xl font-bold">{playlist.name}</h1>
-            <p className="text-gray-400">{playlist.description || "No description"}</p>
+            <p className="text-slate-600">{playlist.description || "No description"}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => playPlaylist(playlist._id)}
-              className="px-4 py-2 rounded bg-white text-black text-sm font-semibold hover:scale-105 transition"
+              className="app-button app-button-primary text-sm"
             >
               Play all
             </button>
@@ -130,8 +130,8 @@ export default function DisplayPlaylistDetail() {
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
                     playlist.isPublic
-                      ? "bg-green-500/20 text-green-400"
-                      : "bg-yellow-500/20 text-yellow-300"
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                      : "bg-amber-50 text-amber-700 border border-amber-100"
                   }`}
                 >
                   {playlist.isPublic ? "Public" : "Private"}
@@ -140,19 +140,19 @@ export default function DisplayPlaylistDetail() {
                   onClick={() =>
                     setPlaylistVisibility(playlist._id, !playlist.isPublic)
                   }
-                  className="px-4 py-2 rounded bg-[#2d2d2d] text-white text-sm font-semibold hover:bg-[#3d3d3d]"
+                  className="app-button app-button-ghost text-sm"
                 >
                   {playlist.isPublic ? "Make private" : "Make public"}
                 </button>
                 <button
                   onClick={handleShare}
-                  className="px-4 py-2 rounded bg-[#2d2d2d] text-white text-sm font-semibold hover:bg-[#3d3d3d]"
+                  className="app-button app-button-secondary text-sm"
                 >
                   Share
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 rounded bg-red-600 text-white text-sm font-semibold hover:bg-red-700"
+                  className="app-button text-sm bg-rose-600 text-white hover:bg-rose-700"
                 >
                   Delete
                 </button>
@@ -162,10 +162,10 @@ export default function DisplayPlaylistDetail() {
         </div>
 
         {shareMessage && (
-          <p className="text-sm text-green-400">{shareMessage}</p>
+          <p className="text-sm text-teal-700">{shareMessage}</p>
         )}
 
-        <div className="bg-[#121212] p-4 rounded">
+        <div className="app-surface p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Songs</h2>
             {!isTemporary && (
@@ -173,7 +173,7 @@ export default function DisplayPlaylistDetail() {
                 <select
                   value={selectedSongId}
                   onChange={(e) => setSelectedSongId(e.target.value)}
-                  className="bg-[#1f1f1f] text-white px-3 py-2 rounded"
+                  className="app-input py-2"
                 >
                   <option value="">Add a song...</option>
                   {availableSongs.map((song) => (
@@ -185,7 +185,7 @@ export default function DisplayPlaylistDetail() {
                 <button
                   onClick={handleAddSong}
                   disabled={isWorking}
-                  className="px-4 py-2 rounded bg-white text-black font-semibold disabled:opacity-60"
+                  className="app-button app-button-primary disabled:opacity-60"
                 >
                   Add
                 </button>
@@ -194,29 +194,29 @@ export default function DisplayPlaylistDetail() {
           </div>
 
           {playlist.songs.length === 0 ? (
-            <p className="text-gray-400">No songs in this playlist yet.</p>
+            <p className="text-slate-500">No songs in this playlist yet.</p>
           ) : (
             <div className="flex flex-col gap-3">
               {sortedPlaylistSongs.map((song) => (
                 <div
                   key={song._id}
-                  className="flex items-center justify-between bg-[#1f1f1f] rounded p-3"
+                  className="flex items-center justify-between bg-white/80 border border-slate-200 rounded-2xl p-3"
                 >
                   <div className="flex items-center gap-3">
                     <img
                       src={song.image}
                       alt={song.name}
-                      className="w-12 h-12 object-cover rounded"
+                      className="w-12 h-12 object-cover rounded-xl"
                     />
                     <div>
-                      <p className="font-semibold">{song.name}</p>
-                      <p className="text-sm text-gray-400">{song.album}</p>
+                      <p className="font-semibold text-slate-900">{song.name}</p>
+                      <p className="text-sm text-slate-500">{song.album}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => playWithId(song._id)}
-                      className="px-3 py-2 rounded bg-[#2d2d2d] text-white text-sm font-semibold hover:bg-[#3d3d3d]"
+                      className="px-3 py-2 rounded-full bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
                     >
                       Play
                     </button>
@@ -224,7 +224,7 @@ export default function DisplayPlaylistDetail() {
                       <button
                         onClick={() => handleRemoveSong(song._id)}
                         disabled={isWorking}
-                        className="px-3 py-2 rounded bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60"
+                        className="px-3 py-2 rounded-full bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 disabled:opacity-60"
                       >
                         Remove
                       </button>

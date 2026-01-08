@@ -24,9 +24,9 @@ export default function DisplayFavorites() {
     <>
       <Navbar />
       <div className="mt-6">
-        <h1 className="my-6 font-bold text-2xl">Your Favorites</h1>
+        <h1 className="my-6 font-bold text-2xl text-slate-900">Your Favorites</h1>
         {isFavoritesLoading ? (
-          <p className="text-gray-400">Loading favorites...</p>
+          <p className="text-slate-500">Loading favorites...</p>
         ) : sortedFavorites.length ? (
           <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide flex-wrap">
             {sortedFavorites.map((item) => (
@@ -34,7 +34,7 @@ export default function DisplayFavorites() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-400">You have not favorited any songs yet.</p>
+          <p className="text-slate-500">You have not favorited any songs yet.</p>
         )}
       </div>
     </>

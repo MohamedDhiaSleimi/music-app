@@ -17,9 +17,9 @@ const GoogleOAuthButton: React.FC<GoogleOAuthButtonProps> = ({
   return (
     <button
       onClick={handleGoogleLogin}
-      className={`w-full bg-white text-black font-semibold py-4 rounded-2xl transition flex items-center justify-center space-x-3 transform hover:translate-y-[-1px] hover:shadow-xl shadow-black/20 border border-gray-200 ${className}`}
+      className={`w-full bg-white/90 text-slate-900 font-semibold py-4 rounded-2xl transition flex items-center justify-center space-x-3 transform hover:-translate-y-0.5 hover:shadow-xl border border-slate-200 ${className}`}
     >
-      <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center shadow-inner">
+      <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shadow-inner">
         <svg className="w-5 h-5" viewBox="0 0 24 24">
         <path
           fill="#4285F4"
@@ -40,7 +40,7 @@ const GoogleOAuthButton: React.FC<GoogleOAuthButtonProps> = ({
         </svg>
       </div>
       <div className="flex flex-col items-start leading-tight">
-        <span className="text-sm text-gray-500">Sign in instantly</span>
+        <span className="text-sm text-slate-500">Sign in instantly</span>
         <span>{text}</span>
       </div>
     </button>

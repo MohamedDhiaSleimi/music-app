@@ -66,14 +66,14 @@ export default function RegisterPage() {
       <GoogleOAuthButton text={`${UI_MESSAGES.BUTTONS.SIGN_UP} with Google`} className="mb-6" />
 
       <div className="my-6 flex items-center">
-        <div className="flex-1 border-t border-neutral-800"></div>
-        <span className="px-4 text-gray-500 text-sm">OR</span>
-        <div className="flex-1 border-t border-neutral-800"></div>
+        <div className="flex-1 border-t border-slate-200"></div>
+        <span className="px-4 text-slate-400 text-sm">OR</span>
+        <div className="flex-1 border-t border-slate-200"></div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl text-sm">
             {error}
           </div>
         )}
@@ -115,9 +115,9 @@ export default function RegisterPage() {
       </form>
 
       <div className="mt-8 text-center">
-        <p className="text-gray-400 text-sm">
+        <p className="text-slate-600 text-sm">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition">
+          <Link to="/login" className="text-teal-700 hover:text-teal-600 font-semibold transition">
             {UI_MESSAGES.BUTTONS.SIGN_IN}
           </Link>
         </p>

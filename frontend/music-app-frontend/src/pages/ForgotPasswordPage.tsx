@@ -67,11 +67,11 @@ export default function ForgotPasswordPage() {
           <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
             {UI_MESSAGES.BUTTONS.SEND_RESET_LINK}
           </Button>
-        </form>
+      </form>
       )}
 
       <div className="mt-8 text-center">
-        <Link to="/login" className="text-gray-400 hover:text-white text-sm transition">
+        <Link to="/login" className="text-slate-500 hover:text-teal-700 text-sm transition">
           {UI_MESSAGES.BUTTONS.BACK_TO_LOGIN}
         </Link>
       </div>

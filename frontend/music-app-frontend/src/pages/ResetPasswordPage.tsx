@@ -61,10 +61,10 @@ export default function ResetPasswordPage() {
     return (
       <AuthPageLayout title={UI_MESSAGES.TITLES.INVALID_LINK} subtitle="" showLogo={false}>
         <div className="text-center">
-          <p className="text-gray-400 mb-8">{UI_MESSAGES.NOTIFICATIONS.INVALID_RESET_LINK}</p>
+          <p className="text-slate-600 mb-8">{UI_MESSAGES.NOTIFICATIONS.INVALID_RESET_LINK}</p>
           <Link
             to="/forgot-password"
-            className="inline-block bg-green-500 hover:bg-green-400 text-black font-semibold py-3 px-6 rounded-full transition"
+            className="inline-block app-button app-button-primary"
           >
             {UI_MESSAGES.BUTTONS.REQUEST_NEW_LINK}
           </Link>
@@ -107,7 +107,7 @@ export default function ResetPasswordPage() {
       </form>
 
       <div className="mt-8 text-center">
-        <Link to="/login" className="text-gray-400 hover:text-white text-sm transition">
+        <Link to="/login" className="text-slate-500 hover:text-teal-700 text-sm transition">
           {UI_MESSAGES.BUTTONS.BACK_TO_LOGIN}
         </Link>
       </div>

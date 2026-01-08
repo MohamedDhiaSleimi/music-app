@@ -5,7 +5,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['"IBM Plex Sans"', '"Space Grotesk"', 'sans-serif'],
+        display: ['"Space Grotesk"', '"IBM Plex Sans"', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 }

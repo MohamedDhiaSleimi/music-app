@@ -25,7 +25,7 @@ export default function DisplayPublicPlaylist() {
     return (
       <>
         <Navbar />
-        <p className="text-white mt-6">Loading playlist...</p>
+        <p className="text-slate-500 mt-6">Loading playlist...</p>
       </>
     );
   }
@@ -34,11 +34,11 @@ export default function DisplayPublicPlaylist() {
     return (
       <>
         <Navbar />
-        <div className="text-white mt-6">
+        <div className="text-slate-700 mt-6">
           <p>Playlist not found or not public.</p>
           <button
             onClick={() => navigate("/discover")}
-            className="mt-4 px-4 py-2 bg-white text-black rounded font-semibold"
+            className="mt-4 app-button app-button-primary"
           >
             Back to discover
           </button>
@@ -52,40 +52,40 @@ export default function DisplayPublicPlaylist() {
   return (
     <>
       <Navbar />
-      <div className="mt-6 flex flex-col gap-6 text-white">
-        <div className="bg-[#121212] p-4 rounded">
-          <p className="text-sm text-gray-400">Public playlist</p>
+      <div className="mt-6 flex flex-col gap-6 text-slate-900">
+        <div className="app-surface p-5">
+          <p className="text-sm text-slate-500 uppercase tracking-[0.2em]">Public playlist</p>
           <h1 className="text-3xl font-bold">{playlist.name}</h1>
-          <p className="text-gray-400">
+          <p className="text-slate-600">
             {playlist.description || "No description"}
           </p>
         </div>
 
-        <div className="bg-[#121212] p-4 rounded">
+        <div className="app-surface p-5">
           <h2 className="text-xl font-semibold mb-4">Songs</h2>
           {playlist.songs.length === 0 ? (
-            <p className="text-gray-400">No songs in this playlist yet.</p>
+            <p className="text-slate-500">No songs in this playlist yet.</p>
           ) : (
             <div className="flex flex-col gap-3">
               {sortedSongs.map((song) => (
                 <div
                   key={song._id}
-                  className="flex items-center justify-between bg-[#1f1f1f] rounded p-3"
+                  className="flex items-center justify-between bg-white/80 border border-slate-200 rounded-2xl p-3"
                 >
                   <div className="flex items-center gap-3">
                     <img
                       src={song.image}
                       alt={song.name}
-                      className="w-12 h-12 object-cover rounded"
+                      className="w-12 h-12 object-cover rounded-xl"
                     />
                     <div>
-                      <p className="font-semibold">{song.name}</p>
-                      <p className="text-sm text-gray-400">{song.album}</p>
+                      <p className="font-semibold text-slate-900">{song.name}</p>
+                      <p className="text-sm text-slate-500">{song.album}</p>
                     </div>
                   </div>
                   <button
                     onClick={() => playWithId(song._id)}
-                    className="px-3 py-2 rounded bg-[#2d2d2d] text-white text-sm font-semibold hover:bg-[#3d3d3d]"
+                    className="px-3 py-2 rounded-full bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
                   >
                     Play
                   </button>

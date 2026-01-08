@@ -13,11 +13,11 @@ export default function AlbumItem({ _id, image, name, desc }: AlbumItemProps) {
   return (
     <div
       onClick={() => navigate(`/album/${_id}`)}
-      className="min-w-[180px] p-2 px-3 rounded cursor-pointer hover:bg-[#ffffff26]"
+      className="min-w-[190px] p-3 rounded-2xl cursor-pointer bg-white/80 border border-slate-200 hover:border-slate-300 hover:-translate-y-1 transition shadow-md"
     >
-      <img className="rounded" src={image} alt={name} />
-      <p className="font-bold mt-2 mb-1 truncate">{name}</p>
-      <p className="text-slate-200 text-sm truncate">{desc}</p>
+      <img className="rounded-xl" src={image} alt={name} />
+      <p className="font-bold mt-3 mb-1 text-slate-900 truncate">{name}</p>
+      <p className="text-slate-600 text-sm truncate">{desc}</p>
     </div>
   );
 }

@@ -36,7 +36,7 @@ export default function LoginPage() {
         setError(
           <div>
             <p>{errorMessage}</p>
-            <Link to="/resend-verification" className="block mt-2 text-green-400 hover:text-green-300 underline">
+            <Link to="/resend-verification" className="block mt-2 text-teal-700 hover:text-teal-600 underline">
               {UI_MESSAGES.BUTTONS.RESEND_VERIFICATION}
             </Link>
           </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl text-sm">
             {error}
           </div>
         )}
@@ -86,7 +86,7 @@ export default function LoginPage() {
         />
 
         <div className="flex items-center justify-end">
-          <Link to="/forgot-password" className="text-sm text-gray-400 hover:text-green-400 transition">
+          <Link to="/forgot-password" className="text-sm text-slate-500 hover:text-teal-700 transition">
             Forgot password?
           </Link>
         </div>
@@ -97,17 +97,17 @@ export default function LoginPage() {
       </form>
 
       <div className="my-8 flex items-center">
-        <div className="flex-1 border-t border-neutral-800"></div>
-        <span className="px-4 text-gray-500 text-sm">OR</span>
-        <div className="flex-1 border-t border-neutral-800"></div>
+        <div className="flex-1 border-t border-slate-200"></div>
+        <span className="px-4 text-slate-400 text-sm">OR</span>
+        <div className="flex-1 border-t border-slate-200"></div>
       </div>
 
       <GoogleOAuthButton />
 
       <div className="mt-8 text-center">
-        <p className="text-gray-400">
+        <p className="text-slate-600">
           Don't have an account?{' '}
-          <Link to="/register" className="text-green-400 hover:text-green-300 font-semibold transition">
+          <Link to="/register" className="text-teal-700 hover:text-teal-600 font-semibold transition">
             {UI_MESSAGES.BUTTONS.SIGN_UP}
           </Link>
         </p>

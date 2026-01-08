@@ -35,18 +35,18 @@ export default function Navbar() {
   return (
     <>
       {/* Top Navigation Bar */}
-      <div className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 mb-5 flex flex-col gap-3 shadow-lg shadow-black/30 backdrop-blur-xl">
-        <div className="flex justify-between items-center font-semibold text-white">
+      <div className="w-full app-surface-soft px-4 py-3 mb-5 flex flex-col gap-3">
+        <div className="flex justify-between items-center font-semibold text-slate-900">
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate(-1)}
-              className="w-10 h-10 bg-black/50 border border-white/10 rounded-full flex items-center justify-center hover:-translate-y-[1px] hover:border-white/30 transition"
+              className="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center hover:-translate-y-[1px] hover:border-slate-300 transition text-slate-600"
             >
               ←
             </button>
             <button
               onClick={() => navigate(1)}
-              className="w-10 h-10 bg-black/50 border border-white/10 rounded-full flex items-center justify-center hover:-translate-y-[1px] hover:border-white/30 transition"
+              className="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center hover:-translate-y-[1px] hover:border-slate-300 transition text-slate-600"
             >
               →
             </button>
@@ -60,15 +60,15 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search songs, albums & playlists..."
-                className="w-96 px-11 py-3 bg-white/10 border border-white/10 rounded-full text-white placeholder-gray-400 focus:outline-none focus:border-green-400/70 focus:ring-2 focus:ring-green-500/50 transition-all"
+                className="w-96 app-input pl-11"
               />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">⌕</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
             </div>
 
             {/* User Avatar */}
             <Link
               to="/profile-settings"
-              className="w-11 h-11 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-black font-bold text-lg hover:scale-105 transition shadow-lg shadow-green-500/20"
+              className="w-11 h-11 bg-gradient-to-br from-teal-600 to-amber-400 rounded-full flex items-center justify-center text-white font-bold text-lg hover:scale-105 transition shadow-lg"
             >
               {user?.username?.[0]?.toUpperCase() || "U"}
             </Link>
@@ -82,20 +82,20 @@ export default function Navbar() {
               <>
                 <button
                   onClick={() => setViewFilter("all")}
-                  className={`px-6 py-3 rounded-full font-medium transition-all border ${
+                  className={`app-pill ${
                     viewFilter === "all"
-                      ? "bg-white text-black border-white"
-                      : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
+                      ? "app-pill-active"
+                      : "hover:border-slate-300"
                   }`}
                 >
                   All content
                 </button>
                 <button
                   onClick={() => setViewFilter("music")}
-                  className={`px-6 py-3 rounded-full font-medium transition-all border ${
+                  className={`app-pill ${
                     viewFilter === "music"
-                      ? "bg-white text-black border-white"
-                      : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
+                      ? "app-pill-active"
+                      : "hover:border-slate-300"
                   }`}
                 >
                   Music only
@@ -103,8 +103,8 @@ export default function Navbar() {
               </>
             )}
             {showSortControl && (
-              <label className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-200">
-                <span className="text-xs uppercase tracking-wide text-gray-400">
+              <label className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-slate-200 text-sm text-slate-600">
+                <span className="text-xs uppercase tracking-wide text-slate-400">
                   Sort
                 </span>
                 <select
@@ -112,7 +112,7 @@ export default function Navbar() {
                   onChange={(event) =>
                     setSortOption(event.target.value as typeof sortOption)
                   }
-                  className="bg-transparent text-white text-sm focus:outline-none"
+                  className="bg-transparent text-slate-700 text-sm focus:outline-none"
                 >
                   <option value="recommended">Recommended</option>
                   <option value="date">Date</option>

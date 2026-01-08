@@ -1,6 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --app-bg: #f7f4ef;
+    --app-bg-2: #edf3f0;
+    --app-line: #e6dfd5;
+    --app-text: #1f2933;
+    --app-muted: #5f6b7a;
+    --app-accent: #0f766e;
+    --app-accent-2: #d97706;
+  }
+
+  body {
+    font-family: "IBM Plex Sans", "Space Grotesk", sans-serif;
+    color: var(--app-text);
+    background: radial-gradient(1200px circle at top right, rgba(15, 118, 110, 0.12), transparent 45%),
+      radial-gradient(900px circle at 10% 20%, rgba(217, 119, 6, 0.12), transparent 50%),
+      linear-gradient(180deg, var(--app-bg), var(--app-bg-2));
+    min-height: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  #root {
+    min-height: 100%;
+  }
+}
+
+@layer components {
+  .app-surface {
+    @apply bg-white/80 border border-slate-200/80 rounded-3xl shadow-lg backdrop-blur;
+  }
+
+  .app-surface-soft {
+    @apply bg-white/70 border border-slate-200/70 rounded-2xl shadow-md backdrop-blur;
+  }
+
+  .app-pill {
+    @apply rounded-full border border-slate-200/80 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition;
+  }
+
+  .app-pill-active {
+    @apply bg-slate-900 text-white border-slate-900;
+  }
+
+  .app-input {
+    @apply w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white/80 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-200 focus:border-teal-500;
+  }
+
+  .app-button {
+    @apply rounded-full font-semibold px-6 py-3 transition;
+  }
+
+  .app-button-primary {
+    @apply bg-teal-700 text-white hover:bg-teal-600 shadow-lg;
+  }
+
+  .app-button-secondary {
+    @apply bg-slate-900 text-white hover:bg-slate-800;
+  }
+
+  .app-button-ghost {
+    @apply bg-white/70 text-slate-700 border border-slate-200 hover:border-slate-300 hover:text-slate-900;
+  }
+}
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -8,20 +81,20 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #2e2e2e;
+  background: #efe9df;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #888;
+  background-color: #c7bfb3;
   border-radius: 10px;
-  border: 3px solid #2e2e2e;
+  border: 3px solid #efe9df;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #b4ab9f;
 }
 
 ::-webkit-scrollbar-corner {
-  background: #2e2e2e;
+  background: #efe9df;
 }

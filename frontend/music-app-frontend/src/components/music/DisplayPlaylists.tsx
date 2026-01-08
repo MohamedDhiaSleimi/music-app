@@ -60,8 +60,8 @@ export default function DisplayPlaylists() {
     <>
       <Navbar />
       <div className="mt-6 flex flex-col gap-6">
-        <div className="bg-[#121212] rounded p-4">
-          <h2 className="text-xl font-semibold text-white mb-4">
+        <div className="app-surface p-5">
+          <h2 className="text-xl font-semibold text-slate-900 mb-4">
             Create a playlist
           </h2>
           <form
@@ -75,7 +75,7 @@ export default function DisplayPlaylists() {
               onChange={(e) =>
                 setFormState((prev) => ({ ...prev, name: e.target.value }))
               }
-              className="rounded bg-[#1f1f1f] text-white px-3 py-3"
+              className="app-input"
               required
             />
             <input
@@ -88,9 +88,9 @@ export default function DisplayPlaylists() {
                   description: e.target.value,
                 }))
               }
-              className="rounded bg-[#1f1f1f] text-white px-3 py-3"
+              className="app-input"
             />
-            <label className="flex items-center gap-2 text-white bg-[#1f1f1f] px-3 py-3 rounded cursor-pointer">
+            <label className="flex items-center gap-2 text-slate-700 bg-white/70 border border-slate-200 px-3 py-3 rounded-2xl cursor-pointer">
               <input
                 type="checkbox"
                 checked={formState.isPublic}
@@ -100,32 +100,32 @@ export default function DisplayPlaylists() {
                     isPublic: e.target.checked,
                   }))
                 }
-                className="w-4 h-4"
+                className="w-4 h-4 accent-teal-600"
               />
               <span>Public</span>
             </label>
             <button
               type="submit"
               disabled={creating}
-              className="bg-green-500 hover:bg-green-600 text-black font-semibold rounded px-4 py-3 disabled:opacity-60"
+              className="app-button app-button-primary disabled:opacity-60"
             >
               {creating ? "Creating..." : "Create"}
             </button>
           </form>
           {shareMessage && (
-            <p className="text-sm text-green-400 mt-3">{shareMessage}</p>
+            <p className="text-sm text-teal-700 mt-3">{shareMessage}</p>
           )}
         </div>
 
-        <div className="bg-[#121212] rounded p-4">
+        <div className="app-surface p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-white">Your playlists</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Your playlists</h2>
             {isPlaylistsLoading && (
-              <span className="text-sm text-gray-400">Loading...</span>
+              <span className="text-sm text-slate-500">Loading...</span>
             )}
           </div>
           {filteredPlaylists.length === 0 ? (
-            <p className="text-gray-400">No playlists yet.</p>
+            <p className="text-slate-500">No playlists yet.</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredPlaylists.map((playlist) => {
@@ -134,45 +134,45 @@ export default function DisplayPlaylists() {
                       <div
                         key={playlist._id}
                         onClick={() => navigate(`/playlists/${playlist._id}`)}
-                        className="bg-neutral-900 p-4 rounded-lg hover:bg-neutral-800 transition flex flex-col cursor-pointer"
+                        className="bg-white/80 border border-slate-200 p-4 rounded-2xl hover:border-slate-300 transition flex flex-col cursor-pointer shadow-md"
                       >
                         {coverImage ? (
                           <img
                             src={coverImage}
                             alt={playlist.name}
-                            className="w-full aspect-square rounded mb-3"
+                            className="w-full aspect-square rounded-xl mb-3"
                           />
                     ) : (
-                      <div className="w-full aspect-square rounded mb-3 bg-gradient-to-br from-green-500/30 to-blue-500/30 flex items-center justify-center text-xl font-semibold text-white">
+                      <div className="w-full aspect-square rounded-xl mb-3 bg-gradient-to-br from-teal-500/30 to-amber-300/40 flex items-center justify-center text-xl font-semibold text-slate-800">
                         PL
                       </div>
                     )}
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-white font-medium truncate">
+                        <p className="text-slate-900 font-medium truncate">
                           {playlist.name}
                         </p>
-                        <p className="text-gray-400 text-sm truncate">
+                        <p className="text-slate-500 text-sm truncate">
                           {playlist.description || "No description"}
                         </p>
                       </div>
                       {playlist.isTemporary ? (
-                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">
+                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
                           Daily
                         </span>
                       ) : (
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-semibold ${
                             playlist.isPublic
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-yellow-500/20 text-yellow-300"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                              : "bg-amber-50 text-amber-700 border border-amber-100"
                           }`}
                         >
                           {playlist.isPublic ? "Public" : "Private"}
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-400 text-sm mt-2">
+                    <p className="text-slate-500 text-sm mt-2">
                       {playlist.songs.length} song
                       {playlist.songs.length === 1 ? "" : "s"}
                     </p>
@@ -187,7 +187,7 @@ export default function DisplayPlaylists() {
                                 !playlist.isPublic
                               );
                             }}
-                            className="px-3 py-2 rounded bg-[#2d2d2d] text-white text-xs font-semibold hover:bg-[#3d3d3d]"
+                            className="px-3 py-2 rounded-full bg-white text-slate-700 text-xs font-semibold border border-slate-200 hover:border-slate-300"
                           >
                             {playlist.isPublic ? "Set private" : "Set public"}
                           </button>
@@ -197,7 +197,7 @@ export default function DisplayPlaylists() {
                               handleShare(playlist._id);
                             }}
                             disabled={sharingId === playlist._id}
-                            className="px-3 py-2 rounded bg-[#2d2d2d] text-white text-xs font-semibold hover:bg-[#3d3d3d] disabled:opacity-60"
+                            className="px-3 py-2 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 disabled:opacity-60"
                           >
                             {sharingId === playlist._id ? "Sharing..." : "Share"}
                           </button>
@@ -206,7 +206,7 @@ export default function DisplayPlaylists() {
                               event.stopPropagation();
                               deletePlaylist(playlist._id);
                             }}
-                            className="px-3 py-2 rounded bg-red-600 text-white text-xs font-semibold hover:bg-red-700"
+                            className="px-3 py-2 rounded-full bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700"
                           >
                             Delete
                           </button>

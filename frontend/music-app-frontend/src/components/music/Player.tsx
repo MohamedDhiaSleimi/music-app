@@ -96,20 +96,20 @@ export default function Player() {
   };
 
   return (
-    <div className="h-[10%] bg-gradient-to-r from-[#0b1728] via-[#0f111a] to-[#0b1728] border-t border-white/10 px-4 flex items-center justify-between text-white shadow-[0_-10px_40px_-24px_rgba(0,0,0,0.9)]">
+    <div className="h-[10%] bg-white/90 border-t border-slate-200 px-4 flex items-center justify-between text-slate-900 shadow-lg backdrop-blur">
       {/* Left: Current Track */}
-      <div className="flex items-center gap-4 w-full lg:w-[32%] flex-wrap relative bg-white/5 border border-white/10 rounded-2xl p-2 backdrop-blur">
-        <div className="w-14 h-14 rounded-lg overflow-hidden bg-black/40 flex-shrink-0">
+      <div className="flex items-center gap-4 w-full lg:w-[32%] flex-wrap relative bg-white/70 border border-slate-200 rounded-2xl p-2">
+        <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0">
           <img src={track.image} alt={track.name} className="w-full h-full object-cover" />
         </div>
         <div className="min-w-0">
-          <h4 className="font-semibold text-sm leading-tight truncate">{track.name}</h4>
-          <p className="text-xs text-gray-400 leading-snug truncate">{track.desc}</p>
+          <h4 className="font-semibold text-sm leading-tight truncate text-slate-900">{track.name}</h4>
+          <p className="text-xs text-slate-500 leading-snug truncate">{track.desc}</p>
         </div>
         <button
           onClick={() => toggleFavorite(track._id)}
           disabled={isTrackUpdating}
-          className={`ml-4 text-gray-400 hover:text-white ${isTrackUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`ml-4 text-slate-400 hover:text-rose-500 ${isTrackUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
           aria-label={isTrackFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           {isTrackFavorite ? (
@@ -124,13 +124,13 @@ export default function Player() {
         </button>
         <button
           onClick={() => setIsPickerOpen((prev) => !prev)}
-          className="ml-2 px-3 py-1 rounded-full bg-gradient-to-r from-green-500/80 to-blue-500/70 text-black text-xs font-semibold hover:from-green-400 hover:to-blue-400 shadow-md shadow-green-500/20"
+          className="ml-2 px-3 py-1 rounded-full bg-teal-700 text-white text-xs font-semibold hover:bg-teal-600 shadow-md"
         >
           + Playlist
         </button>
         <button
           onClick={() => setIsQueueOpen(true)}
-          className="ml-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+          className="ml-2 px-3 py-1 rounded-full bg-white text-xs font-semibold hover:border-slate-300 border border-slate-200 text-slate-700"
         >
           Queue
         </button>
@@ -139,28 +139,28 @@ export default function Player() {
           isPickerOpen ? (
             <div className="fixed inset-0 z-30 grid place-items-center px-4">
               <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                 onClick={() => setIsPickerOpen(false)}
               />
-              <div className="relative w-full max-w-md bg-[#0f111a] border border-white/10 rounded-2xl p-5 shadow-2xl shadow-black/50">
+              <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl p-5 shadow-2xl">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm font-semibold">Add to playlist</p>
                   <button
                     onClick={() => setIsPickerOpen(false)}
-                    className="text-gray-400 hover:text-white text-sm"
+                    className="text-slate-400 hover:text-slate-600 text-sm"
                   >
                     ✕
                   </button>
                 </div>
 
                 {isPlaylistsLoading ? (
-                  <p className="text-gray-400 text-sm">Loading playlists...</p>
+                  <p className="text-slate-500 text-sm">Loading playlists...</p>
                 ) : playlists.length > 0 ? (
                   <>
                     <select
                       value={selectedPlaylistId}
                       onChange={(e) => setSelectedPlaylistId(e.target.value)}
-                      className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2 border border-white/10"
+                      className="app-input mb-2 py-2"
                     >
                       {playlists.map((playlist) => (
                         <option key={playlist._id} value={playlist._id}>
@@ -171,33 +171,33 @@ export default function Player() {
                     <button
                       onClick={handleAddToPlaylist}
                       disabled={!selectedPlaylistId || isWorking}
-                      className="w-full bg-white text-black font-semibold rounded py-2 disabled:opacity-60"
+                      className="w-full app-button app-button-primary disabled:opacity-60"
                     >
                       {isWorking ? "Adding..." : "Add"}
                     </button>
-                    <div className="mt-3 text-xs text-gray-400">
+                    <div className="mt-3 text-xs text-slate-500">
                       No playlist you want? Create a new one below.
                     </div>
                   </>
                 ) : (
-                  <p className="text-gray-400 text-sm mb-2">
+                  <p className="text-slate-500 text-sm mb-2">
                     You have no playlists yet.
                   </p>
                 )}
 
-                <div className="mt-3 border-t border-[#2f2f2f] pt-3">
+                <div className="mt-3 border-t border-slate-200 pt-3">
                   <p className="text-sm font-semibold mb-2">Create new</p>
                   <input
                     type="text"
                     value={newPlaylistName}
                     onChange={(e) => setNewPlaylistName(e.target.value)}
                     placeholder="Playlist name"
-                    className="w-full bg-[#1f1f1f] text-white px-3 py-2 rounded mb-2 border border-white/10"
+                    className="app-input mb-2 py-2"
                   />
                   <button
                     onClick={handleCreateAndAdd}
                     disabled={!newPlaylistName.trim() || isWorking}
-                    className="w-full bg-green-500 text-black font-semibold rounded py-2 disabled:opacity-60"
+                    className="w-full app-button app-button-primary disabled:opacity-60"
                   >
                     {isWorking ? "Creating..." : "Create & Add"}
                   </button>
@@ -211,25 +211,25 @@ export default function Player() {
           isQueueOpen ? (
             <div className="fixed inset-0 z-40 grid place-items-center px-4">
               <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                 onClick={() => setIsQueueOpen(false)}
               />
-              <div className="relative w-full max-w-3xl bg-[#0f111a] border border-white/10 rounded-2xl p-5 shadow-2xl shadow-black/50">
+              <div className="relative w-full max-w-3xl bg-white border border-slate-200 rounded-2xl p-5 shadow-2xl">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-gray-400">Up next</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-400">Up next</p>
                     <h3 className="text-lg font-semibold">Current queue</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={clearQueue}
-                      className="px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+                      className="px-3 py-1 rounded-full bg-white text-xs font-semibold border border-slate-200 hover:border-slate-300"
                     >
                       Clear
                     </button>
                     <button
                       onClick={() => setIsQueueOpen(false)}
-                      className="px-3 py-1 rounded-full bg-white/10 text-xs font-semibold hover:bg-white/20 border border-white/15"
+                      className="px-3 py-1 rounded-full bg-white text-xs font-semibold border border-slate-200 hover:border-slate-300"
                     >
                       Close
                     </button>
@@ -238,7 +238,7 @@ export default function Player() {
 
                 <div className="max-h-[60vh] overflow-y-auto space-y-2">
                   {playQueue.length === 0 ? (
-                    <p className="text-gray-400 text-sm">Queue is empty. Add songs to start building it.</p>
+                    <p className="text-slate-500 text-sm">Queue is empty. Add songs to start building it.</p>
                   ) : (
                     playQueue.map((song, idx) => {
                       const isCurrent = track?._id === song._id;
@@ -247,45 +247,45 @@ export default function Player() {
                           key={song._id + idx}
                           className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2 border ${
                             isCurrent
-                              ? "bg-white/10 border-white/30"
-                              : "bg-white/5 border-white/10"
+                              ? "bg-teal-50 border-teal-200"
+                              : "bg-white border-slate-200"
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/40 flex-shrink-0">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0">
                               <img src={song.image} alt={song.name} className="w-full h-full object-cover" />
                             </div>
                             <div className="min-w-0">
                               <p className="font-semibold text-sm truncate">{song.name}</p>
-                              <p className="text-xs text-gray-400 truncate">{song.album}</p>
+                              <p className="text-xs text-slate-500 truncate">{song.album}</p>
                             </div>
                           </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs text-gray-400 w-8 text-center">{idx + 1}</span>
+                          <span className="text-xs text-slate-400 w-8 text-center">{idx + 1}</span>
                           <button
                             onClick={() => moveQueueItem(song._id, "up")}
                             disabled={idx === 0}
-                            className="px-2 py-1 rounded-full bg-white/10 text-xs hover:bg-white/20 border border-white/15 disabled:opacity-40"
+                            className="px-2 py-1 rounded-full bg-white text-xs border border-slate-200 hover:border-slate-300 disabled:opacity-40"
                           >
                             ↑
                           </button>
                           <button
                             onClick={() => moveQueueItem(song._id, "down")}
                             disabled={idx === playQueue.length - 1}
-                            className="px-2 py-1 rounded-full bg-white/10 text-xs hover:bg-white/20 border border-white/15 disabled:opacity-40"
+                            className="px-2 py-1 rounded-full bg-white text-xs border border-slate-200 hover:border-slate-300 disabled:opacity-40"
                           >
                             ↓
                           </button>
                           <button
                             onClick={() => playWithId(song._id)}
-                            className="px-3 py-1 rounded-full bg-white text-black text-xs font-semibold hover:scale-105 transition"
+                            className="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800"
                           >
                             Play
                           </button>
                           <button
                             onClick={() => removeFromQueue(song._id)}
-                            className="px-2 py-1 rounded-full bg-red-500/20 text-red-200 text-xs hover:bg-red-500/30 border border-red-500/30"
+                            className="px-2 py-1 rounded-full bg-rose-100 text-rose-600 text-xs hover:bg-rose-200 border border-rose-200"
                           >
                             ✕
                           </button>
@@ -302,13 +302,13 @@ export default function Player() {
       </div>
 
       {/* Center: Controls */}
-      <div className="flex flex-col items-center gap-2 w-[38%] bg-white/5 border border-white/10 rounded-2xl px-4 py-2 backdrop-blur">
+      <div className="flex flex-col items-center gap-2 w-[38%] bg-white/70 border border-slate-200 rounded-2xl px-4 py-2">
         <div className="flex items-center gap-6">
           <button
             onClick={toggleShuffle}
             className={`${
-              isShuffle ? "text-green-500" : "text-gray-400"
-            } hover:text-white`}
+              isShuffle ? "text-teal-600" : "text-slate-400"
+            } hover:text-slate-700`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M10.59 9.17L6.83 5.41 5.41 6.83 9.17 10.59l1.42-1.42zM14.59 15.17L18.34 19 19.76 17.59 16 13.83l-1.41 1.34zM14.59 4l5.17 5.17-1.42 1.41L13.17 5.41 14.59 4zM4.24 19.76l5.17-5.17 1.41 1.41L5.66 21.17 4.24 19.76z" />
@@ -316,7 +316,7 @@ export default function Player() {
           </button>
           <button
             onClick={previousSong}
-            className="text-white hover:scale-110 transition"
+            className="text-slate-700 hover:scale-110 transition"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
@@ -324,7 +324,7 @@ export default function Player() {
           </button>
           <button
             onClick={playStatus ? pause : play}
-            className="bg-gradient-to-br from-white to-gray-200 text-black rounded-full p-4 hover:scale-105 transition shadow-lg shadow-white/20"
+            className="bg-slate-900 text-white rounded-full p-4 hover:scale-105 transition shadow-lg"
           >
             {playStatus ? (
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -338,7 +338,7 @@ export default function Player() {
           </button>
           <button
             onClick={nextSong}
-            className="text-white hover:scale-110 transition"
+            className="text-slate-700 hover:scale-110 transition"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6z" />
@@ -347,8 +347,8 @@ export default function Player() {
           <button
             onClick={cycleLoopMode}
             className={`${
-              loopMode !== "off" ? "text-green-500" : "text-gray-400"
-            } hover:text-white relative`}
+              loopMode !== "off" ? "text-teal-600" : "text-slate-400"
+            } hover:text-slate-700 relative`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
@@ -362,7 +362,7 @@ export default function Player() {
         </div>
 
         {/* Seek Bar */}
-        <div className="flex items-center gap-3 w-full text-xs">
+        <div className="flex items-center gap-3 w-full text-xs text-slate-500">
           <span>
             {formatTime(Math.floor(audioRef.current?.currentTime || 0))}
           </span>
@@ -370,10 +370,10 @@ export default function Player() {
           <div
             ref={seekBg}
             onClick={seekSong}
-            className="relative flex-1 h-1.5 bg-white/15 rounded-full cursor-pointer group"
+            className="relative flex-1 h-1.5 bg-slate-200 rounded-full cursor-pointer group"
           >
             <div
-              className="absolute h-full rounded-full transition-all bg-gradient-to-r from-green-400 via-blue-400 to-purple-400"
+              className="absolute h-full rounded-full transition-all bg-gradient-to-r from-teal-500 via-emerald-400 to-amber-400"
               style={{
                 width: audioRef.current?.duration
                   ? `${
@@ -385,7 +385,7 @@ export default function Player() {
               }}
             />
             <div
-              className="absolute h-4 w-4 bg-white rounded-full -top-1 left-0 opacity-0 group-hover:opacity-100 shadow-lg shadow-green-400/30 transition-opacity"
+              className="absolute h-4 w-4 bg-white border border-slate-200 rounded-full -top-1 left-0 opacity-0 group-hover:opacity-100 shadow-md transition-opacity"
               style={{
                 left: audioRef.current?.duration
                   ? `${
@@ -404,7 +404,7 @@ export default function Player() {
 
       {/* Right: Volume + Logout */}
       <div className="flex items-center gap-4 w-[30%] justify-end">
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-full backdrop-blur">
+        <div className="flex items-center gap-2 bg-white/70 border border-slate-200 px-3 py-2 rounded-full">
           <button onClick={toggleMute}>
             {isMuted || volume === 0 ? (
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -427,13 +427,13 @@ export default function Player() {
             step="0.01"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-28 h-1 bg-gray-600 rounded-full appearance-none cursor-pointer accent-green-400"
+            className="w-28 h-1 bg-slate-200 rounded-full appearance-none cursor-pointer accent-teal-600"
           />
         </div>
 
         <button
           onClick={logout}
-          className="bg-white/10 border border-red-400/40 text-red-100 hover:bg-red-500 hover:text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-lg shadow-red-500/20"
+          className="bg-rose-600 text-white px-4 py-2 rounded-full text-sm font-medium transition hover:bg-rose-700 shadow-lg"
         >
           Logout
         </button>

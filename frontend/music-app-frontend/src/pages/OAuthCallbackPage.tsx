@@ -43,14 +43,14 @@ export default function OAuthCallbackPage() {
   }, [searchParams, login, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500">
-      <div className="bg-white rounded-2xl shadow-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="bg-white/85 border border-slate-200 rounded-2xl shadow-2xl p-8">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mb-4"></div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600 mb-4"></div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">
             Completing sign in...
           </h2>
-          <p className="text-gray-600">Please wait while we redirect you.</p>
+          <p className="text-slate-600">Please wait while we redirect you.</p>
         </div>
       </div>
     </div>

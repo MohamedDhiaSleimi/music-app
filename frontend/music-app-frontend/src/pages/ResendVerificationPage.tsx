@@ -71,7 +71,7 @@ export default function ResendVerificationPage() {
       )}
 
       <div className="mt-8 text-center">
-        <Link to="/login" className="text-gray-400 hover:text-white text-sm transition">
+        <Link to="/login" className="text-slate-500 hover:text-teal-700 text-sm transition">
           {UI_MESSAGES.BUTTONS.BACK_TO_LOGIN}
         </Link>
       </div>

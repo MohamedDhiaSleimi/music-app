@@ -15,13 +15,13 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'font-semibold py-4 px-6 rounded-full transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100';
+  const baseClasses = 'app-button inline-flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0';
   
   const variants = {
-    primary: 'bg-green-500 hover:bg-green-400 text-black',
-    secondary: 'bg-neutral-800 hover:bg-neutral-700 text-white',
-    danger: 'bg-red-500 hover:bg-red-600 text-white',
-    ghost: 'bg-transparent hover:bg-neutral-800 text-white border border-neutral-700',
+    primary: 'app-button-primary',
+    secondary: 'app-button-ghost',
+    danger: 'bg-rose-600 hover:bg-rose-700 text-white',
+    ghost: 'app-button-ghost',
   };
 
   const widthClass = fullWidth ? 'w-full' : '';

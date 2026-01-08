@@ -27,7 +27,7 @@ const Avatar: React.FC<AvatarProps> = ({ imageUrl, username, size = 'md', classN
 
   return (
     <div
-      className={`${sizeClasses[size]} bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold ${className}`}
+      className={`${sizeClasses[size]} bg-gradient-to-br from-teal-600 to-amber-400 rounded-full flex items-center justify-center text-white font-bold ${className}`}
     >
       {username?.[0]?.toUpperCase() || '?'}
     </div>
