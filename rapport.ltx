@@ -1,0 +1,1439 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{caption}
+\usetikzlibrary{positioning, arrows.meta}
+
+% Page geometry
+\geometry{left=2.5cm,right=2.5cm,top=3cm,bottom=3cm}
+
+% Colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Code listing style
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Rapport du projet Music App}
+\lhead{\leftmark}
+\cfoot{\thepage}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\Huge\bfseries Music App\\[0.5cm]}
+    {\Large Plateforme full stack d'authentification et de streaming\\[2cm]}
+
+    {\Large\textbf{Rapport complet du projet}\\[1cm]}
+
+    \vspace{2cm}
+
+    {\large
+    \textbf{Technologies utilisees et architecture du systeme}\\[0.5cm]
+    }
+
+    \vfill
+
+    {\large
+    Auteurs : \\
+    Mohamed Dhia Sleimi\\[0.3cm]
+    rahma guerfila\\[0.3cm]
+    zeineb hkiri\\[0.3cm]
+    Date : \today\\[0.3cm]
+    Version : 1.0
+    }
+
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Abstract
+\section*{Resume}
+\addcontentsline{toc}{section}{Resume}
+
+Ce document presente une vue d'ensemble complete du projet Music App, une application web et mobile full stack concue pour le streaming et la gestion de musique. Le systeme met en oeuvre une architecture moderne de microservices avec des services separes pour l'authentification, la gestion musicale, les recommandations alimentees par IA et l'ensemencement des donnees. Le projet s'appuie sur des technologies de pointe telles que Spring Boot, Node.js, React, Python et Docker, offrant une solution evolutive et maintenable pour le streaming musical avec des fonctionnalites avancees comme l'integration OAuth2, les recommandations en temps reel et le support multiplateforme.
+
+\newpage
+
+% Executive Summary
+\section{Resume executif}
+
+Music App est une plateforme complete de streaming musical qui illustre des pratiques modernes d'ingenierie logicielle et des schemas d'architecture. Le systeme est concu avec les objectifs cles suivants :
+
+\begin{itemize}
+    \item \textbf{Scalabilite} : l'architecture microservices permet une mise a l'echelle independante des services
+    \item \textbf{Securite} : authentification basee sur JWT avec integration OAuth2
+    \item \textbf{Experience utilisateur} : interfaces web responsives et mobiles natives
+    \item \textbf{Intelligence} : recommandations musicales basees sur l'IA et l'apprentissage automatique
+    \item \textbf{Performance} : strategies de cache et requetes basees de donnees optimisees
+    \item \textbf{Maintenabilite} : architecture propre avec separation des responsabilites
+\end{itemize}
+
+La plateforme prend en charge des fonctionnalites essentielles, notamment l'authentification des utilisateurs, la gestion de bibliotheques musicales, la creation de playlists, le suivi des favoris, la journalisation d'activite, la gestion de file de lecture et des recommandations intelligentes basees sur les caracteristiques audio et les preferences des utilisateurs.
+
+\newpage
+
+% Introduction
+\section{Introduction}
+
+\subsection{Contexte et objectifs}
+
+Le projet Music App vise a fournir une experience de streaming musical moderne, securisee et scalable. Les principaux objectifs sont :
+
+\begin{itemize}
+    \item Offrir une authentification robuste et une gestion complete des comptes utilisateur
+    \item Proposer des interfaces web et mobile coherentes
+    \item Integrer des recommandations locales basees sur le contenu audio
+    \item Supporter les workflows administratifs (gestion utilisateurs, contenus)
+    \item Faciliter le deploiement via une stack DevOps standardisee
+\end{itemize}
+
+\subsection{Perimetre fonctionnel}
+
+\begin{itemize}
+    \item Authentification, inscription, OAuth2, verification email et reinitialisation de mot de passe
+    \item Gestion de chansons, albums, playlists et favoris
+    \item File de lecture et lecteur musical cote client
+    \item Journalisation d'activites et consultation d'historique
+    \item Recommandations IA basees sur features audio et favoris utilisateur
+    \item Outils d'administration et ensemencement de donnees de dev
+\end{itemize}
+
+\newpage
+
+% System Architecture
+\section{Architecture du systeme}
+
+\subsection{Architecture de haut niveau}
+
+Music App suit un modele d'architecture microservices avec les principaux composants suivants :
+
+\begin{enumerate}
+    \item \textbf{Couche frontend}
+    \begin{itemize}
+        \item Application web (React + TypeScript)
+        \item Application mobile (Android/Kotlin)
+        \item Panneau d'administration (React)
+    \end{itemize}
+
+    \item \textbf{Couche de services backend}
+    \begin{itemize}
+        \item Service d'authentification (Spring Boot/Java)
+        \item Service musical (Node.js/Express)
+        \item Service de recommandation (Python/FastAPI)
+        \item Service Faker (Node.js) - ensemencement des donnees
+    \end{itemize}
+
+    \item \textbf{Couche de donnees}
+    \begin{itemize}
+        \item MongoDB (base de donnees principale)
+        \item Cloudinary (stockage des medias)
+        \item Couche de cache (Caffeine/en memoire)
+    \end{itemize}
+
+    \item \textbf{Couche d'infrastructure}
+    \begin{itemize}
+        \item Conteneurs Docker
+        \item Reverse proxy Nginx
+        \item Orchestration Docker Compose
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Diagramme d'architecture}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.8cm,
+    box/.style={rectangle, draw, minimum width=3.2cm, minimum height=1cm, text centered},
+    service/.style={box, fill=blue!20},
+    frontend/.style={box, fill=green!20},
+    database/.style={box, fill=yellow!20},
+    arrow/.style={-{Stealth[length=2.5mm]}}
+]
+
+% Frontend Layer
+\node[frontend] (web) {Frontend web\\React/TS};
+\node[frontend, right=of web] (mobile) {App mobile\\Android/Kotlin};
+\node[frontend, right=of mobile] (admin) {Panneau admin\\React};
+
+% Backend Services
+\node[service, below=of web] (auth) {Service Auth\\Spring Boot};
+\node[service, below=of mobile] (music) {Service Musique\\Node.js};
+\node[service, below=of admin] (rec) {Recommandation\\Python/FastAPI};
+
+% Database
+\node[database, below=of music] (db) {MongoDB\\Base de donnees};
+
+% Connections
+\draw[arrow] (web) -- (auth);
+\draw[arrow] (web) -- (music);
+\draw[arrow] (web) -- (rec);
+\draw[arrow] (mobile) -- (auth);
+\draw[arrow] (mobile) -- (music);
+\draw[arrow] (admin) -- (music);
+\draw[arrow] (auth) -- (db);
+\draw[arrow] (music) -- (db);
+\draw[arrow] (rec) -- (db);
+
+\end{tikzpicture}
+\caption{Architecture systeme de haut niveau}
+\end{figure}
+
+\subsection{Communication entre microservices}
+
+Les services communiquent via :
+\begin{itemize}
+    \item \textbf{APIs REST} : HTTP/HTTPS pour la communication synchrone
+    \item \textbf{Tokens JWT} : pour l'authentification et l'autorisation
+    \item \textbf{Reseau interne} : reseau bridge Docker pour la communication inter-services
+\end{itemize}
+
+\newpage
+
+% Technology Stack
+\section{Pile technologique}
+
+\subsection{Technologies backend}
+
+\subsubsection{Service d'authentification}
+
+\begin{itemize}
+    \item \textbf{Framework} : Spring Boot 3.5.7
+    \item \textbf{Langage} : Java 17
+    \item \textbf{Outil de build} : Maven
+    \item \textbf{Dependances cles} :
+    \begin{itemize}
+        \item Spring Security - framework de securite
+        \item Spring Data MongoDB - integration base de donnees
+        \item JWT (jjwt) 0.11.5 - gestion des tokens
+        \item Spring OAuth2 Client - integration OAuth2
+        \item Caffeine Cache - couche de cache
+        \item Bucket4j 8.1.0 - limitation de debit
+        \item Spring Mail - services d'email
+        \item Lombok - generation de code
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Service musical}
+
+\begin{itemize}
+    \item \textbf{Runtime} : Node.js 20
+    \item \textbf{Framework} : Express.js
+    \item \textbf{Langage} : JavaScript (ES6+)
+    \item \textbf{Dependances cles} :
+    \begin{itemize}
+        \item Mongoose - ODM MongoDB
+        \item Cloudinary - stockage des medias
+        \item Multer - gestion d'upload de fichiers
+        \item Dotenv - configuration d'environnement
+        \item CORS - partage de ressources entre origines
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Service de recommandation}
+
+\begin{itemize}
+    \item \textbf{Framework} : FastAPI
+    \item \textbf{Langage} : Python 3.10
+    \item \textbf{Serveur} : Uvicorn
+    \item \textbf{Dependances cles} :
+    \begin{itemize}
+        \item Scikit-learn 1.3.2 - apprentissage automatique
+        \item Pandas 2.2.3 - manipulation de donnees
+        \item NumPy 1.26.4 - calcul numerique
+        \item Essentia 2.1b6 - analyse audio
+        \item TinyTag 1.10.1 - extraction de metadonnees audio
+        \item PyMongo 4.10.1 - integration MongoDB
+        \item Joblib 1.4.2 - serialisation de modele
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Service Faker}
+
+\begin{itemize}
+    \item \textbf{Runtime} : Node.js 18
+    \item \textbf{Framework} : Express.js
+    \item \textbf{But} : ensemencement des donnees de developpement
+    \item \textbf{Fonctionnalites cles} :
+    \begin{itemize}
+        \item Creation automatique d'utilisateurs
+        \item Traitement de fichiers musicaux locaux
+        \item Generation d'albums et de chansons
+        \item Creation de playlists (12-18 par utilisateur)
+        \item Ensemencement des favoris (20 par utilisateur)
+        \item Integration avec le service de recommandation
+    \end{itemize}
+\end{itemize}
+
+\subsection{Technologies frontend}
+
+\subsubsection{Application web}
+
+\begin{itemize}
+    \item \textbf{Framework} : React 18
+    \item \textbf{Langage} : TypeScript
+    \item \textbf{Outil de build} : Vite
+    \item \textbf{Styles} : Tailwind CSS 3.4
+    \item \textbf{Bibliotheques cles} :
+    \begin{itemize}
+        \item React Router 6 - routage
+        \item TanStack Query - recuperation de donnees
+        \item Axios - client HTTP
+        \item React Hook Form - gestion de formulaires
+        \item Zod - validation de schema
+        \item Lucide React - Icones
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Application mobile}
+
+\begin{itemize}
+    \item \textbf{Plateforme} : Android
+    \item \textbf{Langage} : Kotlin
+    \item \textbf{Architecture} : MVVM (Model-View-ViewModel)
+    \item \textbf{Composants cles} :
+    \begin{itemize}
+        \item Jetpack Navigation - composant de navigation
+        \item Retrofit 2 - client REST
+        \item ViewModel \& LiveData - gestion d'etat
+        \item Material Design 3 - composants UI
+        \item Coroutines - programmation asynchrone
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Panneau d'administration}
+
+\begin{itemize}
+    \item \textbf{Framework} : React 18
+    \item \textbf{Langage} : JavaScript (JSX)
+    \item \textbf{Styles} : Tailwind CSS
+    \item \textbf{But} : fonctions administratives
+    \item \textbf{Fonctionnalites} :
+    \begin{itemize}
+        \item Gestion des utilisateurs
+        \item Administration des chansons et albums
+        \item Gestion des playlists
+        \item Etat du systeme de recommandation
+    \end{itemize}
+\end{itemize}
+
+\newpage
+
+% Detailed Service Architecture
+\section{Architecture detaillee des services}
+
+\subsection{Service d'authentification}
+
+\subsubsection{Structure des packages}
+
+\begin{lstlisting}[language=bash, caption=Structure du service Auth]
+auth-service/
+├── config/
+│   ├── AdminSeeder.java
+│   ├── CacheConfig.java
+│   └── SecurityConfig.java
+├── constants/
+│   └── AppConstants.java
+├── controller/
+│   ├── AdminController.java
+│   ├── AuthController.java
+│   └── ProfileController.java
+├── dto/
+│   ├── request/
+│   └── response/
+├── exception/
+│   ├── GlobalExceptionHandler.java
+│   └── custom/
+├── mapper/
+│   └── UserMapper.java
+├── model/
+│   ├── AccountStatus.java (enum)
+│   └── User.java
+├── repository/
+│   └── UserRepository.java
+├── scheduler/
+│   └── AccountDeactivationScheduler.java
+├── security/
+│   ├── JwtAuthenticationFilter.java
+│   ├── JwtUtil.java
+│   ├── OAuth2AuthenticationFailureHandler.java
+│   ├── OAuth2AuthenticationSuccessHandler.java
+│   └── RateLimitingFilter.java
+├── service/
+│   ├── AuthService.java
+│   ├── EmailService.java
+│   ├── EmailVerificationService.java
+│   ├── OAuth2Service.java
+│   ├── PasswordService.java
+│   ├── ProfileService.java
+│   └── TokenService.java
+└── util/
+    ├── UserIdExtractor.java
+    └── ValidationUtil.java
+\end{lstlisting}
+
+\subsubsection{Schemas de conception cles}
+
+\begin{enumerate}
+    \item \textbf{Service Layer Pattern} : logique metier separee des controleurs
+    \item \textbf{Repository Pattern} : abstraction de l'acces aux donnees
+    \item \textbf{DTO Pattern} : objets de transfert de donnees pour la communication API
+    \item \textbf{Mapper Pattern} : conversion entite vers DTO
+    \item \textbf{Filter Pattern} : filtrage des requetes pour JWT et limitation de debit
+    \item \textbf{Strategy Pattern} : gestion de l'authentification OAuth2
+\end{enumerate}
+
+\subsubsection{Fonctionnalites de securite}
+
+\begin{itemize}
+    \item \textbf{Implementation JWT} :
+    \begin{lstlisting}[language=Java, caption=Generation de token JWT]
+public String generateToken(String userId, String email) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("userId", userId);
+    claims.put("email", email);
+
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + expiration);
+
+    return Jwts.builder()
+        .setClaims(claims)
+        .setSubject(email)
+        .setIssuedAt(now)
+        .setExpiration(expiryDate)
+        .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+        .compact();
+}
+    \end{lstlisting}
+
+    \item \textbf{Limitation de debit} : implementation Bucket4j (100 req/min par IP)
+    \item \textbf{Configuration CORS} : configuree pour plusieurs origines
+    \item \textbf{Chiffrement des mots de passe} : BCrypt avec force 10
+\end{itemize}
+
+\subsubsection{Gestion de l'etat du compte}
+
+\begin{lstlisting}[language=Java, caption=Enum de statut de compte]
+public enum AccountStatus {
+    PENDING_VERIFICATION,  // Email not verified
+    ACTIVE,                // Email verified, active
+    DEACTIVATION_PENDING,  // 7-day grace period
+    DEACTIVATED;           // Permanently deactivated
+
+    public boolean isActive() {
+        return this == ACTIVE ||
+               this == PENDING_VERIFICATION ||
+               this == DEACTIVATION_PENDING;
+    }
+
+    public boolean canLogin() {
+        return this == ACTIVE ||
+               this == PENDING_VERIFICATION ||
+               this == DEACTIVATION_PENDING;
+    }
+}
+\end{lstlisting}
+
+\subsection{Service musical}
+
+\subsubsection{Fonctionnalites cles}
+
+\begin{itemize}
+    \item Gestion des chansons et albums
+    \item Creation et partage de playlists
+    \item Suivi des favoris
+    \item Journalisation d'activite
+    \item Upload des fichiers media vers Cloudinary
+    \item Visibilite publique/privee des playlists
+    \item Codes de partage pour les playlists
+\end{itemize}
+
+\subsection{Service de recommandation IA}
+
+\subsubsection{Vue d'ensemble}
+
+Le service de recommandation fournit des suggestions musicales locales basees sur un modele de clustering et des features audio extraites automatiquement. Il fonctionne en deux phases :
+
+\begin{itemize}
+    \item \textbf{Extraction des features} : collecte des descripteurs audio via Essentia et enrichissement via TinyTag
+    \item \textbf{Recommandation} : projection dans l'espace des features, assignation a un cluster, puis recherche des voisins les plus proches
+\end{itemize}
+
+\subsubsection{Sources de donnees}
+
+\begin{itemize}
+    \item \textbf{MongoDB} : collection \texttt{song\_features} (features calculees)
+    \item \textbf{Dataset local} : fichier CSV avec des features et metadonnees musicales
+    \item \textbf{Favoris utilisateur} : collection \texttt{favorites} pour les recommandations par utilisateur
+\end{itemize}
+
+\subsubsection{Pipeline d'apprentissage et assets}
+
+\begin{itemize}
+    \item \textbf{Pipeline} : StandardScaler + KMeans
+    \item \textbf{Modele} : pipeline serialise au format Joblib
+    \item \textbf{Chargement} : prechargement du modele et du dataset au demarrage
+    \item \textbf{Clusters} : 20 clusters pour le regroupement de titres similaires
+\end{itemize}
+
+\subsubsection{Features audio utilisees}
+
+\begin{itemize}
+    \item valence, year, acousticness, danceability, duration\_ms, energy
+    \item explicit, instrumentalness, key, liveness, loudness, mode
+    \item popularity, speechiness, tempo
+\end{itemize}
+
+\subsubsection{Strategie de recommandation}
+
+\begin{enumerate}
+    \item \textbf{Recommandation par chanson} :
+    \begin{itemize}
+        \item Recuperation des features dans \texttt{song\_features}
+        \item Normalisation via le scaler
+        \item Predicton de cluster
+        \item Recherche des voisins les plus proches (distance euclidienne)
+    \end{itemize}
+
+    \item \textbf{Recommandation par utilisateur} :
+    \begin{itemize}
+        \item Recuperation des chansons favorites
+        \item Construction d'un centroid (moyenne des features normalisees)
+        \item Predicton de cluster
+        \item Recherche des voisins dans le cluster
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Gestion des features manquantes}
+
+\begin{itemize}
+    \item \textbf{Backfill automatique} : scan des chansons sans features et traitement en arriere-plan
+    \item \textbf{Extraction a la demande} : endpoint pour programmer l'extraction d'une chanson
+    \item \textbf{Compatibilite URL} : normalisation des URLs locales (services Docker)
+\end{itemize}
+
+\subsubsection{Flux de recommandation IA}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.6cm,
+    box/.style={rectangle, draw, minimum width=3.2cm, minimum height=1cm, text centered},
+    arrow/.style={-{Stealth[length=2.5mm]}}
+]
+
+\node[box] (client) {Client (web/mobile)};
+\node[box, below=of client] (api) {API Recommendation};
+\node[box, below left=of api, xshift=-0.6cm] (features) {song\_features (MongoDB)};
+\node[box, below right=of api, xshift=0.6cm] (model) {Scaler + KMeans};
+\node[box, below=of features] (resp) {Reponse recommandations};
+\node[box, below=of model] (dataset) {Dataset local (CSV)};
+
+\draw[arrow] (client) -- node[right] {GET /recommendation/*} (api);
+\draw[arrow] (api) -- (features);
+\draw[arrow] (api) -- (model);
+\draw[arrow] (model) -- (dataset);
+\draw[arrow] (features) -- (resp);
+\draw[arrow] (model) -- (resp);
+\draw[arrow] (resp) -- (client);
+
+\end{tikzpicture}
+\caption{Flux de recommandation IA}
+\end{figure}
+
+\subsection{Service Faker}
+
+\subsubsection{Fonctionnalites}
+
+\begin{itemize}
+    \item Seed automatique d'utilisateurs, albums, chansons, playlists et favoris
+    \item Integration avec le service de recommandation pour calculer les features
+    \item Acces aux fichiers audio locaux pour les tests et demos
+\end{itemize}
+
+\newpage
+
+% Database Design
+\section{Conception de la base de donnees}
+
+\subsection{Schemas des collections}
+
+\subsubsection{Collection users}
+
+\begin{lstlisting}[language=JSON, caption=Structure de document utilisateur]
+{
+    "_id": "ObjectId",
+    "email": "user@example.com",
+    "username": "johndoe",
+    "password": "bcrypt_hash",
+    "profileImageUrl": "url_to_image",
+    "status": "ACTIVE",
+    "createdAt": "ISODate",
+    "lastLogin": "ISODate",
+    "provider": "local",
+    "providerId": null,
+    "passwordResetToken": null,
+    "passwordResetTokenExpiry": null,
+    "emailVerificationToken": null,
+    "emailVerificationTokenExpiry": null,
+    "deactivationRequestedAt": null,
+    "deactivatedAt": null
+}
+\end{lstlisting}
+
+\subsubsection{Collection songs}
+
+\begin{lstlisting}[language=JSON, caption=Structure de document chanson]
+{
+    "_id": "ObjectId",
+    "name": "Song Title",
+    "desc": "Song Description",
+    "album": "Album Name",
+    "image": "cloudinary_url",
+    "file": "cloudinary_audio_url",
+    "duration": "3:45"
+}
+\end{lstlisting}
+
+\subsubsection{Collection playlists}
+
+\begin{lstlisting}[language=JSON, caption=Structure de document playlist]
+{
+    "_id": "ObjectId",
+    "name": "My Playlist",
+    "description": "Description",
+    "ownerId": "user_id",
+    "songs": ["song_id_1", "song_id_2"],
+    "isPublic": true,
+    "shareCode": "abc123def",
+    "createdAt": "ISODate",
+    "updatedAt": "ISODate"
+}
+\end{lstlisting}
+
+\subsubsection{Collection song features}
+
+\begin{lstlisting}[language=JSON, caption=Document de caracteristiques audio]
+{
+    "_id": "song_id",
+    "songId": "song_id",
+    "file": "audio_file_url",
+    "metadata": {
+        "name": "Song Name",
+        "artist": "Artist Name",
+        "album": "Album Name",
+        "year": 2024,
+        "genre": "Pop",
+        "duration_ms": 225000
+    },
+    "features": {
+        "valence": 0.65,
+        "acousticness": 0.23,
+        "danceability": 0.78,
+        "energy": 0.84,
+        "instrumentalness": 0.0,
+        "key": 5,
+        "liveness": 0.12,
+        "loudness": -5.3,
+        "mode": 1,
+        "speechiness": 0.04,
+        "tempo": 128.0,
+        "popularity": 75
+    },
+    "updatedAt": "ISODate"
+}
+\end{lstlisting}
+
+\subsection{Indexes}
+
+\begin{table}[H]
+\centering
+\caption{Indexes MongoDB}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Collection} & \textbf{Index} & \textbf{Type} \\
+\hline
+users & email & Unique \\
+users & username & Unique, Sparse \\
+users & provider + providerId & Compound \\
+users & passwordResetToken & Single \\
+users & status + deactivationRequestedAt & Compound \\
+\hline
+favorites & userId + song & Compound, Unique \\
+\hline
+playlists & ownerId & Single \\
+playlists & shareCode & Unique, Sparse \\
+\hline
+activities & userId + createdAt & Compound \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% Security Architecture
+\section{Architecture de securite}
+
+\subsection{Flux d'authentification}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.4cm,
+    box/.style={rectangle, draw, minimum width=2.8cm, minimum height=0.9cm, text centered, font=\small},
+    arrow/.style={-{Stealth[length=2.3mm]}}
+]
+
+\node[box] (user) {Utilisateur};
+\node[box, below=of user] (frontend) {Frontend};
+\node[box, below=of frontend] (auth) {Service Auth};
+\node[box, below=of auth] (db) {Base de donnees};
+
+\draw[arrow] (user) -- node[right] {1. Login} (frontend);
+\draw[arrow] (frontend) -- node[right] {2. POST /login} (auth);
+\draw[arrow] (auth) -- node[right] {3. Verification} (db);
+\draw[arrow] (db) -- node[left] {4. Donnees utilisateur} (auth);
+\draw[arrow] (auth) -- node[left] {5. Token JWT} (frontend);
+\draw[arrow] (frontend) -- node[left] {6. Stocker le token} (user);
+
+\end{tikzpicture}
+\caption{Flux d'authentification}
+\end{figure}
+
+\subsection{Mecanisme d'autorisation}
+
+\begin{enumerate}
+    \item \textbf{Structure du token JWT} :
+    \begin{lstlisting}[language=JSON, caption=Payload JWT]
+{
+    "userId": "user_id_here",
+    "email": "user@example.com",
+    "iat": 1704672000,
+    "exp": 1704758400,
+    "sub": "user@example.com"
+}
+    \end{lstlisting}
+
+    \item \textbf{Validation du token} :
+    \begin{itemize}
+        \item Verification de la signature avec HS512
+        \item Verification d'expiration (24 heures)
+        \item Verification de l'existence de l'utilisateur
+        \item Verification du statut du compte
+    \end{itemize}
+
+    \item \textbf{Endpoints proteges} :
+    \begin{itemize}
+        \item Bearer token dans l'en-tete Authorization
+        \item Filtre JWT traite toutes les requetes
+        \item Contexte utilisateur injecte dans SecurityContext
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Integration OAuth2}
+
+\begin{lstlisting}[language=YAML, caption=Configuration OAuth2]
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri:
+              "{baseUrl}/login/oauth2/code/{registrationId}"
+\end{lstlisting}
+
+\subsection{Bonnes pratiques de securite}
+
+\begin{itemize}
+    \item \textbf{Securite des mots de passe} :
+    \begin{itemize}
+        \item Hachage BCrypt avec force 10
+        \item Exigence minimale de 6 caracteres
+        \item Les tokens de reinitialisation expirent en 1 heure
+    \end{itemize}
+
+    \item \textbf{Limitation de debit} :
+    \begin{itemize}
+        \item 100 requetes par minute par IP
+        \item Algorithme de seau a jetons Bucket4j
+        \item Code de statut 429 en cas de depassement
+    \end{itemize}
+
+    \item \textbf{Configuration CORS} :
+    \begin{itemize}
+        \item Liste blanche d'origines specifiees
+        \item Credentials autorises
+        \item Preflight max age : 3600s
+    \end{itemize}
+
+    \item \textbf{Verification d'email} :
+    \begin{itemize}
+        \item Les tokens expirent en 24 heures
+        \item Generation de tokens basee sur UUID
+        \item Verification requise pour les operations sensibles
+    \end{itemize}
+\end{itemize}
+
+\newpage
+
+% API Endpoints
+\section{Reference des endpoints API}
+
+\subsection{Service d'authentification}
+
+\begin{table}[H]
+\centering
+\caption{Endpoints Auth}
+\small
+\begin{tabular}{|p{1.5cm}|p{4.3cm}|p{5.2cm}|}
+\hline
+\textbf{Methode} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+POST & /api/auth/register & Enregistrer un nouvel utilisateur \\
+POST & /api/auth/login & Connexion utilisateur \\
+GET & /api/auth/me & Recuperer l'utilisateur courant \\
+POST & /api/auth/forgot-password & Demander la reinitialisation du mot de passe \\
+POST & /api/auth/reset-password & Reinitialiser le mot de passe avec token \\
+POST & /api/auth/verify-email & Verifier l'adresse email \\
+POST & /api/auth/resend-verification & Renvoyer l'email de verification \\
+POST & /api/auth/deactivate-account & Demander la desactivation du compte \\
+POST & /api/auth/cancel-deactivation & Annuler la desactivation \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Profil et administration}
+
+\begin{table}[H]
+\centering
+\caption{Endpoints Profil et Admin}
+\small
+\begin{tabular}{|p{1.5cm}|p{4.3cm}|p{5.2cm}|}
+\hline
+\textbf{Methode} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /api/profile & Recuperer le profil utilisateur \\
+PUT & /api/profile/username & Mettre a jour le nom d'utilisateur \\
+PUT & /api/profile/photo & Mettre a jour la photo de profil \\
+DELETE & /api/profile/photo & Supprimer la photo de profil \\
+POST & /api/profile/request-verification & Demander un nouvel email de verification \\
+GET & /api/admin/users & Lister les utilisateurs (admin) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Service musical}
+
+\begin{table}[H]
+\centering
+\caption{Endpoints Music Service}
+\small
+\begin{tabular}{|p{1.5cm}|p{4.3cm}|p{5.2cm}|}
+\hline
+\textbf{Methode} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /api/song/list & Lister les chansons \\
+POST & /api/song/add & Ajouter une chanson (image + audio) \\
+DELETE & /api/song/remove/:id & Supprimer une chanson \\
+\hline
+GET & /api/album/list & Lister les albums \\
+POST & /api/album/add & Ajouter un album (image) \\
+DELETE & /api/album/remove/:id & Supprimer un album \\
+\hline
+POST & /api/playlist/create & Creer une playlist \\
+DELETE & /api/playlist/:playlistId & Supprimer une playlist \\
+POST & /api/playlist/:playlistId/add-song & Ajouter une chanson a une playlist \\
+POST & /api/playlist/:playlistId/remove-song & Retirer une chanson d'une playlist \\
+PATCH & /api/playlist/:playlistId/visibility & Changer la visibilite d'une playlist \\
+POST & /api/playlist/:playlistId/share & Generer un code de partage \\
+GET & /api/playlist/shared/:shareCode & Recuperer une playlist partagee \\
+GET & /api/playlist/public/discover & Decouvrir des playlists publiques \\
+GET & /api/playlist/public/:playlistId & Recuperer une playlist publique \\
+GET & /api/playlist/all & Lister toutes les playlists \\
+GET & /api/playlist/user/:userId & Lister les playlists d'un utilisateur \\
+GET & /api/playlist/:playlistId & Recuperer une playlist par id \\
+\hline
+POST & /api/favorite/add & Ajouter un favori \\
+POST & /api/favorite/remove & Retirer un favori \\
+GET & /api/favorite/list/:userId & Lister les favoris d'un utilisateur \\
+\hline
+POST & /api/activity/log & Enregistrer une activite \\
+GET & /api/activity/user/:userId & Recuperer les activites recentes \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Service de recommandation}
+
+\begin{table}[H]
+\centering
+\caption{Endpoints Recommendation Service}
+\small
+\begin{tabular}{|p{1.5cm}|p{4.3cm}|p{5.2cm}|}
+\hline
+\textbf{Methode} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /health & Health check \\
+GET & /api/recommendation/status & Statut des assets IA et nombre de features \\
+POST & /api/recommendation/backfill & Backfill des features manquantes \\
+POST & /api/recommendation/extract & Programmer l'extraction des features \\
+GET & /api/recommendation/song/{songId} & Recommandations par chanson (param limit) \\
+GET & /api/recommendation/user/{userId} & Recommandations par utilisateur (param limit) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Service Faker}
+
+\begin{table}[H]
+\centering
+\caption{Endpoints Faker Service}
+\small
+\begin{tabular}{|p{1.5cm}|p{4.3cm}|p{5.2cm}|}
+\hline
+\textbf{Methode} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /health & Health check \\
+POST & /api/faker/seed & Seed des donnees de dev \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% Deployment Architecture
+\section{Architecture de deploiement}
+
+\subsection{Conteneurisation Docker}
+
+\subsubsection{Conteneurs de services}
+
+\begin{table}[H]
+\centering
+\caption{Services Docker}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Service} & \textbf{Image} & \textbf{Port} & \textbf{Dependances} \\
+\hline
+mongodb & mongo:7.0 & 27017 & - \\
+auth-service & Custom Java & 8080 & mongodb \\
+music-service & Custom Node & 3000 & mongodb \\
+recommendation & Custom Python & 4003 & mongodb \\
+faker-service & Custom Node & 4002 & mongodb \\
+frontend & Custom React & 5173(80) & auth, music \\
+admin-panel & Custom React & 5174(80) & music \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Configuration reseau}
+
+\begin{lstlisting}[language=YAML, caption=Reseau Docker Compose]
+networks:
+  music-app-network:
+    driver: bridge
+
+services:
+  mongodb:
+    networks:
+      - music-app-network
+
+  auth-service:
+    networks:
+      - music-app-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+\end{lstlisting}
+
+\subsection{Processus de build}
+
+\subsubsection{Builds Docker multi-etapes}
+
+\begin{lstlisting}[language=Docker, caption=Dockerfile frontend]
+# Stage 1: Build
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+ARG VITE_API_BASE_URL
+ARG VITE_OAUTH_GOOGLE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_OAUTH_GOOGLE_URL=$VITE_OAUTH_GOOGLE_URL
+RUN npm run build
+
+# Stage 2: Production
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+\end{lstlisting}
+
+\subsection{Variables d'environnement}
+
+\begin{table}[H]
+\centering
+\caption{Variables d'environnement cles}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Variable} & \textbf{But} \\
+\hline
+MONGODB\_URI & Chaine de connexion a la base de donnees \\
+JWT\_SECRET & Cle de signature des tokens \\
+GOOGLE\_CLIENT\_ID & ID client OAuth2 \\
+GOOGLE\_CLIENT\_SECRET & Secret client OAuth2 \\
+MAIL\_USERNAME & Nom d'utilisateur email SMTP \\
+MAIL\_PASSWORD & Mot de passe email SMTP \\
+CLOUDINARY\_NAME & Nom de compte Cloudinary \\
+CLOUDINARY\_API\_KEY & Cle API Cloudinary \\
+FRONTEND\_URL & URL de l'application frontend \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Health Checks}
+
+\begin{lstlisting}[language=YAML, caption=Configuration des health checks]
+healthcheck:
+  test: ["CMD", "curl", "-f",
+         "http://localhost:8080/actuator/health"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+\end{lstlisting}
+
+\newpage
+
+% Performance Optimization
+\section{Optimisation des performances}
+
+\subsection{Strategie de cache}
+
+\subsubsection{Cache au niveau application}
+
+\begin{itemize}
+    \item \textbf{Technologie} : Caffeine Cache
+    \item \textbf{Duree du cache} : 5 minutes
+    \item \textbf{Taille max} : 1000 entrees
+    \item \textbf{Donnees mises en cache} :
+    \begin{itemize}
+        \item Profils utilisateurs
+        \item Resultats d'authentification
+        \item Chansons frequemment consultees
+    \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption=Configuration du cache]
+@Configuration
+@EnableCaching
+public class CacheConfig {
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager =
+            new CaffeineCacheManager("users");
+        cacheManager.setCaffeine(
+            Caffeine.newBuilder()
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .maximumSize(1000)
+        );
+        return cacheManager;
+    }
+}
+\end{lstlisting}
+
+\subsection{Optimisation de la base de donnees}
+
+\begin{itemize}
+    \item \textbf{Indexes} : index strategiques sur les champs souvent interroges
+    \item \textbf{Indexes clairsemes} : pour les champs optionnels afin d'economiser de l'espace
+    \item \textbf{Indexes composes} : pour les requetes multi-champs
+    \item \textbf{Projection} : ne recuperer que les champs necessaires
+    \item \textbf{Pagination} : limiter les ensembles de resultats pour les grandes requetes
+\end{itemize}
+
+\subsection{Optimisation frontend}
+
+\begin{itemize}
+    \item \textbf{Code splitting} : imports dynamiques pour les routes
+    \item \textbf{Lazy loading} : composants charges a la demande
+    \item \textbf{Optimisation d'images} : transformations Cloudinary
+    \item \textbf{Taille du bundle} : tree shaking et minification
+    \item \textbf{React Query} : cache automatique et deduplication
+\end{itemize}
+
+\subsection{Optimisation API}
+
+\begin{itemize}
+    \item \textbf{Compression de reponse} : compression Gzip activee
+    \item \textbf{Pagination} : limiter les grands ensembles de resultats
+    \item \textbf{Selection de champs} : permettre aux clients de specifier les champs
+    \item \textbf{Requetes par lot} : plusieurs operations en une requete
+    \item \textbf{Pooling de connexions} : reutilisation des connexions a la base
+\end{itemize}
+
+\newpage
+
+% Monitoring and Logging
+\section{Monitoring et journalisation}
+
+\subsection{Strategie de logs}
+
+\subsubsection{Logs applicatifs}
+
+\begin{itemize}
+    \item \textbf{Framework} : SLF4J + Logback (Java), Winston (Node.js)
+    \item \textbf{Niveaux de log} :
+    \begin{itemize}
+        \item ERROR : echecs critiques
+        \item WARN : problemes recuperables
+        \item INFO : evenements importants
+        \item DEBUG : informations detaillees (dev uniquement)
+    \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption=Exemple de logging]
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AuthService {
+    public AuthResponse login(LoginRequest request) {
+        log.info("Login attempt for user: {}",
+                 request.getEmailOrUsername());
+
+        try {
+            // Login logic
+            log.info("Login successful for user: {}",
+                     user.getEmail());
+            return response;
+        } catch (Exception e) {
+            log.error("Login failed: {}", e.getMessage());
+            throw e;
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Gestion des erreurs}
+
+\subsubsection{Gestionnaire global d'exceptions}
+
+\begin{lstlisting}[language=Java, caption=Gestionnaire d'exceptions]
+@ControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<MessageResponse>
+        handleRuntimeException(RuntimeException ex) {
+        log.error("Runtime exception: ", ex);
+        return ResponseEntity.badRequest()
+            .body(new MessageResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<MessageResponse>
+        handleGeneralException(Exception ex) {
+        log.error("Unexpected exception: ", ex);
+        return ResponseEntity.status(
+            HttpStatus.INTERNAL_SERVER_ERROR
+        ).body(new MessageResponse(
+            "An unexpected error occurred"
+        ));
+    }
+}
+\end{lstlisting}
+
+\subsection{Suivi des performances}
+
+\begin{itemize}
+    \item \textbf{Spring Boot Actuator} : endpoints de sante
+    \item \textbf{Metriques} :
+    \begin{itemize}
+        \item Taux de requetes
+        \item Temps de reponse
+        \item Taux d'erreurs
+        \item Connexions base de donnees
+        \item Taux de hit du cache
+    \end{itemize}
+\end{itemize}
+
+\newpage
+
+% Challenges and Solutions
+\section{Defis et solutions}
+
+\subsection{Defis techniques}
+
+\begin{enumerate}
+    \item \textbf{Defi} : Authentification inter-services
+    \begin{itemize}
+        \item \textbf{Probleme} : plusieurs services doivent valider les tokens JWT
+        \item \textbf{Solution} : validation JWT centralisee dans le service d'auth, token passe via les en-tetes
+        \item \textbf{Resultat} : authentification coherente sur tous les services
+    \end{itemize}
+
+    \item \textbf{Defi} : Gestion des uploads de fichiers
+    \begin{itemize}
+        \item \textbf{Probleme} : les gros fichiers audio ralentissent les uploads
+        \item \textbf{Solution} : integration Cloudinary pour le stockage media
+        \item \textbf{Resultat} : uploads rapides, diffusion CDN, optimisation automatique
+    \end{itemize}
+
+    \item \textbf{Defi} : Recommandations en temps reel
+    \begin{itemize}
+        \item \textbf{Probleme} : calculer les recommandations a la demande est lent
+        \item \textbf{Solution} : clusters pre-calcules, extraction de caracteristiques en arriere-plan
+        \item \textbf{Resultat} : reponses de recommandations en moins d'une seconde
+    \end{itemize}
+
+    \item \textbf{Defi} : Communication entre conteneurs Docker
+    \begin{itemize}
+        \item \textbf{Probleme} : les services ne parvenaient pas a se joindre
+        \item \textbf{Solution} : reseau bridge personnalise, noms de service comme hostnames
+        \item \textbf{Resultat} : communication inter-services fluide
+    \end{itemize}
+
+    \item \textbf{Defi} : Gestion du callback OAuth2
+    \begin{itemize}
+        \item \textbf{Probleme} : gestion d'etat complexe durant le flux OAuth
+        \item \textbf{Solution} : page de callback dediee, extraction des parametres URL
+        \item \textbf{Resultat} : integration OAuth fluide avec gestion des erreurs
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+% Future Enhancements
+\section{Ameliorations futures}
+
+\subsection{Fonctionnalites prevues}
+
+\begin{enumerate}
+    \item \textbf{Fonctionnalites sociales} :
+    \begin{itemize}
+        \item Profils utilisateur et suivi
+        \item Playlists collaboratives
+        \item Integration de partage social
+        \item Commentaires et likes
+    \end{itemize}
+
+    \item \textbf{Fonctionnalites audio} :
+    \begin{itemize}
+        \item Lecture hors ligne
+        \item Egaliseur audio
+        \item Crossfade entre les pistes
+        \item Lecture sans interruption
+        \item Integration des paroles
+    \end{itemize}
+
+    \item \textbf{Tableau de bord analytique} :
+    \begin{itemize}
+        \item Statistiques d'ecoute
+        \item Metriques d'engagement utilisateur
+        \item Chansons/artistes populaires
+        \item Distribution geographique
+    \end{itemize}
+
+    \item \textbf{Ameliorations mobile} :
+    \begin{itemize}
+        \item Application iOS
+        \item Notifications push
+        \item Mode hors ligne
+        \item Support de widgets
+    \end{itemize}
+
+\end{enumerate}
+
+\subsection{Dette technique}
+
+\begin{itemize}
+    \item Couverture de tests complete (objectif 90\%)
+    \item Documentation API avec Swagger/OpenAPI
+    \item Gestion des erreurs exhaustive
+    \item Benchmarking des performances
+    \item Audit de securite
+    \item Ameliorations d'accessibilite (WCAG 2.1 AA)
+\end{itemize}
+
+\newpage
+
+% Conclusion
+\section{Conclusion}
+
+Le projet Music App illustre avec succes la mise en oeuvre d'une plateforme moderne et evolutive de streaming musical en utilisant des technologies et des architectures standard de l'industrie. Le systeme s'appuie sur une architecture microservices pour obtenir :
+
+\begin{itemize}
+    \item \textbf{Modularite} : services independants avec responsabilites claires
+    \item \textbf{Scalabilite} : chaque service peut evoluer independamment selon la demande
+    \item \textbf{Maintenabilite} : structure de code propre avec separation des responsabilites
+    \item \textbf{Securite} : mecanismes robustes d'authentification et d'autorisation
+    \item \textbf{Intelligence} : recommandations basees sur le ML pour une meilleure experience utilisateur
+    \item \textbf{Multiplateforme} : applications web et mobiles avec experience coherente
+\end{itemize}
+
+\subsection{Realisations clees}
+
+\begin{enumerate}
+    \item Mise en oeuvre reussie d'une architecture microservices avec 4 services backend
+    \item Integration de l'apprentissage automatique pour des recommandations musicales intelligentes
+    \item Creation d'applications web responsives et mobiles natives
+    \item Securite complete avec JWT et OAuth2
+    \item Mise en oeuvre de fonctionnalites en temps reel avec journalisation d'activite
+    \item Conteneurisation de tous les services avec Docker pour un deploiement simple
+    \item Modele de donnees evolutif avec MongoDB
+\end{enumerate}
+
+\subsection{Lecons apprises}
+
+\begin{itemize}
+    \item Les microservices ajoutent de la complexite mais offrent des avantages importants en scalabilite
+    \item Docker simplifie le deploiement et assure la coherence entre les environnements
+    \item Une bonne conception d'API est cruciale pour l'integration frontend-backend
+    \item Les strategies de cache ameliorent significativement les performances
+    \item La securite doit etre integree des le depart, pas ajoutee apres coup
+    \item La documentation et l'organisation du code sont essentielles pour la maintenabilite
+\end{itemize}
+
+\subsection{Impact}
+
+Ce projet fournit une base solide pour une plateforme de streaming musical prete pour la production. L'architecture prend en charge les ameliorations futures et peut gerer la croissance des utilisateurs grace a la mise a l'echelle horizontale. La conception modulaire permet d'ajouter facilement des fonctionnalites sans perturber les fonctionnalites existantes.
+
+\newpage
+
+% References
+\section{References}
+
+\begin{enumerate}
+    \item Documentation Spring Framework : \url{https://spring.io/projects/spring-boot}
+    \item Documentation React : \url{https://react.dev}
+    \item Documentation FastAPI : \url{https://fastapi.tiangolo.com}
+    \item Documentation MongoDB : \url{https://www.mongodb.com/docs}
+    \item Documentation Docker : \url{https://docs.docker.com}
+    \item Introduction JWT : \url{https://jwt.io/introduction}
+    \item Specification OAuth 2.0 : \url{https://oauth.net/2}
+    \item Documentation Scikit-learn : \url{https://scikit-learn.org}
+    \item Analyse audio Essentia : \url{https://essentia.upf.edu}
+    \item Guide Kotlin Android : \url{https://developer.android.com/kotlin}
+    \item Microservices Patterns par Chris Richardson
+    \item Clean Architecture par Robert C. Martin
+\end{enumerate}
+
+\newpage
+
+% Appendices
+\appendix
+
+\section{Configuration d'environnement}
+
+\subsection{Variables d'environnement requises}
+
+\begin{lstlisting}[language=bash, caption=.env.example]
+# Database
+MONGODB_URI=mongodb://localhost:27017/musicapp
+
+# JWT
+JWT_SECRET=your-secret-key-here
+JWT_EXPIRATION=86400000
+
+# Email
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+EMAIL_FROM=noreply@musicapp.com
+
+# OAuth2
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Frontend
+FRONTEND_URL=http://localhost:5173
+
+# Cloudinary
+CLOUDINARY_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_SECRET_KEY=your-secret-key
+
+# Recommendation Service
+RECOMMENDATION_SERVICE_URL=http://localhost:4003
+\end{lstlisting}
+
+\section{Commandes de deploiement}
+
+\subsection{Commandes Docker Compose}
+
+\begin{lstlisting}[language=bash, caption=Commandes de deploiement]
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f [service_name]
+
+# Stop all services
+docker-compose down
+
+# Rebuild and restart
+docker-compose up -d --build
+
+# Remove volumes (clean slate)
+docker-compose down -v
+
+# Scale specific service
+docker-compose up -d --scale music-service=3
+\end{lstlisting}
+
+\end{document}
