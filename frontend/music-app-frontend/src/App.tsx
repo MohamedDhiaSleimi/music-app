@@ -1,5 +1,4 @@
-// App.tsx - Version finale
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -13,7 +12,7 @@ import ResendVerificationPage from "./pages/ResendVerificationPage";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { MusicProvider } from "./context/MusicContext";
-import MusicApp from "./pages/MusicApp";  // ← C'EST MAINTENANT VOTRE PAGE D'ACCUEIL + LECTEUR
+import MusicApp from "./pages/MusicApp";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +46,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                {/* TOUTES LES ROUTES VONT VERS MusicApp QUI GÈRE L'ACCUEIL ET LE LECTEUR */}
                 <Route
                   path="/*"
                   element={

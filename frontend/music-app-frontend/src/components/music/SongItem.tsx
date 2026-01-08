@@ -1,5 +1,4 @@
 import type { MouseEvent } from "react";
-import { useState } from "react";
 import { useMusic } from "../../context/MusicContext";
 import type { Song } from "../../types/music.types";
 
@@ -9,7 +8,6 @@ export default function SongItem({ _id, image, name, desc }: SongItemProps) {
   const { playWithId, isFavorite, toggleFavorite, favoriteUpdatingIds, addSongToQueue } = useMusic();
   const isSongFavorite = isFavorite(_id);
   const isUpdating = favoriteUpdatingIds.has(_id);
-  const [showDetails, setShowDetails] = useState(false);
 
   const handleToggleFavorite = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -19,18 +17,10 @@ export default function SongItem({ _id, image, name, desc }: SongItemProps) {
   return (
     <div
       onClick={() => playWithId(_id)}
-      className="group min-w-[190px] max-w-[210px] p-3 rounded-2xl cursor-pointer bg-white/5 border border-white/10 hover:border-white/30 hover:-translate-y-1 transition shadow-md shadow-black/30"
+      className="group min-w-[190px] max-w-[240px] max-h-[320px] p-3 rounded-2xl cursor-pointer bg-white/5 border border-white/10 hover:border-white/30 hover:-translate-y-1 transition shadow-md shadow-black/30"
     >
-      <div className="relative rounded-xl overflow-hidden aspect-square">
-        <img
-          className="w-full h-full object-cover"
-          src={image}
-          alt={name}
-          loading="lazy"
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).src = "http://localhost:3000/static/default-song.png";
-          }}
-        />
+      <div className="relative rounded-xl overflow-hidden">
+        <img className="w-full h-44 object-cover" src={image} alt={name} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-100 transition" />
 
         <button
@@ -68,43 +58,8 @@ export default function SongItem({ _id, image, name, desc }: SongItemProps) {
           </button>
         </div>
       </div>
-      <p className="font-bold mt-3 mb-1 text-white leading-tight line-clamp-2 max-h-12 max-w-[180px]">{name}</p>
-      <p className="text-slate-200 text-sm opacity-90 leading-relaxed line-clamp-2 max-h-12 max-w-[180px]">{desc}</p>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowDetails(true);
-        }}
-        className="mt-2 text-xs text-blue-200 hover:text-white font-semibold"
-      >
-        See more
-      </button>
-
-      {showDetails && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          onClick={() => setShowDetails(false)}
-        >
-          <div
-            className="bg-white text-gray-900 rounded-2xl p-6 max-w-lg w-full shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-bold mb-2">{name}</h2>
-                <p className="text-sm text-gray-700">{desc}</p>
-              </div>
-              <button
-                onClick={() => setShowDetails(false)}
-                className="text-gray-500 hover:text-gray-800"
-                aria-label="Close details"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <p className="font-bold mt-3 mb-1 text-white leading-tight truncate">{name}</p>
+      <p className="text-slate-200 text-sm opacity-90 leading-relaxed truncate">{desc}</p>
     </div>
   );
 }

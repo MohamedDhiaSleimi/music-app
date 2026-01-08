@@ -11,15 +11,20 @@ import {
   type ReactNode,
 } from "react";
 import { musicApi } from "../services/musicApi";
-import { recommendationApi } from "../services/recommendationApi";
+import {
+  getRecommendations,
+  getRecommendationScores,
+  type ScoredSong,
+} from "../utils/recommendationPlaceholder";
 import { useAuth } from "./AuthContext";
 import type { Album, Playlist, Song } from "../types/music.types";
-import type { RecommendationHit } from "../types/recommendation.types";
+
+type SortOption = "recommended" | "date" | "alpha";
 
 interface MusicContextType {
-  audioRef: React.RefObject<HTMLAudioElement | null>;
-  seekBar: React.RefObject<HTMLDivElement | null>;
-  seekBg: React.RefObject<HTMLDivElement | null>;
+  audioRef: React.RefObject<HTMLAudioElement>;
+  seekBar: React.RefObject<HTMLDivElement>;
+  seekBg: React.RefObject<HTMLDivElement>;
   playQueue: Song[];
   clearQueue: () => void;
 
@@ -28,6 +33,8 @@ interface MusicContextType {
   songsData: Song[];
   albumsData: Album[];
   playlists: Playlist[];
+  dailyDiscoverPlaylists: Playlist[];
+  allPlaylists: Playlist[];
   discoverPlaylists: Playlist[];
   sharedPlaylist: Playlist | null;
 
@@ -37,9 +44,6 @@ interface MusicContextType {
   favoriteSongIds: Set<string>;
   favoriteUpdatingIds: Set<string>;
   isFavoritesLoading: boolean;
-  recommendations: RecommendationHit[];
-  recommendedAlbums: Album[];
-  isRecommendationLoading: boolean;
   isPlaylistsLoading: boolean;
   isDiscoverLoading: boolean;
   isFavorite: (songId: string) => boolean;
@@ -54,19 +58,25 @@ interface MusicContextType {
   loadPublicPlaylists: () => Promise<void>;
   fetchSharedPlaylist: (shareCode: string) => Promise<void>;
   getPublicPlaylist: (playlistId: string) => Promise<Playlist | null>;
-  logActivity: (type: string, metadata?: Record<string, unknown>) => Promise<void>;
 
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   viewFilter: "all" | "music";
   setViewFilter: (filter: "all" | "music") => void;
+  sortOption: SortOption;
+  setSortOption: (sort: SortOption) => void;
+  sortSongs: (songs: Song[]) => Song[];
+  sortAlbums: (albums: Album[]) => Album[];
+  sortPlaylists: (playlists: Playlist[]) => Playlist[];
+  sortedSongsData: Song[];
+  sortedAlbumsData: Album[];
+  sortedPlaylists: Playlist[];
+  sortedDiscoverPlaylists: Playlist[];
 
   track: Song | null;
-  currentQueueIndex: number | null;
   setTrack: (song: Song) => void;
   playStatus: boolean;
   setPlayStatus: (status: boolean) => void;
-  isBuffering: boolean;
 
   time: {
     currentTime: { minute: number; second: number };
@@ -94,8 +104,6 @@ interface MusicContextType {
   handleVolumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isMuted: boolean;
   toggleMute: () => void;
-  setVolume: React.Dispatch<React.SetStateAction<number>>;
-  setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
 
   isLoading: boolean;
 }
@@ -107,8 +115,6 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const seekBar = useRef<HTMLDivElement>(null);
   const seekBg = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-  const DEFAULT_SONG_IMAGE = "http://localhost:3000/static/default-song.png";
-  const DEFAULT_ALBUM_IMAGE = "http://localhost:3000/static/default-album.png";
 
   const [songs, setSongs] = useState<Song[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -121,29 +127,24 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     new Set()
   );
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [dailyDiscoverPlaylists, setDailyDiscoverPlaylists] = useState<
+    Playlist[]
+  >([]);
   const [discoverPlaylists, setDiscoverPlaylists] = useState<Playlist[]>([]);
   const [sharedPlaylist, setSharedPlaylist] = useState<Playlist | null>(null);
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(false);
   const [isDiscoverLoading, setIsDiscoverLoading] = useState(false);
-  const [recommendations, setRecommendations] = useState<RecommendationHit[]>([]);
-  const [recommendedAlbums, setRecommendedAlbums] = useState<Album[]>([]);
-  const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
 
   const [playQueue, setPlayQueue] = useState<Song[]>([]);
-  const [currentQueueIndex, setCurrentQueueIndex] = useState<number | null>(null);
   const [track, setTrack] = useState<Song | null>(null);
   const [playStatus, setPlayStatus] = useState(false);
-  const [isBuffering, setIsBuffering] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isFavoritesLoading, setIsFavoritesLoading] = useState(false);
 
   const [loopMode, setLoopMode] = useState<"off" | "one" | "all">("off");
   const [isShuffle, setIsShuffle] = useState(false);
-  const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem("volume");
-    return saved ? parseFloat(saved) : 0.5;
-  });
-  const [isMuted, setIsMuted] = useState(() => localStorage.getItem("muted") === "true");
+  const [volume, setVolume] = useState(0.5);
+  const [isMuted, setIsMuted] = useState(false);
 
   const [time, setTime] = useState({
     currentTime: { second: 0, minute: 0 },
@@ -152,16 +153,8 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [viewFilter, setViewFilter] = useState<"all" | "music">("all");
-
-  const deterministicNumber = useCallback((seed: string, min = 0, max = 1) => {
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-      hash = (hash << 5) - hash + seed.charCodeAt(i);
-      hash |= 0;
-    }
-    const normalized = (Math.sin(hash) + 1) / 2;
-    return min + normalized * (max - min);
-  }, []);
+  const [sortOption, setSortOption] = useState<SortOption>("recommended");
+  const [recommendedSongIds, setRecommendedSongIds] = useState<string[]>([]);
 
   const normalizeMediaUrl = useCallback((url?: string) => {
     if (!url) return "";
@@ -179,6 +172,33 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     } catch {
       return url;
     }
+  }, []);
+
+  const normalizeSong = useCallback(
+    (song: Song): Song => ({
+      ...song,
+      image: normalizeMediaUrl(song.image),
+      file: normalizeMediaUrl(song.file),
+    }),
+    [normalizeMediaUrl]
+  );
+
+  const normalizeAlbum = useCallback(
+    (album: Album): Album => ({
+      ...album,
+      image: normalizeMediaUrl(album.image),
+    }),
+    [normalizeMediaUrl]
+  );
+
+  const deterministicNumber = useCallback((seed: string, min = 0, max = 1) => {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash << 5) - hash + seed.charCodeAt(i);
+      hash |= 0;
+    }
+    const normalized = (Math.sin(hash) + 1) / 2;
+    return min + normalized * (max - min);
   }, []);
 
   const enrichSongFeatures = useCallback(
@@ -220,41 +240,9 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         releaseYear:
           song.releaseYear ??
           Math.round(deterministicNumber(song._id + "year", 1995, 2023)),
-        file: normalizeMediaUrl(song.file),
       };
     },
-    [deterministicNumber, normalizeMediaUrl]
-  );
-
-  const normalizeSongs = useCallback(
-    (list: Song[]) => list.map((s) => ({ ...s, file: normalizeMediaUrl(s.file) })),
-    [normalizeMediaUrl]
-  );
-
-  const buildRecommendedAlbums = useCallback(
-    (hits: RecommendationHit[]): Album[] => {
-      const albumsMap = new Map<string, Album>();
-      hits.slice(0, 12).forEach((hit, idx) => {
-        const artistName =
-          (hit.artists || "Various Artists").split(",")[0].trim() ||
-          "Various Artists";
-        if (albumsMap.has(artistName)) return;
-
-        const id = hit.id || `${artistName}-${idx}`;
-        const hue = Math.floor(deterministicNumber(id, 0, 360));
-        const bgColour = `hsl(${hue}, 65%, 70%)`;
-
-        albumsMap.set(artistName, {
-          _id: `rec-${id}`,
-          name: `${artistName} Mix`,
-          desc: hit.name ? `Featuring ${hit.name}` : "Tailored for you",
-          image: DEFAULT_ALBUM_IMAGE,
-          bgColour,
-        });
-      });
-      return Array.from(albumsMap.values());
-    },
-    [DEFAULT_ALBUM_IMAGE, deterministicNumber]
+    [deterministicNumber]
   );
 
   // Load music data
@@ -266,28 +254,14 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
           musicApi.getAlbums(),
         ]);
         const enrichedSongs = songsData.map(enrichSongFeatures);
-        setSongs(enrichedSongs);
-        setAlbums(albumsData);
-        setOriginalSongs(enrichedSongs);
-
-        const savedQueue = localStorage.getItem("playQueue");
-        const savedTrackId = localStorage.getItem("currentTrackId");
-        const savedQueueIndex = localStorage.getItem("currentQueueIndex");
-
-        if (savedQueue) {
-          const parsed = JSON.parse(savedQueue) as Song[];
-          const normalized = normalizeSongs(parsed);
-          setPlayQueue(normalized);
-          if (savedTrackId) {
-            const existing = normalized.find((s) => s._id === savedTrackId);
-            if (existing) {
-              setTrack(existing);
-              setCurrentQueueIndex(savedQueueIndex ? parseInt(savedQueueIndex) : null);
-            }
-          }
-        } else if (enrichedSongs.length > 0) {
-          setTrack(enrichedSongs[0]);
-          setPlayQueue(enrichedSongs);
+        const normalizedSongs = enrichedSongs.map(normalizeSong);
+        const normalizedAlbums = albumsData.map(normalizeAlbum);
+        setSongs(normalizedSongs);
+        setAlbums(normalizedAlbums);
+        setOriginalSongs(normalizedSongs);
+        if (normalizedSongs.length > 0) {
+          setTrack(normalizedSongs[0]);
+          setPlayQueue(normalizedSongs);
         }
       } catch (error) {
         console.error("Failed to load music:", error);
@@ -298,38 +272,13 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     loadMusic();
   }, []);
 
-  const fetchRecommendations = useCallback(
-    async (userId: string) => {
-      if (!userId) return;
-      setIsRecommendationLoading(true);
-      try {
-        const res = await recommendationApi.getUserRecommendations(userId, 24);
-        const hits = res.recommendations || [];
-        setRecommendations(hits);
-        setRecommendedAlbums(buildRecommendedAlbums(hits));
-      } catch (error) {
-        console.error("Failed to load recommendations:", error);
-        setRecommendations([]);
-        setRecommendedAlbums([]);
-      } finally {
-        setIsRecommendationLoading(false);
-      }
-    },
-    [buildRecommendedAlbums]
-  );
-
   const fetchFavorites = async (userId: string) => {
     setIsFavoritesLoading(true);
     try {
       const favoritesData = await musicApi.getFavorites(userId);
-      setFavoriteSongs(favoritesData);
-      setFavoriteSongIds(new Set(favoritesData.map((song) => song._id)));
-      if (favoritesData.length > 0) {
-        fetchRecommendations(userId);
-      } else {
-        setRecommendations([]);
-        setRecommendedAlbums([]);
-      }
+      const normalizedFavorites = favoritesData.map(normalizeSong);
+      setFavoriteSongs(normalizedFavorites);
+      setFavoriteSongIds(new Set(normalizedFavorites.map((song) => song._id)));
     } catch (error) {
       console.error("Failed to load favorites:", error);
       setFavoriteSongs([]);
@@ -348,49 +297,35 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     setIsPlaylistsLoading(true);
     try {
       const playlistsData = await musicApi.getPlaylists(user.userId);
-      setPlaylists(
-        playlistsData.map((p) => ({
-          ...p,
-          songs: p.songs ? normalizeSongs(p.songs) : [],
-        }))
-      );
+      const normalizedPlaylists = playlistsData.map((playlist) => ({
+        ...playlist,
+        songs: playlist.songs.map(normalizeSong),
+      }));
+      setPlaylists(normalizedPlaylists);
     } catch (error) {
       console.error("Failed to load playlists:", error);
       setPlaylists([]);
     } finally {
       setIsPlaylistsLoading(false);
     }
-  }, [user?.userId]);
+  }, [normalizeSong, user?.userId]);
 
   const loadPublicPlaylists = useCallback(async () => {
     setIsDiscoverLoading(true);
     try {
       const data = await musicApi.discoverPublicPlaylists(user?.userId);
-      setDiscoverPlaylists(
-        data.map((p) => ({
-          ...p,
-          songs: p.songs ? normalizeSongs(p.songs) : [],
-        }))
-      );
+      const normalizedPlaylists = data.map((playlist) => ({
+        ...playlist,
+        songs: playlist.songs.map(normalizeSong),
+      }));
+      setDiscoverPlaylists(normalizedPlaylists);
     } catch (error) {
       console.error("Failed to load public playlists:", error);
       setDiscoverPlaylists([]);
     } finally {
       setIsDiscoverLoading(false);
     }
-  }, [user?.userId]);
-
-  const logActivity = useCallback(
-    async (type: string, metadata: Record<string, unknown> = {}) => {
-      if (!user?.userId) return;
-      try {
-        await musicApi.logActivity({ userId: user.userId, type, metadata });
-      } catch (err) {
-        console.error("Failed to log activity:", err);
-      }
-    },
-    [user?.userId]
-  );
+  }, [normalizeSong, user?.userId]);
 
   const createPlaylist = async ({
     name,
@@ -409,8 +344,11 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         isPublic,
         userId: user.userId,
       });
-      setPlaylists((prev) => [playlist, ...prev]);
-      logActivity("playlist_create", { playlistId: playlist._id, name: playlist.name });
+      const normalizedPlaylist = {
+        ...playlist,
+        songs: playlist.songs?.map(normalizeSong) ?? [],
+      };
+      setPlaylists((prev) => [normalizedPlaylist, ...prev]);
       return playlist as Playlist;
     } catch (error) {
       console.error("Failed to create playlist:", error);
@@ -429,8 +367,14 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updatePlaylistInState = (updated: Playlist) => {
+    const normalized = {
+      ...updated,
+      songs: updated.songs.map(normalizeSong),
+    };
     setPlaylists((prev) =>
-      prev.map((playlist) => (playlist._id === updated._id ? updated : playlist))
+      prev.map((playlist) =>
+        playlist._id === updated._id ? normalized : playlist
+      )
     );
   };
 
@@ -495,22 +439,29 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const fetchSharedPlaylist = useCallback(async (shareCode: string) => {
     try {
       const playlist = await musicApi.getSharedPlaylist(shareCode);
-      setSharedPlaylist(playlist);
+      const normalized = {
+        ...playlist,
+        songs: playlist.songs.map(normalizeSong),
+      };
+      setSharedPlaylist(normalized);
     } catch (error) {
       console.error("Failed to fetch shared playlist:", error);
       setSharedPlaylist(null);
     }
-  }, []);
+  }, [normalizeSong]);
 
   const getPublicPlaylist = useCallback(async (playlistId: string) => {
     try {
       const playlist = await musicApi.getPublicPlaylist(playlistId);
-      return playlist as Playlist;
+      return {
+        ...playlist,
+        songs: playlist.songs.map(normalizeSong),
+      } as Playlist;
     } catch (error) {
       console.error("Failed to fetch public playlist:", error);
       return null;
     }
-  }, []);
+  }, [normalizeSong]);
 
   useEffect(() => {
     if (user?.userId) {
@@ -521,12 +472,78 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       setFavoriteSongs([]);
       setFavoriteSongIds(new Set());
       setPlaylists([]);
+      setDailyDiscoverPlaylists([]);
       setDiscoverPlaylists([]);
       setSharedPlaylist(null);
-      setRecommendations([]);
-      setRecommendedAlbums([]);
     }
   }, [user?.userId]);
+
+  useEffect(() => {
+    if (!user?.userId || !songs.length) return;
+
+    const dailyKey = getTodayKey();
+    const storageKey = `daily-discover:${user.userId}`;
+    const raw = localStorage.getItem(storageKey);
+
+    if (raw) {
+      try {
+        const stored = JSON.parse(raw) as {
+          date: string;
+          playlists: Array<{
+            id: string;
+            name: string;
+            description?: string;
+            songIds: string[];
+            seedSongId?: string;
+          }>;
+        };
+        if (stored.date === dailyKey) {
+          const hydrated = stored.playlists
+            .map((playlist) => {
+              const songsList = playlist.songIds
+                .map((id) => songsById.get(id))
+                .filter(Boolean) as Song[];
+              if (!songsList.length) return null;
+              return {
+                _id: playlist.id,
+                name: playlist.name,
+                description: playlist.description,
+                ownerId: user.userId,
+                isPublic: false,
+                songs: songsList,
+                isTemporary: true,
+                isDailyDiscover: true,
+                generatedAt: stored.date,
+                seedSongId: playlist.seedSongId,
+              } as Playlist;
+            })
+            .filter(Boolean) as Playlist[];
+          setDailyDiscoverPlaylists(hydrated);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to load daily discover cache:", error);
+      }
+    }
+
+    const generate = async () => {
+      const playlists = await buildDailyDiscover(user.userId);
+      setDailyDiscoverPlaylists(playlists);
+      const payload = {
+        date: dailyKey,
+        playlists: playlists.map((playlist) => ({
+          id: playlist._id,
+          name: playlist.name,
+          description: playlist.description,
+          songIds: playlist.songs.map((song) => song._id),
+          seedSongId: playlist.seedSongId,
+        })),
+      };
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    };
+
+    generate();
+  }, [user?.userId, songs, songsById, buildDailyDiscover, getTodayKey]);
 
   // Time update
   useEffect(() => {
@@ -587,11 +604,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   // Shuffle
   useEffect(() => {
     if (isShuffle) {
-      const shuffled = [...originalSongs].sort(() => Math.random() - 0.5);
-      setSongs(shuffled);
-      setPlayQueue((prev) =>
-        prev.length ? [...prev].sort(() => Math.random() - 0.5) : shuffled
-      );
+      setSongs([...songs].sort(() => Math.random() - 0.5));
     } else {
       setSongs(originalSongs);
     }
@@ -613,12 +626,337 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     return albums.filter((a) => a.name.toLowerCase().includes(q));
   }, [albums, searchQuery]);
 
-  // Player controls
-  const play = () => {
-    audioRef.current?.play().catch((err) => {
-      console.error("Playback failed:", err);
+  const songsById = useMemo(() => {
+    return new Map(songs.map((song) => [song._id, song]));
+  }, [songs]);
+
+  const getTodayKey = useCallback(
+    () => new Date().toLocaleDateString("en-CA"),
+    []
+  );
+
+  const getTempoBucket = useCallback((song: Song) => {
+    const bpm = song.bpm ?? 0;
+    if (!bpm) return "unknown";
+    if (bpm < 90) return "slow";
+    if (bpm < 120) return "mid";
+    return "fast";
+  }, []);
+
+  const selectSongsWithConstraints = useCallback(
+    (candidates: ScoredSong[], targetCount: number, usedIds: Set<string>) => {
+    const selected: ScoredSong[] = [];
+    const artistCounts = new Map<string, number>();
+    const genreCounts = new Map<string, number>();
+    const tempoCounts = new Map<string, number>();
+
+    const canUse = (song: Song) => {
+      if (usedIds.has(song._id)) return false;
+      const artist = song.artist || "unknown";
+      const genre = song.genre || "unknown";
+      const tempo = getTempoBucket(song);
+      if ((artistCounts.get(artist) || 0) >= 2) return false;
+      if ((genreCounts.get(genre) || 0) >= 3) return false;
+      if ((tempoCounts.get(tempo) || 0) >= 4) return false;
+      return true;
+    };
+
+    const take = (entry: ScoredSong) => {
+      const artist = entry.song.artist || "unknown";
+      const genre = entry.song.genre || "unknown";
+      const tempo = getTempoBucket(entry.song);
+      artistCounts.set(artist, (artistCounts.get(artist) || 0) + 1);
+      genreCounts.set(genre, (genreCounts.get(genre) || 0) + 1);
+      tempoCounts.set(tempo, (tempoCounts.get(tempo) || 0) + 1);
+      selected.push(entry);
+      usedIds.add(entry.song._id);
+    };
+
+    for (const entry of candidates) {
+      if (selected.length >= targetCount) break;
+      if (canUse(entry.song)) {
+        take(entry);
+      }
+    }
+
+    if (selected.length < targetCount) {
+      for (const entry of candidates) {
+        if (selected.length >= targetCount) break;
+        if (usedIds.has(entry.song._id)) continue;
+        take(entry);
+      }
+    }
+
+    return selected;
+  },
+  [getTempoBucket]
+  );
+
+  const buildDailyDiscover = useCallback(
+    async (userId: string) => {
+      if (!songs.length) return [];
+      const dailyKey = getTodayKey();
+      const usedIds = new Set<string>();
+      const allScores = new Map<string, number>();
+      const previousSongIds: string[] = [];
+      const dailyPlaylists: Playlist[] = [];
+
+      const pickLeastRecommendedSeed = () => {
+        let seedId: string | null = null;
+        let lowestScore = Number.POSITIVE_INFINITY;
+        for (const songId of previousSongIds) {
+          const score = allScores.get(songId);
+          if (score === undefined) continue;
+          if (score < lowestScore) {
+            lowestScore = score;
+            seedId = songId;
+          }
+        }
+        if (!seedId && previousSongIds.length) {
+          seedId =
+            previousSongIds[Math.floor(Math.random() * previousSongIds.length)];
+        }
+        return seedId ? songsById.get(seedId) || null : null;
+      };
+
+      for (let index = 0; index < 6; index += 1) {
+        const includeSeed = index === 0;
+        const seedSong =
+          index === 0
+            ? songs[Math.floor(Math.random() * songs.length)]
+            : pickLeastRecommendedSeed();
+        if (!seedSong) break;
+
+        const { scored } = await getRecommendationScores(
+          { seedTrackIds: [seedSong._id], limit: songs.length },
+          songs
+        );
+
+        const available = scored.filter(
+          (entry) => !usedIds.has(entry.song._id)
+        );
+        const targetCount = includeSeed ? 9 : 10;
+        const selected = selectSongsWithConstraints(
+          available,
+          targetCount,
+          usedIds
+        );
+
+        const selectedSongs = selected.map((entry) => entry.song);
+        const albumSongs = includeSeed
+          ? [seedSong, ...selectedSongs]
+          : selectedSongs;
+
+        if (includeSeed) {
+          usedIds.add(seedSong._id);
+          allScores.set(seedSong._id, 1);
+        }
+        selected.forEach((entry) => {
+          allScores.set(entry.song._id, entry.score);
+        });
+        previousSongIds.push(...albumSongs.map((song) => song._id));
+
+        dailyPlaylists.push({
+          _id: `daily-${userId}-${dailyKey}-${index + 1}`,
+          name: `Daily Discover ${index + 1}`,
+          description: `Fresh picks for ${dailyKey}`,
+          ownerId: userId,
+          isPublic: false,
+          songs: albumSongs,
+          isTemporary: true,
+          isDailyDiscover: true,
+          generatedAt: dailyKey,
+          seedSongId: seedSong._id,
+        });
+      }
+
+      return dailyPlaylists;
+    },
+    [songs, songsById, getTodayKey, selectSongsWithConstraints]
+  );
+
+  useEffect(() => {
+    let isActive = true;
+    const seedIds = favoriteSongs.map((song) => song._id);
+
+    const loadRecommendations = async () => {
+      if (!songs.length) {
+        setRecommendedSongIds([]);
+        return;
+      }
+      const { recommendations } = await getRecommendations(
+        { seedTrackIds: seedIds, limit: songs.length },
+        songs
+      );
+      const recommendedIds = recommendations.map((song) => song._id);
+      const seedSet = new Set(seedIds);
+      const fallbackIds = songs
+        .map((song) => song._id)
+        .filter((id) => !seedSet.has(id) && !recommendedIds.includes(id));
+      const orderedIds = [
+        ...recommendedIds,
+        ...seedIds.filter((id) => !recommendedIds.includes(id)),
+        ...fallbackIds,
+      ];
+      if (isActive) {
+        console.log("Recommendation refresh", {
+          seeds: seedIds.length,
+          recommendations: recommendedIds.length,
+          total: orderedIds.length,
+        });
+        setRecommendedSongIds(orderedIds);
+      }
+    };
+
+    loadRecommendations();
+    return () => {
+      isActive = false;
+    };
+  }, [favoriteSongs, songs]);
+
+  const recommendationRank = useMemo(() => {
+    const map = new Map<string, number>();
+    recommendedSongIds.forEach((id, index) => {
+      map.set(id, index);
     });
-    setPlayStatus(true);
+    return map;
+  }, [recommendedSongIds]);
+
+  const sortSongs = useCallback(
+    (list: Song[]) => {
+      const items = [...list];
+      if (sortOption === "alpha") {
+        return items.sort((a, b) => a.name.localeCompare(b.name));
+      }
+      if (sortOption === "date") {
+        return items.sort((a, b) => {
+          const yearDiff = (b.releaseYear ?? 0) - (a.releaseYear ?? 0);
+          if (yearDiff !== 0) return yearDiff;
+          return a.name.localeCompare(b.name);
+        });
+      }
+      return items.sort((a, b) => {
+        const rankA = recommendationRank.get(a._id) ?? Number.MAX_SAFE_INTEGER;
+        const rankB = recommendationRank.get(b._id) ?? Number.MAX_SAFE_INTEGER;
+        if (rankA !== rankB) return rankA - rankB;
+        return a.name.localeCompare(b.name);
+      });
+    },
+    [sortOption, recommendationRank]
+  );
+
+  const getLatestReleaseYear = useCallback((songList: Song[]) => {
+    return songList.reduce(
+      (max, song) => Math.max(max, song.releaseYear ?? 0),
+      0
+    );
+  }, []);
+
+  const getRecommendationRank = useCallback(
+    (songList: Song[]) => {
+      let best = Number.MAX_SAFE_INTEGER;
+      for (const song of songList) {
+        const rank = recommendationRank.get(song._id);
+        if (rank !== undefined && rank < best) best = rank;
+      }
+      return best;
+    },
+    [recommendationRank]
+  );
+
+  const sortAlbums = useCallback(
+    (list: Album[]) => {
+      const items = [...list];
+      if (sortOption === "alpha") {
+        return items.sort((a, b) => a.name.localeCompare(b.name));
+      }
+      if (sortOption === "date") {
+        return items.sort((a, b) => {
+          const yearA = getLatestReleaseYear(
+            songs.filter((song) => song.album === a.name)
+          );
+          const yearB = getLatestReleaseYear(
+            songs.filter((song) => song.album === b.name)
+          );
+          const yearDiff = yearB - yearA;
+          if (yearDiff !== 0) return yearDiff;
+          return a.name.localeCompare(b.name);
+        });
+      }
+      return items.sort((a, b) => {
+        const rankA = getRecommendationRank(
+          songs.filter((song) => song.album === a.name)
+        );
+        const rankB = getRecommendationRank(
+          songs.filter((song) => song.album === b.name)
+        );
+        if (rankA !== rankB) return rankA - rankB;
+        return a.name.localeCompare(b.name);
+      });
+    },
+    [sortOption, songs, getLatestReleaseYear, getRecommendationRank]
+  );
+
+  const sortPlaylists = useCallback(
+    (list: Playlist[]) => {
+      const items = [...list];
+      if (sortOption === "alpha") {
+        return items.sort((a, b) => a.name.localeCompare(b.name));
+      }
+      if (sortOption === "date") {
+        return items.sort((a, b) => {
+          const yearDiff =
+            getLatestReleaseYear(b.songs) - getLatestReleaseYear(a.songs);
+          if (yearDiff !== 0) return yearDiff;
+          return a.name.localeCompare(b.name);
+        });
+      }
+      return items.sort((a, b) => {
+        const rankA = getRecommendationRank(a.songs);
+        const rankB = getRecommendationRank(b.songs);
+        if (rankA !== rankB) return rankA - rankB;
+        return a.name.localeCompare(b.name);
+      });
+    },
+    [sortOption, getLatestReleaseYear, getRecommendationRank]
+  );
+
+  const sortedSongsData = useMemo(
+    () => sortSongs(filteredSongsData),
+    [filteredSongsData, sortSongs]
+  );
+  const sortedAlbumsData = useMemo(
+    () => sortAlbums(filteredAlbumsData),
+    [filteredAlbumsData, sortAlbums]
+  );
+  const allPlaylists = useMemo(
+    () => [...dailyDiscoverPlaylists, ...playlists],
+    [dailyDiscoverPlaylists, playlists]
+  );
+  const sortedPlaylists = useMemo(
+    () => sortPlaylists(allPlaylists),
+    [allPlaylists, sortPlaylists]
+  );
+  const sortedDiscoverPlaylists = useMemo(
+    () => sortPlaylists(discoverPlaylists),
+    [discoverPlaylists, sortPlaylists]
+  );
+
+  // Player controls
+  const play = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (track && audio.src !== track.file) {
+      audio.src = track.file;
+      audio.load();
+    }
+    try {
+      await audio.play();
+      setPlayStatus(true);
+    } catch (error) {
+      console.error("Playback failed:", error);
+      setPlayStatus(false);
+    }
   };
 
   const pause = () => {
@@ -626,32 +964,26 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     setPlayStatus(false);
   };
 
-  const startPlayback = async (song: Song, queueIndex: number | null = null) => {
-    const songWithFile = { ...song, file: normalizeMediaUrl(song.file) };
-    setTrack(songWithFile);
+  const startPlayback = async (song: Song) => {
+    setTrack(song);
     if (audioRef.current) {
-      audioRef.current.src = songWithFile.file || "";
-    }
-    if (!songWithFile.file) {
-      setPlayStatus(false);
-      return;
-    }
-    setCurrentQueueIndex(queueIndex);
-    try {
-      await audioRef.current?.play();
-      setPlayStatus(true);
-    } catch (err) {
-      console.error("Playback failed:", err);
-      setPlayStatus(false);
+      audioRef.current.src = song.file;
+      audioRef.current.load();
+      try {
+        await audioRef.current.play();
+        setPlayStatus(true);
+      } catch (error) {
+        console.error("Playback failed:", error);
+        setPlayStatus(false);
+      }
     }
   };
 
   const playWithId = async (id: string) => {
     const source = playQueue.length ? playQueue : songs;
-    const songIndex = source.findIndex((s) => s._id === id);
-    const song = source[songIndex] || songs.find((s) => s._id === id);
+    const song = source.find((s) => s._id === id) || songs.find((s) => s._id === id);
     if (song) {
-      await startPlayback(song, playQueue.length ? songIndex : null);
+      await startPlayback(song);
     }
   };
 
@@ -659,8 +991,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     if (!track) return;
     const source = playQueue.length ? playQueue : songs;
     if (!source.length) return;
-    const currentIndex =
-      currentQueueIndex !== null ? currentQueueIndex : source.findIndex((s) => s._id === track._id);
+    const currentIndex = source.findIndex((s) => s._id === track._id);
     if (currentIndex <= 0 && loopMode === "off") return;
     const prevIndex = currentIndex > 0 ? currentIndex - 1 : source.length - 1;
     playWithId(source[prevIndex]._id);
@@ -670,8 +1001,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     if (!track) return;
     const source = playQueue.length ? playQueue : songs;
     if (!source.length) return;
-    const currentIndex =
-      currentQueueIndex !== null ? currentQueueIndex : source.findIndex((s) => s._id === track._id);
+    const currentIndex = source.findIndex((s) => s._id === track._id);
     if (currentIndex >= source.length - 1 && loopMode === "off") return;
     const nextIndex = currentIndex < source.length - 1 ? currentIndex + 1 : 0;
     playWithId(source[nextIndex]._id);
@@ -682,9 +1012,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     const rect = seekBg.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const percentage = clickX / rect.width;
-    if (Number.isFinite(audioRef.current.duration)) {
-      audioRef.current.currentTime = percentage * audioRef.current.duration;
-    }
+    audioRef.current.currentTime = percentage * audioRef.current.duration;
   };
 
   const cycleLoopMode = () =>
@@ -697,7 +1025,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const addSongToQueue = (songId: string) => {
     const song = songs.find((s) => s._id === songId);
     if (!song) return;
-    setPlayQueue((prev) => [...prev, { ...song, file: normalizeMediaUrl(song.file) }]);
+    setPlayQueue((prev) => [...prev, song]);
   };
 
   const removeFromQueue = (songId: string) => {
@@ -709,14 +1037,11 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       if (track && track._id === songId) {
         const fallback = nextQueue[idx] || nextQueue[idx - 1];
         if (fallback) {
-          startPlayback(fallback, nextQueue[idx] ? idx : idx - 1);
+          startPlayback(fallback);
         } else {
           audioRef.current?.pause();
           setPlayStatus(false);
-          setCurrentQueueIndex(null);
         }
-      } else if (currentQueueIndex !== null && idx <= currentQueueIndex) {
-        setCurrentQueueIndex(Math.max(currentQueueIndex - 1, 0));
       }
       return nextQueue;
     });
@@ -731,10 +1056,6 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       const nextQueue = [...prev];
       const [item] = nextQueue.splice(idx, 1);
       nextQueue.splice(targetIndex, 0, item);
-      if (currentQueueIndex !== null) {
-        const newIndex = direction === "up" ? currentQueueIndex - 1 : currentQueueIndex + 1;
-        setCurrentQueueIndex(Math.min(Math.max(newIndex, 0), nextQueue.length - 1));
-      }
       return nextQueue;
     });
   };
@@ -743,30 +1064,24 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     setPlayQueue([]);
     audioRef.current?.pause();
     setPlayStatus(false);
-    setCurrentQueueIndex(null);
   };
 
   const playAlbum = (albumId: string) => {
     const albumName = albums.find((a) => a._id === albumId)?.name;
     if (!albumName) return;
-    const albumSongs = songs.filter((s) => s.album === albumName).map((s) => ({
-      ...s,
-      file: normalizeMediaUrl(s.file),
-    }));
+    const albumSongs = songs.filter((s) => s.album === albumName);
     if (!albumSongs.length) return;
+    clearQueue();
     setPlayQueue(albumSongs);
-    startPlayback(albumSongs[0], 0);
+    startPlayback(albumSongs[0]);
   };
 
   const playPlaylist = (playlistId: string) => {
-    const playlist = playlists.find((p) => p._id === playlistId);
+    const playlist = allPlaylists.find((p) => p._id === playlistId);
     if (!playlist || !playlist.songs.length) return;
-    const normalized = playlist.songs.map((s) => ({
-      ...s,
-      file: normalizeMediaUrl(s.file),
-    }));
-    setPlayQueue(normalized);
-    startPlayback(normalized[0], 0);
+    clearQueue();
+    setPlayQueue(playlist.songs);
+    startPlayback(playlist.songs[0]);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -786,32 +1101,17 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleFavorite = async (songId: string) => {
     if (!user?.userId) return;
-    if (favoriteUpdatingIds.has(songId)) return;
     setFavoriteUpdatingIds((prev) => new Set(prev).add(songId));
     try {
       const currentlyFavorite = favoriteSongIds.has(songId);
-      // Optimistic update
-      setFavoriteSongIds((prev) => {
-        const next = new Set(prev);
-        currentlyFavorite ? next.delete(songId) : next.add(songId);
-        return next;
-      });
       if (currentlyFavorite) {
         await musicApi.removeFavorite(user.userId, songId);
-        logActivity("unfavorite", { songId });
       } else {
         await musicApi.addFavorite(user.userId, songId);
-        logActivity("favorite", { songId });
       }
-      fetchRecommendations(user.userId);
+      await fetchFavorites(user.userId);
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
-      // revert on error
-      setFavoriteSongIds((prev) => {
-        const next = new Set(prev);
-        currentlyFavorite ? next.add(songId) : next.delete(songId);
-        return next;
-      });
     } finally {
       setFavoriteUpdatingIds((prev) => {
         const updated = new Set(prev);
@@ -822,44 +1122,6 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isFavorite = (songId: string) => favoriteSongIds.has(songId);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = isMuted ? 0 : volume;
-    localStorage.setItem("volume", String(volume));
-    localStorage.setItem("muted", String(isMuted));
-  }, [volume, isMuted]);
-
-  useEffect(() => {
-    localStorage.setItem("playQueue", JSON.stringify(playQueue));
-    if (track?._id) {
-      localStorage.setItem("currentTrackId", track._id);
-    }
-    if (currentQueueIndex !== null) {
-      localStorage.setItem("currentQueueIndex", String(currentQueueIndex));
-    }
-  }, [playQueue, track?._id, currentQueueIndex]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const handleWaiting = () => setIsBuffering(true);
-    const handlePlaying = () => setIsBuffering(false);
-    const handlePlay = () => setPlayStatus(true);
-    const handlePause = () => setPlayStatus(false);
-    audio.addEventListener("waiting", handleWaiting);
-    audio.addEventListener("playing", handlePlaying);
-    audio.addEventListener("canplay", handlePlaying);
-    audio.addEventListener("play", handlePlay);
-    audio.addEventListener("pause", handlePause);
-    return () => {
-      audio.removeEventListener("waiting", handleWaiting);
-      audio.removeEventListener("playing", handlePlaying);
-      audio.removeEventListener("canplay", handlePlaying);
-      audio.removeEventListener("play", handlePlay);
-      audio.removeEventListener("pause", handlePause);
-    };
-  }, []);
 
   return (
     <MusicContext.Provider
@@ -872,6 +1134,8 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         songsData: filteredSongsData,
         albumsData: filteredAlbumsData,
         playlists,
+        dailyDiscoverPlaylists,
+        allPlaylists,
         discoverPlaylists,
         sharedPlaylist,
         clearQueue,
@@ -881,9 +1145,6 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         favoriteSongIds,
         favoriteUpdatingIds,
         isFavoritesLoading,
-        recommendations,
-        recommendedAlbums,
-        isRecommendationLoading,
         isPlaylistsLoading,
         isDiscoverLoading,
         isFavorite,
@@ -902,13 +1163,20 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         setSearchQuery,
         viewFilter,
         setViewFilter,
+        sortOption,
+        setSortOption,
+        sortSongs,
+        sortAlbums,
+        sortPlaylists,
+        sortedSongsData,
+        sortedAlbumsData,
+        sortedPlaylists,
+        sortedDiscoverPlaylists,
         playQueue,
         track,
-        currentQueueIndex,
         setTrack,
         playStatus,
         setPlayStatus,
-        isBuffering,
         time,
         play,
         pause,
@@ -929,9 +1197,6 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         handleVolumeChange,
         isMuted,
         toggleMute,
-        logActivity,
-        setVolume,
-        setIsMuted,
         isLoading,
       }}
     >

@@ -19,21 +19,21 @@ export default function Display() {
   
   // Find album in the full albums list, not filtered
   const bgColor = isAlbum && albumId
-    ? albums.find((a) => a._id === albumId)?.bgColour || "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-    : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+    ? albums.find((a) => a._id === albumId)?.bgColour || "#121212"
+    : "#121212";
 
   useEffect(() => {
     if (displayRef.current) {
       displayRef.current.style.background = isAlbum 
-        ? `linear-gradient(${bgColor}, rgba(255, 255, 255, 0.1))` 
-        : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        ? `linear-gradient(${bgColor},#121212)` 
+        : "#121212";
     }
   }, [isAlbum, bgColor]);
 
   return (
     <div
       ref={displayRef}
-      className="w-[100%] m-2 px-6 pt-4 rounded-3xl bg-white/90 backdrop-blur-xl border border-white/20 text-gray-800 overflow-auto shadow-xl lg:w-[75%] lg:ml-0"
+      className="w-[100%] m-2 px-6 pt-4 rounded-3xl bg-[#0c0c12]/80 backdrop-blur-xl border border-white/5 text-white overflow-auto shadow-[0_20px_60px_-24px_rgba(0,0,0,0.75)] lg:w-[75%] lg:ml-0"
     >
         <Routes>
           <Route path="/" element={<DisplayHome />} />

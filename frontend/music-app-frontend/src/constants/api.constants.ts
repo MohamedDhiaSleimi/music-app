@@ -31,7 +31,6 @@ export const STORAGE_KEYS = {
 
 // Music API Endpoints
 export const MUSIC_API_BASE_URL = import.meta.env.VITE_MUSIC_API_BASE_URL || 'http://localhost:3000/api';
-export const RECOMMENDATION_API_BASE_URL = import.meta.env.VITE_RECOMMENDATION_API_BASE_URL || 'http://localhost:4003/api/recommendation';
 
 export const MUSIC_ENDPOINTS = {
   SONGS: {
@@ -49,9 +48,6 @@ export const MUSIC_ENDPOINTS = {
     ADD: '/favorite/add',
     REMOVE: '/favorite/remove',
   },
-  ACTIVITY: {
-    BASE: '/activity',
-  },
   PLAYLISTS: {
     BASE: '/playlist',
     CREATE: '/playlist/create',
@@ -60,9 +56,4 @@ export const MUSIC_ENDPOINTS = {
     PUBLIC: '/playlist/public',
     SHARED: '/playlist/shared',
   },
-};
-
-export const RECOMMENDATION_ENDPOINTS = {
-  USER: '/user',
-  SONG: '/song',
 };

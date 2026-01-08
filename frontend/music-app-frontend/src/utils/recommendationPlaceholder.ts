@@ -19,6 +19,11 @@ export interface RecommendationResponse {
   };
 }
 
+export interface ScoredSong {
+  song: Song;
+  score: number;
+}
+
 type FeatureKeys =
   | "bpm"
   | "energy"
@@ -107,6 +112,29 @@ export const getRecommendations = async (
     return { recommendations: [], placeholder: false };
   }
 
+  const { scored, seedPool } = await getRecommendationScores(input, catalog);
+
+  const limit = input.limit ?? 10;
+  return {
+    recommendations: scored.slice(0, limit).map((s) => s.song),
+    placeholder: false,
+    debug: {
+      seeds: seedPool.map((s) => s._id),
+      featureWeights: FEATURE_WEIGHTS,
+      mood: input.mood,
+      genre: input.genre,
+    },
+  };
+};
+
+export const getRecommendationScores = async (
+  input: RecommendationRequest,
+  catalog: Song[]
+): Promise<{ scored: ScoredSong[]; seedPool: Song[] }> => {
+  if (!catalog.length) {
+    return { scored: [], seedPool: [] };
+  }
+
   const seeds =
     input.seedTrackIds
       ?.map((id) => catalog.find((s) => s._id === id))
@@ -146,15 +174,5 @@ export const getRecommendations = async (
     })
     .sort((a, b) => b.score - a.score);
 
-  const limit = input.limit ?? 10;
-  return {
-    recommendations: scored.slice(0, limit).map((s) => s.song),
-    placeholder: false,
-    debug: {
-      seeds: seedPool.map((s) => s._id),
-      featureWeights: FEATURE_WEIGHTS,
-      mood: input.mood,
-      genre: input.genre,
-    },
-  };
+  return { scored, seedPool };
 };

@@ -36,4 +36,8 @@ export interface Playlist {
   isPublic: boolean;
   songs: Song[];
   shareCode?: string;
+  isTemporary?: boolean;
+  isDailyDiscover?: boolean;
+  generatedAt?: string;
+  seedSongId?: string;
 }

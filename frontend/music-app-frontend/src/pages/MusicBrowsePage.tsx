@@ -2,7 +2,14 @@ import { useMusic } from '../context/MusicContext';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function MusicBrowsePage() {
-  const { songs, albums, isLoading, playTrack } = useMusic();
+  const {
+    sortedSongsData,
+    sortedAlbumsData,
+    isLoading,
+    playTrack,
+    sortOption,
+    setSortOption,
+  } = useMusic();
 
   if (isLoading) return <LoadingSpinner fullScreen message="Loading music..." />;
 
@@ -11,9 +18,27 @@ export default function MusicBrowsePage() {
       <div className="max-w-7xl mx-auto pb-32">
         {/* Albums Section */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-white mb-6">Albums</h2>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <h2 className="text-3xl font-bold text-white">Albums</h2>
+            <label className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-200">
+              <span className="text-xs uppercase tracking-wide text-gray-400">
+                Sort
+              </span>
+              <select
+                value={sortOption}
+                onChange={(event) =>
+                  setSortOption(event.target.value as typeof sortOption)
+                }
+                className="bg-transparent text-white text-sm focus:outline-none"
+              >
+                <option value="recommended">Recommended</option>
+                <option value="date">Date</option>
+                <option value="alpha">Alphabetical</option>
+              </select>
+            </label>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {albums.map((album) => (
+            {sortedAlbumsData.map((album) => (
               <div key={album._id} className="bg-neutral-900 p-4 rounded-lg hover:bg-neutral-800 transition">
                 <img src={album.image} alt={album.name} className="w-full aspect-square rounded mb-3" />
                 <p className="text-white font-medium truncate">{album.name}</p>
@@ -27,7 +52,7 @@ export default function MusicBrowsePage() {
         <div>
           <h2 className="text-3xl font-bold text-white mb-6">Songs</h2>
           <div className="space-y-2">
-            {songs.map((song) => (
+            {sortedSongsData.map((song) => (
               <div
                 key={song._id}
                 onClick={() => playTrack(song)}

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { MUSIC_API_BASE_URL, MUSIC_ENDPOINTS } from '../constants/api.constants';
 import type { Album, Playlist, Song } from '../types/music.types';
-import type { Activity } from '../types/activity.types';
 
 export const musicApiClient = axios.create({
   baseURL: MUSIC_API_BASE_URL,
@@ -129,15 +128,5 @@ export const musicApi = {
       params: { userId },
     });
     return response.data.playlist as Playlist;
-  },
-
-  logActivity: async (payload: { userId: string; type: string; metadata?: Record<string, unknown> }) => {
-    const response = await musicApiClient.post(`${MUSIC_ENDPOINTS.ACTIVITY.BASE}/log`, payload);
-    return response.data.activity as Activity;
-  },
-
-  getRecentActivity: async (userId: string): Promise<Activity[]> => {
-    const response = await musicApiClient.get(`${MUSIC_ENDPOINTS.ACTIVITY.BASE}/user/${userId}`);
-    return response.data.activities as Activity[];
   },
 };

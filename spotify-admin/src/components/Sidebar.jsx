@@ -27,6 +27,14 @@ function Sidebar() {
                     <img src={assets.song_icon} className='w-5' alt="Manage Playlists" />
                     <p className='hidden sm:block'>Manage Playlists</p>
                 </NavLink>
+                <NavLink to={"/users"} className="flex items-center gap-2.5 text-gray-800 bg-white border border-black p-2 pr-[max(8vw,10px)] drop-shadow-[-4px_4px_#00ff5b] text-sm font-medium">
+                    <img src={assets.album_icon} className='w-5' alt="Users" />
+                    <p className='hidden sm:block'>Users</p>
+                </NavLink>
+                <NavLink to={"/recommendations"} className="flex items-center gap-2.5 text-gray-800 bg-white border border-black p-2 pr-[max(8vw,10px)] drop-shadow-[-4px_4px_#00ff5b] text-sm font-medium">
+                    <img src={assets.song_icon} className='w-5' alt="Recommendations" />
+                    <p className='hidden sm:block'>Recommendations</p>
+                </NavLink>
             </div>
         </div>
     )

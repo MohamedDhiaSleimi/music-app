@@ -6,6 +6,8 @@ import AddAlbum from './pages/AddAlbum';
 import ListSong from './pages/ListSong';
 import ListAlbum from './pages/ListAlbum';
 import ManagePlaylists from './pages/ManagePlaylists';
+import ListUsers from './pages/ListUsers';
+import RecommendationStatus from './pages/RecommendationStatus';
 import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/DashboardLayout';
@@ -30,6 +32,8 @@ const App = () => {
             <Route path="/list-song" element={<ListSong />} />
             <Route path="/list-album" element={<ListAlbum />} />
             <Route path="/playlists" element={<ManagePlaylists />} />
+            <Route path="/users" element={<ListUsers />} />
+            <Route path="/recommendations" element={<RecommendationStatus />} />
             <Route path="/" element={<Navigate to="/add-song" replace />} />
           </Route>
         </Route>

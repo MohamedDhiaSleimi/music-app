@@ -1,113 +1,98 @@
+import { useNavigate } from "react-router-dom";
 import { useMusic } from "../../context/MusicContext";
 import AlbumItem from "./AlbumItem";
 import Navbar from "./Navbar";
 import SongItem from "./SongItem";
-import { Skeleton } from "../ui/Skeleton";
-import { RecommendationCard } from "./RecommendationCard";
 
 export default function DisplayHome() {
   const { 
-    filteredSongsData, 
-    filteredAlbumsData, 
-    viewFilter,
-    isLoading,
-    recommendations,
-    recommendedAlbums,
-    isRecommendationLoading,
+    sortedSongsData,
+    sortedAlbumsData,
+    dailyDiscoverPlaylists,
+    viewFilter 
   } = useMusic();
+  const navigate = useNavigate();
 
-  const hits = recommendations.slice(0, 10);
-  const featuredAlbums = recommendedAlbums.slice(0, 6);
+  const isMusicOnly = viewFilter === "music";
 
   return (
     <>
       <Navbar />
 
+      {viewFilter === "all" && dailyDiscoverPlaylists.length > 0 && (
+        <div className="mb-8">
+          <h1 className="my-6 font-bold text-2xl">Daily Discover</h1>
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {dailyDiscoverPlaylists.map((playlist) => {
+              const coverImage = playlist.songs[0]?.image;
+              return (
+                <div
+                  key={playlist._id}
+                  onClick={() => navigate(`/playlists/${playlist._id}`)}
+                  className="bg-neutral-900 p-4 rounded-lg hover:bg-neutral-800 transition flex flex-col cursor-pointer"
+                >
+                  {coverImage ? (
+                    <img
+                      src={coverImage}
+                      alt={playlist.name}
+                      className="w-full aspect-square rounded mb-3"
+                    />
+                  ) : (
+                    <div className="w-full aspect-square rounded mb-3 bg-gradient-to-br from-green-500/30 to-blue-500/30 flex items-center justify-center text-xl font-semibold text-white">
+                      DD
+                    </div>
+                  )}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-white font-medium truncate">
+                        {playlist.name}
+                      </p>
+                      <p className="text-gray-400 text-sm truncate">
+                        {playlist.description || "Daily picks"}
+                      </p>
+                    </div>
+                    <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">
+                      Daily
+                    </span>
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">
+                    {playlist.songs.length} song
+                    {playlist.songs.length === 1 ? "" : "s"}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Songs Section */}
       {(viewFilter === "all" || viewFilter === "music") && (
         <div className="mb-8">
           <h1 className="my-6 font-bold text-2xl">Today's biggest hits</h1>
-          {isLoading || isRecommendationLoading ? (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className="w-48 shrink-0">
-                  <Skeleton className="w-full h-44" />
-                  <Skeleton className="h-4 w-3/4 mt-3" />
-                  <Skeleton className="h-3 w-5/6 mt-2" />
-                </div>
-              ))}
-            </div>
-          ) : hits.length > 0 ? (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {hits.map((item, idx) => (
-                <RecommendationCard
-                  key={item.id || idx}
-                  item={item}
-                  accent={`linear-gradient(135deg, hsl(${(idx * 35) % 360},75%,70%), hsl(${(idx * 35 + 20) % 360},65%,60%))`}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {filteredSongsData.map((item) => (
-                <SongItem key={item._id} {...item} />
-              ))}
-            </div>
-          )}
+          <div
+            className={
+              isMusicOnly
+                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6"
+                : "flex overflow-x-auto gap-6 pb-4 scrollbar-hide"
+            }
+          >
+            {sortedSongsData.map((item) => (
+              <SongItem key={item._id} {...item} />
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Recommended Albums Section */}
-      {viewFilter === "all" && (
-        <div className="mb-8">
-          <h1 className="my-6 font-bold text-2xl">Recommended Albums</h1>
-          {isLoading || isRecommendationLoading ? (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {Array.from({ length: 4 }).map((_, idx) => (
-                <div key={idx} className="w-44 shrink-0">
-                  <Skeleton className="w-full h-44 rounded-lg" />
-                  <Skeleton className="h-4 w-3/4 mt-3" />
-                  <Skeleton className="h-3 w-5/6 mt-2" />
-                </div>
-              ))}
-            </div>
-          ) : featuredAlbums.length > 0 ? (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {featuredAlbums.map((item) => (
-                <AlbumItem key={item._id} {...item} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {filteredAlbumsData.map((item) => (
-                <AlbumItem key={item._id} {...item} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Featured Charts fallback */}
+      {/* Albums Section */}
       {viewFilter === "all" && (
         <div className="mb-8">
           <h1 className="my-6 font-bold text-2xl">Featured Charts</h1>
-          {isLoading ? (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {Array.from({ length: 4 }).map((_, idx) => (
-                <div key={idx} className="w-44 shrink-0">
-                  <Skeleton className="w-full h-44 rounded-lg" />
-                  <Skeleton className="h-4 w-3/4 mt-3" />
-                  <Skeleton className="h-3 w-5/6 mt-2" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
-              {filteredAlbumsData.slice(0, 6).map((item) => (
-                <AlbumItem key={item._id} {...item} />
-              ))}
-            </div>
-          )}
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
+            {sortedAlbumsData.map((item) => (
+              <AlbumItem key={item._id} {...item} />
+            ))}
+          </div>
         </div>
       )}
     </>

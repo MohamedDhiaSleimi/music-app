@@ -4,7 +4,8 @@ import SongItem from "./SongItem";
 import { useMusic } from "../../context/MusicContext";
 
 export default function DisplayFavorites() {
-  const { favoriteSongs, isFavoritesLoading, searchQuery } = useMusic();
+  const { favoriteSongs, isFavoritesLoading, searchQuery, sortSongs } =
+    useMusic();
 
   const filteredFavorites = useMemo(() => {
     if (!searchQuery.trim()) return favoriteSongs;
@@ -14,6 +15,10 @@ export default function DisplayFavorites() {
         song.name.toLowerCase().includes(q) || song.desc.toLowerCase().includes(q)
     );
   }, [favoriteSongs, searchQuery]);
+  const sortedFavorites = useMemo(
+    () => sortSongs(filteredFavorites),
+    [filteredFavorites, sortSongs]
+  );
 
   return (
     <>
@@ -22,9 +27,9 @@ export default function DisplayFavorites() {
         <h1 className="my-6 font-bold text-2xl">Your Favorites</h1>
         {isFavoritesLoading ? (
           <p className="text-gray-400">Loading favorites...</p>
-        ) : filteredFavorites.length ? (
+        ) : sortedFavorites.length ? (
           <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide flex-wrap">
-            {filteredFavorites.map((item) => (
+            {sortedFavorites.map((item) => (
               <SongItem key={item._id} {...item} />
             ))}
           </div>

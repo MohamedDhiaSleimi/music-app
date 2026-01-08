@@ -2,11 +2,14 @@ import logging
 import os
 import shutil
 import tempfile
+import warnings
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from numbers import Number
 from pathlib import Path
 from typing import Optional
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import joblib
 import numpy as np
@@ -16,6 +19,7 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pymongo import MongoClient
+from sklearn.exceptions import InconsistentVersionWarning
 from tinytag import TinyTag
 
 # Essentia ships the MusicExtractor algorithm for common audio descriptors
@@ -32,6 +36,13 @@ MONGODB_DB = os.getenv("MONGODB_DB", "musicapp")
 FEATURE_COLLECTION = os.getenv("FEATURE_COLLECTION", "song_features")
 FAVORITE_COLLECTION = os.getenv("FAVORITE_COLLECTION", "favorites")
 RECOMMENDATION_LIMIT_DEFAULT = int(os.getenv("RECOMMENDATION_LIMIT_DEFAULT", "10"))
+MUSIC_API_BASE_URL = os.getenv("MUSIC_API_BASE_URL", "http://music-service:3000/api")
+RECOMMENDATION_BACKFILL_ON_STARTUP = os.getenv("RECOMMENDATION_BACKFILL_ON_STARTUP", "true").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+RECOMMENDATION_MAX_WORKERS = max(3, int(os.getenv("RECOMMENDATION_MAX_WORKERS", "4")))
 
 AI_DATA_DIR = Path(__file__).resolve().parent / "ai"
 MODEL_PATH = AI_DATA_DIR / "spotify_song_cluster_pipeline.joblib"
@@ -60,12 +71,16 @@ db = client[MONGODB_DB]
 features_collection = db[FEATURE_COLLECTION]
 favorites_collection = db[FAVORITE_COLLECTION]
 
-# Configure Essentia extractor once per process
-music_extractor = MusicExtractor(
-    lowlevelStats=True,
-    rhythmStats=True,
-    tonalStats=True,
-)
+# Configure Essentia extractor per thread to avoid concurrency issues.
+_extractor_local = threading.local()
+
+
+def _get_music_extractor() -> MusicExtractor:
+    extractor = getattr(_extractor_local, "extractor", None)
+    if extractor is None:
+        extractor = MusicExtractor()
+        _extractor_local.extractor = extractor
+    return extractor
 
 # Load clustering pipeline and dataset for recommendations
 dataset_df = None
@@ -75,7 +90,17 @@ scaler = None
 kmeans_model = None
 
 try:
-    clustering_pipeline = joblib.load(MODEL_PATH)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", InconsistentVersionWarning)
+        clustering_pipeline = joblib.load(MODEL_PATH)
+        if any(isinstance(w.message, InconsistentVersionWarning) for w in caught):
+            logger.warning(
+                "Model trained with older scikit-learn; re-saving with current version metadata."
+            )
+            try:
+                joblib.dump(clustering_pipeline, MODEL_PATH)
+            except Exception as exc:
+                logger.warning("Unable to update model file: %s", exc)
     scaler = clustering_pipeline.named_steps["scaler"]
     kmeans_model = clustering_pipeline.named_steps["kmeans"]
 
@@ -153,6 +178,34 @@ def download_audio(file_url: str, target_path: str) -> None:
                 fp.write(chunk)
 
 
+def normalize_download_url(file_url: str) -> str:
+    try:
+        parsed = urlparse(file_url)
+        if parsed.scheme not in ("http", "https") or not parsed.hostname:
+            return file_url
+        if parsed.hostname not in ("localhost", "127.0.0.1"):
+            return file_url
+        if parsed.port == 4002:
+            host = "faker-service"
+            port = 4002
+        elif parsed.port == 3000:
+            host = "music-service"
+            port = 3000
+        else:
+            return file_url
+        netloc = f"{host}:{port}" if port else host
+        return urlunparse(parsed._replace(netloc=netloc))
+    except Exception:
+        return file_url
+
+
+def fetch_all_songs():
+    resp = requests.get(f"{MUSIC_API_BASE_URL}/song/list", timeout=30)
+    resp.raise_for_status()
+    data = resp.json()
+    return data.get("songs", [])
+
+
 def extract_metadata(audio_path: str, file_url: str) -> dict:
     base_stem = Path(urlparse(file_url).path).stem or Path(audio_path).stem
     metadata = {
@@ -199,7 +252,8 @@ def _key_to_index(key_str: str) -> int:
 
 
 def extract_features(audio_path: str, metadata_year: int, metadata_duration_ms: Optional[int]) -> dict:
-    features, _ = music_extractor(audio_path)
+    extractor = _get_music_extractor()
+    features, _ = extractor(audio_path)
 
     tempo = _safe_number(features, "rhythm.bpm", 0.0)
     key_str = _safe_string(features, "tonal.key_key", "")
@@ -251,14 +305,17 @@ def persist_features(song_id: str, file_url: str, metadata: dict, audio_features
 def process_song(payload: SongPayload) -> None:
     song_id = payload.songId
     file_url = payload.file
+    download_url = normalize_download_url(file_url)
 
     tmp_dir = tempfile.mkdtemp(prefix="audio_")
     audio_name = Path(urlparse(file_url).path).name or f"{song_id}.audio"
     audio_path = os.path.join(tmp_dir, audio_name)
 
     try:
+        if download_url != file_url:
+            logger.info("Rewriting file URL for download: %s -> %s", file_url, download_url)
         logger.info("Downloading audio for song %s", song_id)
-        download_audio(file_url, audio_path)
+        download_audio(download_url, audio_path)
 
         logger.info("Extracting metadata for song %s", song_id)
         metadata = extract_metadata(audio_path, file_url)
@@ -284,9 +341,96 @@ def process_song(payload: SongPayload) -> None:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+def backfill_missing_features() -> dict:
+    try:
+        songs = fetch_all_songs()
+    except Exception as exc:
+        logger.warning("Backfill failed to load songs: %s", exc)
+        return {"checked": 0, "missing": 0, "scheduled": 0}
+
+    existing_ids = set(
+        features_collection.distinct("songId")
+        + features_collection.distinct("_id")
+    )
+    checked = 0
+    missing = 0
+    scheduled = 0
+    payloads = []
+
+    for song in songs:
+        song_id = song.get("_id")
+        if not song_id:
+            continue
+        checked += 1
+        if song_id in existing_ids:
+            continue
+        missing += 1
+        file_url = song.get("file")
+        if not file_url:
+            continue
+        payloads.append(
+            SongPayload(
+                songId=song_id,
+                file=file_url,
+                name=song.get("name"),
+                album=song.get("album"),
+            )
+        )
+        scheduled += 1
+
+    if not payloads:
+        return {"checked": checked, "missing": missing, "scheduled": scheduled}
+
+    with ThreadPoolExecutor(max_workers=RECOMMENDATION_MAX_WORKERS) as executor:
+        futures = [executor.submit(process_song, payload) for payload in payloads]
+        for future in as_completed(futures):
+            try:
+                future.result()
+            except Exception as exc:
+                logger.warning("Backfill task failed: %s", exc)
+
+    return {"checked": checked, "missing": missing, "scheduled": scheduled}
+
+
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+@app.on_event("startup")
+def startup_backfill():
+    if not RECOMMENDATION_BACKFILL_ON_STARTUP:
+        return
+    thread = threading.Thread(target=backfill_missing_features, daemon=True)
+    thread.start()
+
+
+@app.get("/api/recommendation/status")
+def recommendation_status():
+    assets_loaded = scaler is not None and kmeans_model is not None and dataset_df is not None
+    feature_count = None
+    last_feature_at = None
+
+    try:
+        feature_count = features_collection.count_documents({})
+        latest = features_collection.find_one(sort=[("updatedAt", -1)])
+        if latest and latest.get("updatedAt"):
+            last_feature_at = latest["updatedAt"].isoformat()
+    except Exception as exc:
+        logger.warning("Status collection check failed: %s", exc)
+
+    return {
+        "success": True,
+        "assetsLoaded": assets_loaded,
+        "featureCount": feature_count,
+        "lastFeatureAt": last_feature_at,
+    }
+
+
+@app.post("/api/recommendation/backfill")
+def recommendation_backfill():
+    result = backfill_missing_features()
+    return {"success": True, **result}
 
 
 @app.post("/api/recommendation/extract")

@@ -1,14 +1,36 @@
 // src/components/music/Navbar.tsx
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useMusic } from "../../context/MusicContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
   // Destructure everything once — no duplicates!
-  const { searchQuery, setSearchQuery, viewFilter, setViewFilter } = useMusic();
+  const {
+    searchQuery,
+    setSearchQuery,
+    viewFilter,
+    setViewFilter,
+    filteredSongsData,
+    filteredAlbumsData,
+    sortOption,
+    setSortOption,
+  } = useMusic();
+
+  const showFilterButtons =
+    location.pathname === "/" &&
+    filteredAlbumsData.length > 0 &&
+    filteredSongsData.length > 0;
+
+  const showSortControl =
+    filteredSongsData.length > 1 ||
+    filteredAlbumsData.length > 1 ||
+    location.pathname.includes("playlists") ||
+    location.pathname.includes("discover") ||
+    location.pathname.includes("album");
 
   return (
     <>
@@ -54,28 +76,52 @@ export default function Navbar() {
         </div>
 
         {/* All / Music Filter Buttons */}
-        <div className="flex gap-3">
-          <button
-            onClick={() => setViewFilter("all")}
-            className={`px-6 py-3 rounded-full font-medium transition-all border ${
-              viewFilter === "all"
-                ? "bg-white text-black border-white"
-                : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
-            }`}
-          >
-            All content
-          </button>
-          <button
-            onClick={() => setViewFilter("music")}
-            className={`px-6 py-3 rounded-full font-medium transition-all border ${
-              viewFilter === "music"
-                ? "bg-white text-black border-white"
-                : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
-            }`}
-          >
-            Music only
-          </button>
-        </div>
+        {(showFilterButtons || showSortControl) && (
+          <div className="flex flex-wrap gap-3 items-center">
+            {showFilterButtons && (
+              <>
+                <button
+                  onClick={() => setViewFilter("all")}
+                  className={`px-6 py-3 rounded-full font-medium transition-all border ${
+                    viewFilter === "all"
+                      ? "bg-white text-black border-white"
+                      : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
+                  }`}
+                >
+                  All content
+                </button>
+                <button
+                  onClick={() => setViewFilter("music")}
+                  className={`px-6 py-3 rounded-full font-medium transition-all border ${
+                    viewFilter === "music"
+                      ? "bg-white text-black border-white"
+                      : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
+                  }`}
+                >
+                  Music only
+                </button>
+              </>
+            )}
+            {showSortControl && (
+              <label className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-200">
+                <span className="text-xs uppercase tracking-wide text-gray-400">
+                  Sort
+                </span>
+                <select
+                  value={sortOption}
+                  onChange={(event) =>
+                    setSortOption(event.target.value as typeof sortOption)
+                  }
+                  className="bg-transparent text-white text-sm focus:outline-none"
+                >
+                  <option value="recommended">Recommended</option>
+                  <option value="date">Date</option>
+                  <option value="alpha">Alphabetical</option>
+                </select>
+              </label>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
