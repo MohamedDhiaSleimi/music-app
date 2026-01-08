@@ -478,73 +478,6 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user?.userId]);
 
-  useEffect(() => {
-    if (!user?.userId || !songs.length) return;
-
-    const dailyKey = getTodayKey();
-    const storageKey = `daily-discover:${user.userId}`;
-    const raw = localStorage.getItem(storageKey);
-
-    if (raw) {
-      try {
-        const stored = JSON.parse(raw) as {
-          date: string;
-          playlists: Array<{
-            id: string;
-            name: string;
-            description?: string;
-            songIds: string[];
-            seedSongId?: string;
-          }>;
-        };
-        if (stored.date === dailyKey) {
-          const hydrated = stored.playlists
-            .map((playlist) => {
-              const songsList = playlist.songIds
-                .map((id) => songsById.get(id))
-                .filter(Boolean) as Song[];
-              if (!songsList.length) return null;
-              return {
-                _id: playlist.id,
-                name: playlist.name,
-                description: playlist.description,
-                ownerId: user.userId,
-                isPublic: false,
-                songs: songsList,
-                isTemporary: true,
-                isDailyDiscover: true,
-                generatedAt: stored.date,
-                seedSongId: playlist.seedSongId,
-              } as Playlist;
-            })
-            .filter(Boolean) as Playlist[];
-          setDailyDiscoverPlaylists(hydrated);
-          return;
-        }
-      } catch (error) {
-        console.error("Failed to load daily discover cache:", error);
-      }
-    }
-
-    const generate = async () => {
-      const playlists = await buildDailyDiscover(user.userId);
-      setDailyDiscoverPlaylists(playlists);
-      const payload = {
-        date: dailyKey,
-        playlists: playlists.map((playlist) => ({
-          id: playlist._id,
-          name: playlist.name,
-          description: playlist.description,
-          songIds: playlist.songs.map((song) => song._id),
-          seedSongId: playlist.seedSongId,
-        })),
-      };
-      localStorage.setItem(storageKey, JSON.stringify(payload));
-    };
-
-    generate();
-  }, [user?.userId, songs, songsById, buildDailyDiscover, getTodayKey]);
-
   // Time update
   useEffect(() => {
     const audio = audioRef.current;
@@ -776,6 +709,73 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
+    if (!user?.userId || !songs.length) return;
+
+    const dailyKey = getTodayKey();
+    const storageKey = `daily-discover:${user.userId}`;
+    const raw = localStorage.getItem(storageKey);
+
+    if (raw) {
+      try {
+        const stored = JSON.parse(raw) as {
+          date: string;
+          playlists: Array<{
+            id: string;
+            name: string;
+            description?: string;
+            songIds: string[];
+            seedSongId?: string;
+          }>;
+        };
+        if (stored.date === dailyKey) {
+          const hydrated = stored.playlists
+            .map((playlist) => {
+              const songsList = playlist.songIds
+                .map((id) => songsById.get(id))
+                .filter(Boolean) as Song[];
+              if (!songsList.length) return null;
+              return {
+                _id: playlist.id,
+                name: playlist.name,
+                description: playlist.description,
+                ownerId: user.userId,
+                isPublic: false,
+                songs: songsList,
+                isTemporary: true,
+                isDailyDiscover: true,
+                generatedAt: stored.date,
+                seedSongId: playlist.seedSongId,
+              } as Playlist;
+            })
+            .filter(Boolean) as Playlist[];
+          setDailyDiscoverPlaylists(hydrated);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to load daily discover cache:", error);
+      }
+    }
+
+    const generate = async () => {
+      const playlists = await buildDailyDiscover(user.userId);
+      setDailyDiscoverPlaylists(playlists);
+      const payload = {
+        date: dailyKey,
+        playlists: playlists.map((playlist) => ({
+          id: playlist._id,
+          name: playlist.name,
+          description: playlist.description,
+          songIds: playlist.songs.map((song) => song._id),
+          seedSongId: playlist.seedSongId,
+        })),
+      };
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    };
+
+    generate();
+  }, [user?.userId, songs, songsById, buildDailyDiscover, getTodayKey]);
+
+  useEffect(() => {
     let isActive = true;
     const seedIds = favoriteSongs.map((song) => song._id);
 
@@ -965,17 +965,20 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const startPlayback = async (song: Song) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const shouldReuseSource = audio.src === song.file;
     setTrack(song);
-    if (audioRef.current) {
-      audioRef.current.src = song.file;
-      audioRef.current.load();
-      try {
-        await audioRef.current.play();
-        setPlayStatus(true);
-      } catch (error) {
-        console.error("Playback failed:", error);
-        setPlayStatus(false);
-      }
+    if (!shouldReuseSource) {
+      audio.src = song.file;
+      audio.load();
+    }
+    try {
+      await audio.play();
+      setPlayStatus(true);
+    } catch (error) {
+      console.error("Playback failed:", error);
+      setPlayStatus(false);
     }
   };
 

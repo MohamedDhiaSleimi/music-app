@@ -4,7 +4,7 @@ import Sidebar from "../components/music/Sidebar";
 import { useMusic } from "../context/MusicContext";
 
 export default function MusicApp() {
-  const { audioRef, track, songsData } = useMusic();
+  const { audioRef } = useMusic();
 
   return (
     <div className="h-screen bg-black">
@@ -15,7 +15,7 @@ export default function MusicApp() {
           </div>
           <Player />
         </>
-      <audio ref={audioRef} src={track?.file || ""} preload="auto"></audio>
+      <audio ref={audioRef} preload="auto"></audio>
     </div>
   );
 }
